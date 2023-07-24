@@ -1,0 +1,156 @@
+<!--
+This code contains mainly HTML and JS for the customer order placement page. In certain areas it has a bit of CSS.
+-->
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Lodha Chemist Customer Order Placement</title>
+		<link rel="stylesheet" href="normalize.css">
+		<link rel="stylesheet" href="customerOrderPlacement.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	</head>
+	<body>
+		<script type="text/javascript">
+			var c=1;
+			var row, serial_no, item, qty, otherQty;
+
+			function addItem(){   // Function to transfer item from the text box for user input into the table. 
+				var table = document.getElementById("orders_table");
+				if(document.getElementById("itemName_input").value == "" || document.getElementById("itemName_input").value == null){
+					alert("Item cannot be inserted into table as there is no name. Please try again after writing the name in the text box below.");
+					return;
+				}
+  				var row = table.insertRow(-1);
+  				var serial_no = row.insertCell(0);
+				console.log(c);
+  				var item = row.insertCell(1);
+  				var qty = row.insertCell(2);
+				var editQtyBtn = row.insertCell(3);
+				editQtyBtn.innerHTML = "<button class=\"plusBtn\" onclick = \"plusItem(this)\"><i class=\"fa fa-plus\"></i></button><button onclick = \"minusItem(this)\" class=\"minusBtn\" style=\"font-size:24px\"><i class=\"fa fa-minus\"></i></button>";
+				serial_no.innerHTML = c++;
+  				item.innerHTML = document.getElementById("itemName_input").value + "<button class=\"editItemNameBtn\" \"style=\"font-size:24px;\" onclick = \"editItemName(this)\"><i class = \"fa fa-edit center\"></i></button>"; 
+				if (document.getElementById("quantity_input").value == "Other"){
+					otherQty = prompt("Please enter the quantity of " + document.getElementById("itemName_input").value + " you wish to buy");
+					if (otherQty > 0){
+						qty.innerHTML = otherQty;
+					}else{
+						alert("Sorry this item cannot be added to the list as quantity mentioned is negative");
+						return;
+					}
+				}else{
+					qty.innerHTML = document.getElementById("quantity_input").value;
+				}
+				document.getElementById("itemName_input").value="";
+				document.getElementById("quantity_input").value="1";
+			};
+
+			function editItemName(element){	// Function for the edit icon which appears next to the item name in the table. It allows a user to correct any mistakes in the names of products. 
+				var table = document.getElementById("orders_table");
+				var newItem = prompt("Please edit the name of the medicine"); 
+				if (newItem == table.rows[element.parentNode.parentNode.rowIndex].cells[1].innerHTML){
+					alert("The name of the medicine is the same"); 
+				}else if (newItem == null || newItem == "") {
+					alert("Null isn't an appropriate value for this field. If you would like to change the value for this cell, please click the edit icon again. ");
+				}else{
+					table.rows[element.parentNode.parentNode.rowIndex].cells[1].innerHTML = newItem + "<button \"style=\"font-size:24px\" onclick = \"editItemName(this)\"><i class = \"fas fa-edit\"></i></button>";
+				}
+				
+			};
+			
+			function plusItem(element){  // Increase quantity of the item at a later stage. 
+				var table = document.getElementById("orders_table");
+				table.rows[element.parentNode.parentNode.rowIndex].cells[2].innerHTML = parseInt(table.rows[element.parentNode.parentNode.rowIndex].cells[2].innerHTML) + 1;
+			}
+			function minusItem(element){  // Reduce quantity and delete the product from the table. 
+				var table = document.getElementById("orders_table");
+				if (parseInt(table.rows[element.parentNode.parentNode.rowIndex].cells[2].innerHTML) == 1){
+					var remove = confirm("Reducing the quantity further will remove the item from the cart. Please confirm if you want to do so")
+					if (remove == true){
+						document.getElementById("orders_table").deleteRow(element.parentNode.parentNode.rowIndex);
+						c = document.getElementById("orders_table").rows.length;
+						console.log(c + " delete");
+						for(let i=1; i<=document.getElementById("orders_table").rows.length; i++){ // changing the serial numbers after the delete happens
+							table.rows[i].cells[0].innerHTML = i;
+					}
+					}
+				}else{
+					table.rows[element.parentNode.parentNode.rowIndex].cells[2].innerHTML = parseInt(table.rows[element.parentNode.parentNode.rowIndex].cells[2].innerHTML) - 1;
+				}
+					
+			}
+		</script>
+		<div class="logo">
+				<img src="images/logo.png">
+		</div>
+		<h1>Welcome to Lodha Chemist</h1>
+		<h2>Please place your order below</h2>
+		<form>
+				<div class="orderTable">
+					<h3 style="position: fixed;">Order Details</h3>
+					<table id="orders_table" style="width: 40%; margin-top: 20px; text-align: center; ">
+						<tr style="position: sticky">
+							<th>Serial No.</th>
+							<th>Item Name</th>
+							<th>Quantity</th>
+							<th>Edit Quantity</th>
+						</tr>
+					</table>
+				</div>
+				<table class="buttonsTable" style="width: 40%; border:2px solid black; float: right; margin-right: 40px;">
+					<tr>
+						<div class="inputBoxes">
+							<td style= "width: 45%"><input type="text" id="itemName_input" placeholder="Name of the Product" required></td>
+							<td><select name ="quantity" id="quantity_input" placeholder = "Quantity Required" required>
+								<option selected>1</option>
+								<option>2</option>
+								<option>3</option>
+								<option>4</option>
+								<option>5</option>
+								<option>6</option>
+								<option>7</option>
+								<option>8</option>
+								<option>9</option>
+								<option>10</option>
+								<option>Other</option>
+							</td>
+						</div>
+
+						<div class="cartButtons">
+							<td style = "margin-left: 50px;"><button class="button1" onclick="addItem();">Add Item</button></td>
+						</div>
+					</tr>
+					<tr>
+						<div class="deliveryButton">
+							<td><input type="radio" id="homeDelivery" name="deliveryChoice" value="Home Delivery">
+								<label for="homeDelivery">Home Delivery</label><br> 
+							</td>
+						</div>
+					<tr>
+						<div class ="deliveryButton">
+							<td>
+								<input type="radio" id="pickUp" name="deliveryChoice" value="Pick Up">
+								<label for="pickUp">Pick Up From Store</label><br> 
+							</td>
+						</div>
+						
+					</tr>
+							
+						
+					</tr>
+				</table>
+			<div class="changeProfile">
+				<button class="button7" onclick = "window.location.href = './editcustomerProfile.html'">Change Profile Details</button>
+			</div>
+			<div class="logout">
+				<button class="button8" onclick = "window.location.href = './customerloginpage.html'">Logout</button>
+			</div>
+			<div class="submitOrder">
+				<button type = "submit" class="button4"style="font-size: 25px;">Submit Order</button>
+			</div>
+			<div class="attachPrescription">
+				<input required type="file" class="uploadBox" id="inputPrescription">
+				<label class="uploadBoxLabel" style="font-size:24px" for="inputPrescription">Upload Your Prescription<i class="fa fa-upload"></i></label>
+			</div>
+		</form>
+	</body>
+</html>

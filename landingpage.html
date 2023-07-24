@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Welcome to Lodha Chemist</title>
+    <style>
+      body {
+
+	    background-image: url('images/background_medicine.jpg');
+	    background-repeat: no-repeat;
+	    background-position: top;
+	    background-blend-mode: multiply;
+	    background-size: cover;
+      font-family: monospace;
+      text-align: center;
+      }
+      
+      #login-buttons {
+        margin-top: 40px;
+      }
+      
+      #employee-button, #customer-button {
+        background-color: #008CBA;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition-duration: 0.4s;
+      }
+      
+      #employee-button:hover, #customer-button:hover {
+        background-color: #005f70;
+      }
+      #HeadingText{
+        margin-top: 190px;
+      }
+      .logo{
+	      flex-basis: 20%;
+	      position: static;
+      }
+      .logo img{
+	      width: 180px;
+	      height: auto;
+	      margin: 10px 0px 0px 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo">
+      <img src="images/logo.png">
+    </div>
+    <h1 id="HeadingText">Welcome to Lodha Chemist</h1>
+    <p id = "WelcomeLine">Please choose your login preference.</p>
+    <div id="login-buttons">
+      <button id="employee-button" onclick="window.location.href = './admin_signin.html'">Employee</button>
+      <button id="customer-button" onclick="window.location.href = './customerloginpage.html'">Customer</button>
+    </div>
+  </body>
+</html>
