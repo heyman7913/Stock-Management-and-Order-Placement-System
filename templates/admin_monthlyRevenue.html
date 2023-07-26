@@ -3,23 +3,23 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name = "viewport" content="width=device-width, initial-scale=1">
-		<title>Lodha Chemist POS Terminal</title>
-		<link rel= "stylesheet" type = "text/CSS" href="monthlyRevenue.css">
+		<title>Lodha Chemist Employee Welcome</title>
+		<link rel="stylesheet" type = "text/CSS" href="{{ url_for('static', filename = 'css/admin_inventory.css' ) }}">
 		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
     <body>
         <header>
-			<a href="#" class="logo"><img class="logoImg" src="images/logo.png"></a>
+			<a href="#" class="logo"><img class="logoImg" src="{{ url_for('static', filename = 'images/logo.png') }}"></a>
 			<ul class ="navbar">
-				<li><a href="admin_welcome.html">Home</a></li>
-				<li><a href="inventory.html">Inventory</a></li>
-				<li><a href="posTerminal.html">POS Terminal</a></li>
-				<li><a href="monthlyRevenue.html" class="active">Monthly Revenue</a></li>
-				<li><a href="orders.html">Orders</a></li>
-				<li><a href="returnItems.html">Return Items</a></li>
+				<li><a href="/admin/welcome" class="active">Home</a></li>
+				<li><a href="/admin/inventory">Inventory</a></li>
+				<li><a href="/admin/posTerminal">POS Terminal</a></li>
+				<li><a href="/admin/monthlyRevenue">Monthly Revenue</a></li>
+				<li><a href="/admin/orders">Orders</a></li>
+				<li><a href="/admin/return">Return Items</a></li>
 				<div class="main">
-					<a href="landingpage.html" class="logout"><i class="ri-logout-box-line"></i>Logout</a>
+					<a href="/admin/logout" class="logout"><i class="ri-logout-box-line"></i>Logout</a>
 				</div>
 			</ul>
 		</header>

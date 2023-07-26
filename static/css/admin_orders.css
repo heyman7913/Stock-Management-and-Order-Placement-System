@@ -14,7 +14,7 @@ a{
 }
 body{
     min-height: 100vh;
-    background-image: url('images/background_medicine.jpg');
+    background-image: url('../images/background_medicine.jpg');
 	background-repeat: no-repeat;
 	background-position: top;
 	background-blend-mode: multiply;
@@ -82,19 +82,15 @@ header{
     font-size: 28px;
     margin-right: 7px;
 }
-#welcomeBox{
-    background-color: rgba(88, 153, 226, 0.5); 
-    margin-top: 250px;
-    margin-left: 425px;  
-    position: fixed; 
-    width: 600px; 
-    height: 300px;
+.activeordersTable{
+    height: 150px;
+    overflow-y: auto;
+    width: 1300px;
+    border-collapse: collapse;
+    
 }
-p{
-    font-size: 30px;
-}
-.inventoryTable{
-    height: 450px;
+.elapsedordersTable{
+    height: 150px;
     overflow-y: auto;
     width: 1300px;
     border-collapse: collapse;
@@ -109,31 +105,6 @@ th {
 	border:1px solid black;
 	padding: 5px;
 }
-button{
-	border: solid;
-	border-width: medium;
-	text-align: center;
-	border-radius: 5px;
-	transition-duration: 0.5s;
-	cursor: pointer;
-	text-align: center;
-	display: inline-block;
-	padding:5px;
-	margin-left: 2%;
-	margin-right: 2%;
-	margin-top: 2%;
-	margin-bottom:2%;
-	position: static;
-    font-size: 20px;
-}
-.inputTable{ 
-	margin: 40px 0px 0px 150px;
-	position: fixed;
-}
-.buttonsTable{ 
-	margin: 20px 0px 0px 88%;
-	position: fixed;
-}
 tr{
     text-align: center;
 }
@@ -141,10 +112,4 @@ td{
     padding: 5px;
     width: 160px;
     text-align: center;
-}
-.addItem:hover{
-    background-color: rgb(105, 225, 105);
-}
-.deleteButton:hover{
-    background-color: rgb(214, 53, 53);
 }

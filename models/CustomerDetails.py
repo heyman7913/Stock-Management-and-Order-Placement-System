@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, VARCHAR, DateTime, TIMESTAMP, text, JSON
-from sqlalchemy.dialects.mysql import INTEGER, insert
-from Base import Base
-from engine import engine
+from sqlalchemy import Column, String
+from sqlalchemy.dialects.mysql import INTEGER
+from models.Base import Base
+
 
 class CustomerDetails(Base):
     __tablename__ = "CustomerDetails"

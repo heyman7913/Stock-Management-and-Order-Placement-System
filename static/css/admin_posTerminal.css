@@ -14,7 +14,7 @@ a{
 }
 body{
     min-height: 100vh;
-    background-image: url('images/background_medicine.jpg');
+    background-image: url('../images/background_medicine.jpg');
 	background-repeat: no-repeat;
 	background-position: top;
 	background-blend-mode: multiply;
@@ -86,10 +86,20 @@ th {
 	background-color:green;
 	Color:white;
 	font-size: 15px;
-    width: 300px;
+    width: 160px;
 	text-align:center;
 	border:1px solid black;
 	padding: 5px;
+}
+#grandTotal{
+    background-color:green;
+	Color:white;
+	font-size: 20px;
+    width: 160px;
+	text-align:center;
+	border:1px solid black;
+	padding: 5px;
+    margin-left: 540px;
 }
 button{
 	border: solid;
@@ -106,7 +116,41 @@ button{
 	margin-top: 2%;
 	margin-bottom:2%;
 	position: static;
+    font-size: 20px;
 }
-.showRev:hover{
-    background-color: green; 
+.addItem:hover{
+    background-color: rgb(52, 177, 52);
+}
+.billingTable{
+    height: 450px;
+    overflow-y: auto;
+    width: 820px;
+    border-collapse: collapse;
+    
+}
+.plusBtn{
+	font-size: 24px;
+	width: 48px;
+	height: 48px;
+}
+.minusBtn{
+	font-size: 24px;
+	width: 48px;
+	height: 48px;
+}
+.plusBtn:hover{
+	background-color: green;
+	color: black;
+}
+.minusBtn:hover{
+	background-color: red;
+	color: black;
+}
+tr{
+    text-align: center;
+}
+td{
+    padding: 5px;
+    width: 160px;
+    text-align: center;
 }

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <title>Welcome to Lodha Chemist</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/landingpage.css') }}">
+  </head>
+  <body>
+    <div class="logo">
+      <img src="{{ url_for('static', filename = '/images/logo.png') }}">
+    </div>
+    <h1 id="HeadingText">Welcome to Lodha Chemist</h1>
+    <p id = "WelcomeLine">Please choose your login preference.</p>
+    <div id="login-buttons">
+      <button id="employee-button" onclick="window.location.href = '/admin'">Employee</button>
+      <button id="customer-button" onclick="window.location.href = '/customer'">Customer</button>
+    </div>
+  </body>
+</html>
