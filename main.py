@@ -1,7 +1,7 @@
 from flask import Flask, render_template, abort, request
 import os
 from pathlib import Path
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 
 
 PROJECT_DIR = Path(__file__).resolve().parent
@@ -88,6 +88,12 @@ def adminOrders() -> str:
     return render_template(path)
 
 # ==========================================================
+@app.route('/admin/returnItems', methods = [GET])
+def adminreturnItems() -> str:
+    page_name = 'admin_returnItems.html'
+    path = os.path.join(page_name)
+    return render_template(path)
+# ==========================================================
 
 @app.route('/admin/logout', methods = [GET])
 def adminLogout() -> str:
@@ -102,7 +108,6 @@ class CustomerPage():
     def __init__(self, loginID: str, password: str):
         self.login_id = loginID
         self.password = password
-
 
 @app.route('/customer', methods = ['POST', 'GET'])
 def customer_page() -> str:
@@ -122,6 +127,21 @@ def customer_page() -> str:
     else:
         abort(404)
 
+# ==========================================================
+
+@app.route('/customer/SignUp', methods = ['POST', 'GET'])
+def customer_SignUpp() -> str:
+    page_name = 'customer_signup.html'
+    path = os.path.join(page_name)
+    return render_template(path)
+
+# ==========================================================
+
+@app.route('/customer/changeProfile', methods = ['POST', 'GET'])
+def customer_changeProfile() -> str:
+    page_name = 'customer_editProfile.html'
+    path = os.path.join(page_name)
+    return render_template(path)
 # ==========================================================
 
 

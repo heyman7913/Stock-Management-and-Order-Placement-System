@@ -1,12 +1,11 @@
-<link rel="stylesheet" href="./signup.css">
-
-<form action="customerOrderPlacement.html" style="border:1px solid #ccc">
+<link rel="stylesheet" href="{{ url_for('static', filename = 'css/customer_signup.css') }}">
+<form action="/" method = "POST" style="border:1px solid #ccc">
   <div class="container">
     
     <table id="customerDetails" style="width: 40%;">
         <tr>
             <div class="logo">
-                <img src="images/logo.png">
+                <img src="{{ url_for('static', filename = '/images/logo.png') }}">
             </div>
             <h1 style="text-align: center">Sign Up</h1>
             <p style="text-align: center">Please fill in this form to create an account.</p>
@@ -42,7 +41,7 @@
     <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
 
     <div class="clearfix">
-      <button type="button" class="cancelbtn" onclick="window.location.href = './customerloginpage.html'">Cancel</button>
+      <button type="button" class="cancelbtn" onclick="window.location.href = '/customer'">Cancel</button>
       <button type="submit" class="signupbtn">Sign Up</button>
     </div>
   </div>

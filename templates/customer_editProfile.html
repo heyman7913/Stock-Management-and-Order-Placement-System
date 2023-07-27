@@ -1,12 +1,11 @@
-<link rel="stylesheet" href="./editcustomerprofile.css">
-
-<form action="customer_order_placement.html" style="border:1px solid #ccc">
+<link rel="stylesheet" href="{{ url_for('static', filename = 'css/customer_editProfile.css' ) }}">
+<form action="/customer" style="border:1px solid #ccc">
   <div class="container">
     
     <table id="customerDetails" style="width: 40%;">
         <tr>
             <div class="logo">
-                <img src="images/logo.png">
+                <img src="{{ url_for('static', filename = 'images/logo.png' ) }}">
             </div>
             <h1 style="text-align: center">Edit Profile</h1>
             <p style="text-align: center">Please save all changes after you finish editing profile details</p>
@@ -37,8 +36,8 @@
     </table>
    
     <div class="clearfix">
-      <button type="button" class="cancelbtn" onclick="window.location.href = './customer_order_placement.html'">Cancel</button>
-      <button type="submit" class="signupbtn">Save Changes</button>
+      <button type="button" class="cancelbtn" onclick="window.location.href = '/customer'">Cancel</button>
+      <button type="submit" class="savebtn">Save Changes</button>
     </div>
   </div>
 </form>

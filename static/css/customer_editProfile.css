@@ -1,6 +1,6 @@
 * {box-sizing: border-box}
 body{
-	background-image: url('images/background_medicine.jpg');
+	background-image: url('../images/background_medicine.jpg');
 	background-repeat: no-repeat;
 	background-position: top;
 	background-blend-mode: multiply;
@@ -57,7 +57,7 @@ button:hover {
 }
 
 /* Float cancel and signup buttons and add an equal width */
-.cancelbtn, .signupbtn {
+.cancelbtn, .savebtn {
   float: left;
   width: 50%;
 }
@@ -76,7 +76,7 @@ button:hover {
 
 /* Change styles for cancel button and signup button on extra small screens */
 @media screen and (max-width: 300px) {
-  .cancelbtn, .signupbtn {
+  .cancelbtn, .savebtn {
     width: 100%;
   }
 }

@@ -75,7 +75,7 @@ button:hover {
   }
 }
 body{
-	background-image: url('images/background_medicine.jpg');
+	background-image: url('../images/background_medicine.jpg');
 	background-repeat: no-repeat;
 	background-position: top;
 	background-blend-mode: multiply;

@@ -5,7 +5,7 @@
   <title>Customer Login</title>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css'>
   <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Muli'>
-  <link rel="stylesheet" href="{{ url_for('static', filename = 'css/customerOrderPlacement.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'css/customer_OrderPlacement.css') }}">
 </head>
 <body>
 <!-- partial:index.partial.html -->
@@ -27,14 +27,17 @@
                                 </div> 
                                 <div class="form-group pt-1">
                                     <button class="btn btn-primary btn-block" type="submit">Log In</button>
-                                    
                                 </div>
                             </form>
+                            <div class="form-group pt-1">
+                                    <button class="btn btn-primary btn-block" onclick="window.location.href = '/'" style = "background-color: red; border: 2px solid red;">Back</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 </div>
+<br>
 <br>
 <br>
 <br>
