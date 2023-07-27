@@ -126,8 +126,19 @@ def admin_page() -> str:
     page_name_1 = 'admin_signin.html'
     page_name_2 = 'admin_welcome.html'
     if request.method == GET:
-        path = os.path.join(page_name_1)
-        return render_template(path)
+        try:
+            auth = request.cookies.get('auth')
+            if auth is not None:
+                raise Exception("Cookie Found")
+        except Exception as e:
+            print(str(e))
+            res = make_response()
+            res.set_cookie("auth", '', 0)
+            res.headers['location'] = url_for('adminWelcome')
+            return res, 302
+        else:
+            path = os.path.join(page_name_1)
+            return render_template(path)
     elif request.method == POST:
         form_data = request.form
         admin_page_ref = AdminPage(
