@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import json
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate, migrate
 
 # ========================================================
 # CONSTANTS
@@ -23,22 +24,15 @@ DEBUG = True
 # ========================================================
 
 PROJECT_DIR = Path(__file__).resolve().parent
-app = Flask(__name__)
 
 # ========================================================
-# DATABASE
+# DATABASE + APP
 
 try:
     with open(os.path.join(PROJECT_DIR, "documents", "secret.json")) as secret:
         data = json.load(secret)
         if DEBUG:
-            DB_CON = "mysql+pymysql://{user_name}:password:{password}@{host}/{database}".format(
-                user_name=data[DATABASE][USERNAME],
-                password=data[DATABASE][PASSWORD],
-                host=data[DATABASE][HOST],
-                port=data[DATABASE][PORT],
-                database=f"{data[DATABASE][NAME]}?unix_socket=/opt/lampp/var/mysql/mysql.sock",
-            )
+            DB_CON = "sqlite://{}app.db".format(os.path.join(PROJECT_DIR, "database", "secret.json"))
         else:
             DB_CON = "mysql://{user_name}:password:{password}@{host}:{port}/{database}".format(
                 user_name=data[DATABASE][USERNAME],
@@ -47,6 +41,7 @@ try:
                 port=data[DATABASE][PORT],
                 database=data[DATABASE][NAME],
             )
+    app = Flask(__name__)
 except Exception as e:
     print(str(e))
     raise KeyboardInterrupt
@@ -54,6 +49,7 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = DB_CON
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     db = SQLAlchemy(app)
+    migrate = Migrate(app, db, command='migrate')
 
 
 # ========================================================
