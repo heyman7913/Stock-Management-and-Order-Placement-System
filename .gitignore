@@ -1,2 +1,4 @@
 /venv/
 *.drawio.dtmp
+*.drawio.bkp
+secret.json
