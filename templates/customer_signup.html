@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="{{ url_for('static', filename = 'css/customer_signup.css') }}">
+<script src="{{ url_for('static', filename = 'js/customer_signup.js') }}"></script>
 <form action="/customer/signup" method = "POST" style="border:1px solid #ccc">
   <div class="container">
     
@@ -31,10 +32,10 @@
         </tr>
         <tr>
             <label for="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password - Minimum 8 characters" name="psw" required minlength="8">
+            <input type="password" placeholder="Enter Password - Minimum 8 characters" id="psw" name="psw" required minlength="8">
         
             <label for="psw-repeat"><b>Repeat Password</b></label>
-            <input type="password" placeholder="Repeat Password" name="psw-repeat" required>       
+            <input type="password" placeholder="Repeat Password" id="psw-repeat" name="psw-repeat" required>
         </tr>
     </table>
     <div style="color:red;">
@@ -52,7 +53,7 @@
 
     <div class="clearfix">
       <button type="button" class="cancelbtn" onclick="window.location.href = '/customer'">Cancel</button>
-      <button type="submit" class="signupbtn">Sign Up</button>
+      <button type="submit" id="submitBtn" class="signupbtn" disabled>Sign Up</button>
     </div>
   </div>
 </form>

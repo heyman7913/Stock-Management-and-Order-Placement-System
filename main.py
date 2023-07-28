@@ -668,7 +668,7 @@ def employee_signin():
             cookies = [
                 ['auth', '', 0],
             ]
-            redirect = _redirect(destination='adminWelcome', cookies=cookies)
+            redirect = _redirect(destination='employeeWelcome', cookies=cookies)
             return redirect, 302
         else:
             path = os.path.join(page_name)
@@ -683,14 +683,14 @@ def employee_signin():
         # return render_template(path)
         res = make_response()
         res.set_cookie(AUTH_COOKIE, "DATA HERE", 60 * 60 * 24 * 2)
-        res.headers['location'] = url_for('adminWelcome')
+        res.headers['location'] = url_for('employeeWelcome')
         return res, 302
     else:
         abort(401)
 
 
 @app.route('/employee/welcome', methods=[GET, POST])
-def adminWelcome() -> str:
+def employeeWelcome() -> str:
     if request.method == GET:
         try:
             auth = request.cookies.get('auth')
@@ -700,7 +700,7 @@ def adminWelcome() -> str:
             print(str(e))
             res = make_response()
             res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_page')
+            res.headers['location'] = url_for('employee_signin')
             return res, 302
         else:
             page_name = 'employee_welcome.html'
@@ -711,7 +711,7 @@ def adminWelcome() -> str:
 
 
 @app.route('/employee/inventory', methods=[GET, POST])
-def adminInventory() -> str:
+def employeeInventory() -> str:
     if request.method == GET:
         try:
             auth = request.cookies.get('auth')
@@ -721,7 +721,7 @@ def adminInventory() -> str:
             print(str(e))
             res = make_response()
             res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_page')
+            res.headers['location'] = url_for('employee_signin')
             return res, 302
         else:
             page_name = 'employee_inventory.html'
@@ -732,7 +732,7 @@ def adminInventory() -> str:
 
 
 @app.route('/employee/posTerminal', methods=[GET, POST])
-def adminPosTerminal() -> str:
+def employeePosTerminal() -> str:
     if request.method == GET:
         try:
             auth = request.cookies.get('auth')
@@ -742,7 +742,7 @@ def adminPosTerminal() -> str:
             print(str(e))
             res = make_response()
             res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_page')
+            res.headers['location'] = url_for('employee_signin')
             return res, 302
         else:
             page_name = 'employee_posTerminal.html'
@@ -753,7 +753,7 @@ def adminPosTerminal() -> str:
 
 
 @app.route('/employee/monthlyRevenue', methods=[GET, POST])
-def adminMonthlyRevenue() -> str:
+def employeeMonthlyRevenue() -> str:
     if request.method == GET:
         try:
             auth = request.cookies.get('auth')
@@ -763,7 +763,7 @@ def adminMonthlyRevenue() -> str:
             print(str(e))
             res = make_response()
             res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_page')
+            res.headers['location'] = url_for('employee_signin')
             return res, 302
         else:
             page_name = 'employee_monthlyRevenue.html'
@@ -774,7 +774,7 @@ def adminMonthlyRevenue() -> str:
 
 
 @app.route('/employee/orders', methods=[GET, POST])
-def adminOrders() -> str:
+def employeeOrders() -> str:
     if request.method == GET:
         try:
             auth = request.cookies.get('auth')
@@ -784,7 +784,7 @@ def adminOrders() -> str:
             print(str(e))
             res = make_response()
             res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_page')
+            res.headers['location'] = url_for('employee_signin')
             return res, 302
         else:
             page_name = 'employee_orders.html'
@@ -795,7 +795,7 @@ def adminOrders() -> str:
 
 
 @app.route('/employee/returnItems', methods=[GET, POST])
-def adminreturnItems() -> str:
+def employeereturnItems() -> str:
     if request.method == GET:
         try:
             auth = request.cookies.get('auth')
@@ -805,7 +805,7 @@ def adminreturnItems() -> str:
             print(str(e))
             res = make_response()
             res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_page')
+            res.headers['location'] = url_for('employee_signin')
             return res, 302
         else:
             page_name = 'employee_returnItems.html'
@@ -816,11 +816,11 @@ def adminreturnItems() -> str:
 
 
 @app.route('/employee/logout', methods=[GET, POST])
-def adminLogout():
+def employeeLogout():
     if request.method == GET:
         res = make_response()
         res.set_cookie(AUTH_COOKIE, '', 0)
-        res.headers['location'] = url_for('employee_page')
+        res.headers['location'] = url_for('employee_signin')
         return res, 302
     else:
         abort(401)

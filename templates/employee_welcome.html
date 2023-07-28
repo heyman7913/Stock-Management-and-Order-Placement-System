@@ -4,21 +4,21 @@
 		<meta charset="utf-8">
 		<meta name = "viewport" content="width=device-width, initial-scale=1">
 		<title>Lodha Chemist Employee Welcome</title>
-		<link rel="stylesheet" type = "text/CSS" href="{{ url_for('static', filename = 'css/admin_welcome.css') }}">
+		<link rel="stylesheet" type = "text/CSS" href="{{ url_for('static', filename = 'css/employee_welcome.css') }}">
 		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
 	</head>
 	<body>
 		<header>
 			<a href="#" class="logo"><img class="logoImg" src="{{ url_for('static', filename = 'images/logo.png') }}"></a>
 			<ul class ="navbar">
-				<li><a href="/admin/welcome" class="active">Home</a></li>
-				<li><a href="/admin/inventory">Inventory</a></li>
-				<li><a href="/admin/posTerminal">POS Terminal</a></li>
-				<li><a href="/admin/monthlyRevenue">Monthly Revenue</a></li>
-				<li><a href="/admin/orders">Orders</a></li>
-				<li><a href="/admin/return">Return Items</a></li>
+				<li><a href="/employee/welcome" class="active">Home</a></li>
+				<li><a href="/employee/inventory">Inventory</a></li>
+				<li><a href="/employee/posTerminal">POS Terminal</a></li>
+				<li><a href="/employee/monthlyRevenue">Monthly Revenue</a></li>
+				<li><a href="/employee/orders">Orders</a></li>
+				<li><a href="/employee/return">Return Items</a></li>
 				<div class="main">
-					<a href="/admin/logout" class="logout"><i class="ri-logout-box-line"></i>Logout</a>
+					<a href="/employee/logout" class="logout"><i class="ri-logout-box-line"></i>Logout</a>
 				</div>
 			</ul>
 		</header>
