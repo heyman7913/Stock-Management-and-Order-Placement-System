@@ -16,7 +16,7 @@
                 <div class="row">
                     <div class="col-md-5 mx-auto">
                         <div class="card card-body">                  
-                            <form action="/customer" method="POST">
+                            <form action="/customer/signin" method="POST">
                                 <div class="form-group required">
                                     <label for="loginID">Mobile Number/Email</label>
                                     <input type="text" class="form-control text-lowercase" id="loginID" required="" name="loginID" value="">
@@ -36,12 +36,23 @@
                             </div>
                             <p class="small-xl pt-3 text-center">
                                 <span class="text-muted">Not a member?</span>
-                                <a href="/customer/SignUp">Sign up</a>
+                                <a href="/customer/signup">Sign up</a>
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
+</div>
+<div style="color:red;">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 </div>
 <br>
 <p>Store Address:<br>

@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="{{ url_for('static', filename = 'css/customer_signup.css') }}">
-<form action="/" method = "POST" style="border:1px solid #ccc">
+<form action="/customer/signup" method = "POST" style="border:1px solid #ccc">
   <div class="container">
     
     <table id="customerDetails" style="width: 40%;">
@@ -22,7 +22,7 @@
             <input type="text" placeholder="Enter Email" name="email" required>
         </tr>
         <tr>
-            <label for="phone-number"><b>Mobile Number</b></label>
+            <label for="mobile"><b>Mobile Number</b></label>
             <input type="tel" placeholder="10 Digit Mobile Number" name="mobile" required maxlength="10"></input>
         </tr>
         <tr>
@@ -37,7 +37,17 @@
             <input type="password" placeholder="Repeat Password" name="psw-repeat" required>       
         </tr>
     </table>
-   
+    <div style="color:red;">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+    </div>
     <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
 
     <div class="clearfix">
