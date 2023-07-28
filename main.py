@@ -1,12 +1,17 @@
 # ========================================================
 # IMPORTS
 
-from flask import Flask, render_template, abort, request, make_response, url_for
+import json
 import os
 from pathlib import Path
-import json
+
+from flask import Flask, render_template, abort, request, make_response, url_for
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate, migrate
+from sqlalchemy import Integer, String, Column, DateTime
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 # ========================================================
 # CONSTANTS
@@ -51,6 +56,54 @@ else:
     db = SQLAlchemy(app)
     migrate = Migrate(app, db, command='migrate')
 
+
+# ========================================================
+# Models
+
+# =========================
+# Customer Models
+class CustomerLogin(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_name = db.Column(db.String(100), nullable=False, unique=True)
+    password_hash = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+    customer_details = db.relationship('CustomerDetails', backref='customerlogin', lazy=True)
+    customer_sales = db.relationship('CustomerSales', backref='customerlogin', lazy=True)
+
+    def __repr__(self):
+        return f"{self.email}"
+
+
+class CustomerDetails(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    first_name = db.Column(String(50), nullable=False)
+    last_name = db.Column(String(50), nullable=False)
+    phoneNumber = db.Column(Integer, nullable=False)
+    emailID = db.Column(String(100), nullable=False)
+    address = db.Column(String(200), nullable=False)
+    created_at = db.Column(DateTime(timezone=True), server_default=func.now())
+
+    customer_login_id = db.Column(db.Integer, db.ForeignKey( "customerlogin.id", ondelete="CASCADE"), nullable=False)
+
+    def __repr__(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+class CustomerSales(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+    customer_login_id = db.Column(db.Integer, db.ForeignKey( "customerlogin.id", ondelete="CASCADE"), nullable=False)
+
+    def __repr__(self):
+        return f"SALE ID : {self.id}"
+
+# =========================
+
+# =========================
+
+# =========================
 
 # ========================================================
 # Routing
@@ -115,7 +168,7 @@ def customer_changeProfile() -> str:
 # ======================
 
 
-class AdminPage():
+class AdminPage:
     def __init__(self, login_id: str, password: str):
         self.login_id = login_id
         self.password = password
@@ -291,12 +344,4 @@ def adminLogout():
     else:
         abort(401)
 
-
 # ==========================================================
-# MAIN
-
-if __name__ == '__main__':
-    # Create all tables in DB
-    # db.create_all()
-    # Run Engine
-    app.run(host='localhost', port=8000, debug=True)
