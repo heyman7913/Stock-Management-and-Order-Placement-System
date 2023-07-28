@@ -2,3 +2,4 @@
 *.drawio.dtmp
 *.drawio.bkp
 secret.json
+*.db
