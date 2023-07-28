@@ -37,7 +37,13 @@ try:
     with open(os.path.join(PROJECT_DIR, "documents", "secret.json")) as secret:
         data = json.load(secret)
         if DEBUG:
-            DB_CON = "sqlite://{}app.db".format(os.path.join(PROJECT_DIR, "database", "secret.json"))
+            DB_CON = "mysql://{user_name}:password:{password}@{host}:{port}/{database}".format(
+                user_name=data[DATABASE][USERNAME],
+                password=data[DATABASE][PASSWORD],
+                host=data[DATABASE][HOST],
+                port=data[DATABASE][PORT],
+                database=data[DATABASE][NAME],
+            )
         else:
             DB_CON = "mysql://{user_name}:password:{password}@{host}:{port}/{database}".format(
                 user_name=data[DATABASE][USERNAME],
