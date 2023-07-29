@@ -13,7 +13,7 @@ body {
         margin-top: 40px;
       }
 
-      #employee-button, #customer-button {
+      #employee-button, #customer-button, #admin-button {
         background-color: #008CBA;
         border: none;
         color: #fff;
@@ -28,7 +28,7 @@ body {
         transition-duration: 0.4s;
       }
 
-      #employee-button:hover, #customer-button:hover {
+      #employee-button:hover, #customer-button:hover, #admin-button: hover {
         background-color: #005f70;
       }
       #HeadingText{

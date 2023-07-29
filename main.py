@@ -644,6 +644,11 @@ def customerLogout():
     else:
         abort(401)
 
+@app.route('/customer/forget-password', methods=[GET,POST])
+def customerForgotPWD():
+    page_name = 'customer_forgotPwd.html'
+    path = os.path.join(page_name)
+    return render_template(path)
 
 # ======================
 
@@ -826,3 +831,21 @@ def employeeLogout():
         abort(401)
 
 # ==========================================================
+
+@app.route('/admin', methods=[GET, POST])
+def adminSignIn():
+    page_name = 'admin_signin.html'
+    path = os.path.join(page_name)
+    return render_template(path)
+
+@app.route('/admin/welcome', methods=[GET, POST])
+def adminWelcome():
+    page_name = 'admin_welcome.html'
+    path = os.path.join(page_name)
+    return render_template(path)
+
+@app.route('/admin/userAccess', methods=[GET, POST])
+def adminUserAccess():
+    page_name = 'admin_userAccess.html'
+    path = os.path.join(page_name)
+    return render_template(path)
