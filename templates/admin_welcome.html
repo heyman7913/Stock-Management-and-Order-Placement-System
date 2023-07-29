@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name = "viewport" content="width=device-width, initial-scale=1">
+		<title>Lodha Chemist Admin Welcome</title>
+		<link rel="stylesheet" type = "text/CSS" href="{{ url_for('static', filename = 'css/admin_welcome.css') }}">
+		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
+	</head>
+	<body>
+		<header>
+			<a href="#" class="logo"><img class="logoImg" src="{{ url_for('static', filename = 'images/logo.png') }}"></a>
+			<ul class ="navbar">
+				<li><a href="/admin/welcome" class="active">Home</a></li>
+				<li><a href="/admin/userAccess">Employee Access</a></li>
+				<div class="main">
+					<a href="/admin/logout" class="logout"><i class="ri-logout-box-line"></i>Logout</a>
+				</div>
+			</ul>
+		</header>
+
+		<div id = "welcomeBox">
+			<p id = "welcomeMsg">Welcome to the Lodha Chemist Admin Interface
+				<br>
+				<br>
+				<br>
+				Today the date is
+			</p>
+			<br>
+			<p>
+				The current time is <span id = "time"></span>
+			</p>
+		</div>
+		<script text="type/javascript">
+			function getDate(){
+				const date = new Date();
+				let day = date.getDate();
+				let month = date.getMonth() + 1;
+				let year = date.getFullYear();
+				// This arrangement can be altered based on how we want the date's format to appear.
+				let currentDate = `${day}-${month}-${year}`;
+				return currentDate
+			}
+			function currentTime() {
+					let date = new Date();
+					let hh = date.getHours();
+					let mm = date.getMinutes();
+					let ss = date.getSeconds();
+					let session = "AM";
+					if (hh === 0) {
+						hh = 12;
+					}
+					if (hh > 12) {
+						hh = hh - 12;
+						session = "PM";
+					}
+					hh = (hh < 10) ? "0" + hh : hh;
+					mm = (mm < 10) ? "0" + mm : mm;
+					ss = (ss < 10) ? "0" + ss : ss;
+
+					let time = hh + ":" + mm + ":" + ss + " " + session;
+					let t = setTimeout(function () { currentTime() }, 1000);
+					document.getElementById("time").innerText = time;
+				}
+
+			document.getElementById("welcomeMsg").innerHTML = document.getElementById("welcomeMsg").innerHTML + getDate();
+			currentTime();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name = "viewport" content="width=device-width, initial-scale=1">
+		<title>Lodha Chemist Admin User Access</title>
+		<link rel="stylesheet" type = "text/CSS" href="{{ url_for('static', filename = 'css/admin_userAccess.css' ) }}">
+		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script text = "type/javascript" src="{{ url_for('static', filename = 'js/admin_userAccess.js') }}"></script>
+	</head>
+	<body>
+		<header>
+			<a href="#" class="logo"><img class="logoImg" src="{{ url_for('static', filename = 'images/logo.png') }}"></a>
+			<ul class ="navbar">
+				<li><a href="/admin/welcome">Home</a></li>
+				<li><a href="/admin/userAccess" class="active">Employee Access</a></li>
+				<div class="main">
+					<a href="/admin/logout" class="logout"><i class="ri-logout-box-line"></i>Logout</a>
+				</div>
+			</ul>
+		</header>
+        <br>
+        <br>
+        <br>
+        <div  class="userTable" style = "margin-top: 160px; margin-left: 60px;">
+            <h3 style="position: fixed; margin-top: -70px;">Employee Access Details</h3>
+            <table id ="userTable">
+                <tr style="position: fixed; margin-top: -50px;">
+                    <th>Employee ID</th>
+                    <th>Employee First Name</th>
+                    <th>Employee Last Name</th>
+                    <th>Email ID</th>
+                    <th>Edit Employee</th>
+                    <th>Delete Access</th>
+                </tr>
+                {% for item in data %}
+                <tr>
+                    <td>{{item.id}}</td>
+                    <td>{{item.first_name}}</td>
+                    <td>{{item.last_name}}</td>
+                    <td>{{item.email}}</td>
+                    <td>
+                        <a href="/admin/editEmployee/{{item.id}}">
+                            <button class="editUserPassword" style="font-size:24px;">
+                                <i class = "fa fa-edit center"></i>
+                            </button>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="/admin/deleteEmployee/{{item.id}}">
+                            <button class="deleteButton">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div style="color:red;">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <ul class=flashes>
+                {% for message in messages %}
+                  <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+              {% endif %}
+            {% endwith %}
+        </div>
+        <form action="/admin/userAccess" method="POST">
+            <table class="inputTable">
+                <h3 style="margin-left: 100px; margin-bottom: -25px;">Fill the form below to grant access to a user</h3>
+                <tr>
+                    <div class="inputBoxes">
+                        <td>
+                            <input type="text" id="EmpFirstName" name="first_name" placeholder="Emp First Name" required>
+                        </td>
+                        <td>
+                            <input type="text" id="EmpLastName" name="last_name" placeholder="Emp Last Name" required>
+                        </td>
+                        <td>
+                            <input type="text" id="EmpEmailID" name="email" placeholder="Emp Email ID">
+                        </td>
+                        <td>
+                            <input type="text" id="EmpPassword" name="password" placeholder="Password">
+                        </td>
+                    </div>
+                </tr>
+            </table>
+            <div class="buttonsTable">
+                <button class="addUser" type="submit">Add User</button>
+            </div>
+        </form>
+
+    </body>
+</html>

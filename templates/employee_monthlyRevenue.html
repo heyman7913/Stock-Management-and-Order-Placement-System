@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name = "viewport" content="width=device-width, initial-scale=1">
+		<title>Lodha Chemist Emp Monthly Revenue</title>
+		<link rel="stylesheet" type = "text/CSS" href="{{ url_for('static', filename = 'css/employee_inventory.css' ) }}">
+		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script text = "type/javascript" src="{{ url_for('static', filename = 'js/employee_monthlyRevenue.js') }}"></script>
+	</head>
+    <body>
+        <header>
+			<a href="#" class="logo"><img class="logoImg" src="{{ url_for('static', filename = 'images/logo.png') }}"></a>
+			<ul class ="navbar">
+				<li><a href="/employee/welcome" >Home</a></li>
+				<li><a href="/employee/inventory">Inventory</a></li>
+				<li><a href="/employee/posTerminal">POS Terminal</a></li>
+				<li><a href="/employee/monthlyRevenue" class="active">Monthly Revenue</a></li>
+				<li><a href="/employee/orders">Orders</a></li>
+				<li><a href="/employee/returnItems">Return Items</a></li>
+				<div class="main">
+					<a href="/employee/logout" class="logout"><i class="ri-logout-box-line"></i>Logout</a>
+				</div>
+			</ul>
+		</header>
+        <br>
+        <br>
+        <br>
+        <div class = "monthlyRevenue" style = "margin-top: 160px; margin-left: 60px;">
+            <h3 style="position: fixed; margin-top: -70px;">Monthly Revenue Details</h3>
+            <table id ="monthlyRevenueTable">
+                <tr style="position: fixed; margin-top: -50px;">
+                    <th>Month/Year</th>
+                    <th>Total Number of Orders</th>
+                    <th>Monthly Revenue</th>
+                </tr>
+            </table>
+            <h3 style="position: fixed; margin-left: 1000px">To view current month revenue, <br> please click button below</h3>
+            <table class = "inputBoxes" style="position: fixed; margin-left: 1000px; margin-top: 60px;">
+                <td><button class="showRev" onclick="currentMonthRevenue()">Show Current Month Revenue</button></td>
+            </table>
+        </div>
+    </body>
+</html>

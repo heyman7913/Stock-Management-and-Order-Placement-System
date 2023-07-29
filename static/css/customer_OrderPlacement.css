@@ -1,0 +1,145 @@
+*{
+	margin: 0px 0px 10px 5px;
+	font-family: monospace;
+
+}
+body{
+	background-image: url('../images/background_medicine.jpg');
+	background-repeat: no-repeat;
+	background-position: top;
+	background-blend-mode: multiply;
+	background-size: cover;
+}
+
+h1{
+	text-align: center;
+	padding-top: 80px;
+}
+h2{
+	text-align: center;
+}
+.logo{
+	flex-basis: 20%;
+	position: fixed;
+}
+.logo img{
+	width: 180px;
+	height: auto;
+	margin: 10px 0px 0px 0px;
+}
+button{
+	border: solid;
+	border-width: medium;
+	text-align: center;
+	border-radius: 5px;
+	transition-duration: 0.5s;
+	cursor: pointer;
+	text-align: center;
+	display: inline-block;
+	padding:5px;
+	margin-left: 2%;
+	margin-right: 2%;
+	margin-top: 2%;
+	margin-bottom:2%;
+	position: static;
+}
+.button1:hover{
+	background-color: #4CAF50;
+}
+.button4:hover{
+	background-color:rgb(80, 158, 89)
+}
+.cartButtons{
+	margin: 20px 0px 0px 60%;
+}
+.inputBoxes{
+	margin: 0;
+	float: right;
+}
+input[type="file"]{
+	display: none; 
+}
+.uploadBoxLabel{
+	display: inline-block;
+	text-transform: uppercase;
+	color: white;
+	background: red;
+	text-align: center;
+	padding: 15px 40px;
+	letter-spacing: 1.5px;
+	cursor: pointer;
+	box-shadow: 5px 15px 25px rgba(0,0,0,0.35);
+	border-radius: 5px;
+}
+table {
+	border-collapse: collapse;
+	font-size: 20px;
+	
+}
+.orderTable{
+	height: 280px;
+	overflow: auto;
+}
+.buttonsTable{
+	margin: -15% 0px 0px 40%;
+	width: 50%; 
+	border:2px solid black; 
+	position: sticky;
+}
+th {
+	background-color:green;
+	Color:white;
+	font-size: 15px;
+	width:10%;
+	text-align:center;
+	border:1px solid black;
+	padding:5px
+}
+.attachPrescription{
+	float:right;
+	margin-top: -20%;
+	width: 40%; 
+	margin-left: 20px; 
+	position: sticky;
+}
+.plusBtn{
+	font-size: 24px;
+	width: 48px;
+	height: 48px;
+}
+.plusBtn:hover{
+	background-color: green;
+	color: black;
+}
+.minusBtn{
+	font-size: 24px;
+	width: 48px;
+	height: 48px;
+}
+.minusBtn:hover{
+	background-color: red;
+	color: black;
+}
+.editItemNameBtn{
+	font-size: 24px;
+	height: 40px;
+	text-align: center;
+}
+.editItemNameBtn:hover{
+	background-color: yellow;
+	color: black;
+}
+.center{
+	text-align: center;
+	display: block;
+}
+.button7:hover{
+	background-color: rgb(227, 227, 100) ;
+	color: black;
+}
+.button8:hover{
+	background-color: red;
+	color: black;
+}
+
+

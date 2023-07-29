@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name = "viewport" content="width=device-width, initial-scale=1">
+		<title>Lodha Chemist Emp Orders</title>
+		<link rel="stylesheet" type = "text/CSS" href="{{ url_for('static', filename = 'css/employee_inventory.css' ) }}">
+		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	</head>
+	<body>
+		<header>
+			<a href="#" class="logo"><img class="logoImg" src="{{ url_for('static', filename = 'images/logo.png') }}"></a>
+			<ul class ="navbar">
+				<li><a href="/employee/welcome" >Home</a></li>
+				<li><a href="/employee/inventory">Inventory</a></li>
+				<li><a href="/employee/posTerminal">POS Terminal</a></li>
+				<li><a href="/employee/monthlyRevenue">Monthly Revenue</a></li>
+				<li><a href="/employee/orders" class="active">Orders</a></li>
+				<li><a href="/employee/returnItems">Return Items</a></li>
+				<div class="main">
+					<a href="/employee/logout" class="logout"><i class="ri-logout-box-line"></i>Logout</a>
+				</div>
+			</ul>
+		</header>
+        <br>
+        <br>
+        <br>
+        <div  class="activeOrdersTable" style = "margin-top: 160px; margin-left: 60px;">
+            <h3 style="position: fixed; margin-top: -70px;">Active Order Details</h3>
+            <table id ="activeordersTable">
+                <tr style="position: fixed; margin-top: -50px;">
+                    <th>Order ID</th>
+                    <th>Product Name</th>
+                    <th>Quantity Ordered</th>
+                    <th>Order Date</th>
+                    <th>Amount Due</th>
+                    <th>Accept/Decline Order</th>
+                    <th>Delivery Choice (Home/PickUp)</th>
+                </tr>
+            </table>
+        </div>
+        <div  class="elapsedOrdersTable" style = "margin-top: 300px; margin-left: 60px;">
+            <h3 style="position: fixed; margin-top: -70px;">Past Order Details</h3>
+            <table id ="elapsedordersTable">
+                <tr style="position: fixed; margin-top: -50px;">
+                    <th>Order ID</th>
+                    <th>Product Name</th>
+                    <th>Quantity Ordered</th>
+                    <th>Order Date</th>
+                    <th>Amount Received</th>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>

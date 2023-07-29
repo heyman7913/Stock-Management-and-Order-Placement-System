@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name = "viewport" content="width=device-width, initial-scale=1">
+		<title>Lodha Chemist Emp Inventory</title>
+		<link rel="stylesheet" type = "text/CSS" href="{{ url_for('static', filename = 'css/employee_inventory.css' ) }}">
+		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script text = "type/javascript" src="{{ url_for('static', filename = 'js/employee_inventory.js') }}"></script>
+	</head>
+	<body>
+		<header>
+			<a href="#" class="logo"><img class="logoImg" src="{{ url_for('static', filename = 'images/logo.png') }}"></a>
+			<ul class ="navbar">
+				<li><a href="/employee/welcome">Home</a></li>
+				<li><a href="/employee/inventory" class="active">Inventory</a></li>
+				<li><a href="/employee/posTerminal">POS Terminal</a></li>
+				<li><a href="/employee/monthlyRevenue">Monthly Revenue</a></li>
+				<li><a href="/employee/orders">Orders</a></li>
+				<li><a href="/employee/returnItems">Return Items</a></li>
+				<div class="main">
+					<a href="/employee/logout" class="logout"><i class="ri-logout-box-line"></i>Logout</a>
+				</div>
+			</ul>
+		</header>
+        <br>
+        <br>
+        <br>
+        <div  class="inventoryTable" style = "margin-top: 160px; margin-left: 60px;">
+            <h3 style="position: fixed; margin-top: -70px;">Inventory Details</h3>
+            <table id ="inventoryTable">
+                <tr style="position: fixed; margin-top: -50px;">
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Price(₹)/Unit</th>
+                    <th>Quantity Available</th>
+                    <th>Shelf Location</th>
+                    <th>Accept Returns</th>
+                    <th>Reorder Quantity</th>
+                    <th>Delete Item</th>
+                </tr>
+            </table>
+        </div>
+            <table class="inputTable">
+                <h3 style="margin-left: 20px; margin-bottom: -25px;">Fill the form below to add items into inventory</h3>
+                <tr>
+                    <div class="inputBoxes">
+                        <td><input type="text" id="productName" placeholder="Name of the Product" required>
+                        </td>
+                        <td><input type="number" id="productPrice" placeholder="Price in Rupees" required></td>
+                        <td><select id="quantityAvailable" placeholder="Quantity Available" required>
+                                <option disabled selected>Quantity Available</option>
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>6</option>
+                                <option>7</option>
+                                <option>8</option>
+                                <option>9</option>
+                                <option>10</option>
+                                <option>Other</option>
+                        </td>
+                        <td><input type="text" id="shelfLocation" placeholder="Shelf Location" required></td>
+                        <td><select id="acceptReturns" required>
+                                <option disabled selected>Accept Returns</option>
+                                <option>Yes</option>
+                                <option>No</option>
+                        </td>
+                        <td><select id="reorderQty" placeholder="Reorder Available" required>
+                                <option disabled selected>Reorder Quantity</option>
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>6</option>
+                                <option>7</option>
+                                <option>8</option>
+                                <option>9</option>
+                                <option>10</option>
+                                <option>Other</option>
+                        </td>
+                    </div>
+                </tr>
+            </table>
+            <div class="buttonsTable">
+                <button class="addItem" onclick="addItem()">Add Item</button>
+            </div>
+    </body>
+</html>

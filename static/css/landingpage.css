@@ -1,0 +1,45 @@
+body {
+
+	    background-image: url('../images/background_medicine.jpg');
+	    background-repeat: no-repeat;
+	    background-position: top;
+	    background-blend-mode: multiply;
+	    background-size: cover;
+      font-family: monospace;
+      text-align: center;
+      }
+
+      #login-buttons {
+        margin-top: 40px;
+      }
+
+      #employee-button, #customer-button, #admin-button {
+        background-color: #008CBA;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition-duration: 0.4s;
+      }
+
+      #employee-button:hover, #customer-button:hover, #admin-button: hover {
+        background-color: #005f70;
+      }
+      #HeadingText{
+        margin-top: 190px;
+      }
+      .logo{
+	      flex-basis: 20%;
+	      position: static;
+      }
+      .logo img{
+	      width: 180px;
+	      height: auto;
+	      margin: 10px 0px 0px 0px;
+      }

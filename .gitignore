@@ -1,0 +1,7 @@
+/venv/
+*.drawio.dtmp
+*.drawio.bkp
+secret.json
+*.db
+*pycache*
+Backup-codes-lodhachemist.txt
