@@ -3,6 +3,8 @@
 import hashlib
 import json
 import os
+import random
+import string
 from pathlib import Path
 
 from flask import Flask, render_template, abort, request, make_response, url_for, flash
@@ -11,11 +13,14 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Column, DateTime
 from sqlalchemy.sql import func
 
+from email_thread import EmailSend
+
 # ========================================================
 # CONSTANTS
 
 SECRET = "SECRET"
 SERVER = "SERVER"
+DEBUG = "DEBUG"
 DATABASE = "DATABASE"
 USERNAME = "USERNAME"
 PASSWORD = "PASSWORD"
@@ -24,11 +29,12 @@ PORT = "PORT"
 NAME = "NAME"
 GET = "GET"
 POST = "POST"
-DEBUG = True
 EXPIRE_NOW = 0
 EXPIRE_1_WEEK = 60 * 60 * 24 * 7
 BLANK = ''
-AUTH_COOKIE = "auth"
+AUTH_COOKIE_ADMIN = "auth_admin"
+AUTH_COOKIE_EMP = "auth_emp"
+AUTH_COOKIE_CUST = "auth_cust"
 # ========================================================
 
 PROJECT_DIR = Path(__file__).resolve().parent
@@ -40,7 +46,11 @@ try:
     app = Flask(__name__)
     with open(os.path.join(PROJECT_DIR, "documents", "secret.json")) as secret:
         data = json.load(secret)
-        if DEBUG:
+        server_stat = data[SERVER][DEBUG]
+        server_host = data[SERVER][HOST]
+        server_port = data[SERVER][PORT]
+        server_name = data[SERVER][NAME]
+        if server_stat:
             DB_CON = "sqlite:///{database}.db".format(
                 database=data[DATABASE][NAME],
             )
@@ -76,8 +86,8 @@ class CustomerLogin(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    customer_details = db.relationship('CustomerDetails', backref='customer_login', lazy=True)
-    customer_sales = db.relationship('CustomerSales', backref='customer_login', lazy=True)
+    customer_details = db.relationship('CustomerDetails', backref='customer_login', lazy=True, cascade='all, delete')
+    customer_sales = db.relationship('CustomerSales', backref='customer_login', lazy=True, cascade='all, delete')
 
     def __repr__(self):
         return f"{self.email}"
@@ -94,7 +104,7 @@ class CustomerDetails(db.Model):
     address = db.Column(String(200), nullable=False)
     created_at = db.Column(DateTime(timezone=True), server_default=func.now())
 
-    customer_login_id = db.Column(db.Integer, db.ForeignKey("customer_login.id", ondelete="CASCADE"), nullable=False)
+    customer_login_id = db.Column(db.Integer, db.ForeignKey("customer_login.id"), nullable=False)
 
     def __repr__(self):
         return f"{self.first_name} {self.last_name}"
@@ -106,17 +116,79 @@ class CustomerSales(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    customer_login_id = db.Column(db.Integer, db.ForeignKey("customer_login.id", ondelete="CASCADE"), nullable=False)
+    customer_login_id = db.Column(db.Integer, db.ForeignKey("customer_login.id"), nullable=False)
 
     def __repr__(self):
         return f"SALE ID : {self.id}"
 
 
 # =========================
+# Admin Models
+class AdminLogin(db.Model):
+    __tablename__ = 'admin_login'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_name = db.Column(db.String(100), nullable=False, unique=True)
+    password_hash = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+    admin_details = db.relationship('AdminDetails', backref='admin_login', lazy=True, cascade='all, delete')
+    employee_login = db.relationship('EmployeeLogin', backref='admin_login', lazy=True, cascade='all, delete')
+
+    def __repr__(self):
+        return f"{self.email}"
+
+
+class AdminDetails(db.Model):
+    __tablename__ = 'admin_details'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    first_name = db.Column(String(50), nullable=False)
+    last_name = db.Column(String(50), nullable=False)
+    emailID = db.Column(String(100), nullable=False)
+    phoneNumber = db.Column(Integer, nullable=False)
+    created_at = db.Column(DateTime(timezone=True), server_default=func.now())
+
+    admin_login_id = db.Column(db.Integer, db.ForeignKey("admin_login.id"), nullable=False)
+
+    def __repr__(self):
+        return f"{self.first_name} {self.last_name}"
+
 
 # =========================
+# Employee Models
+class EmployeeLogin(db.Model):
+    __tablename__ = 'employee_login'
 
-# =========================
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_name = db.Column(db.String(100), nullable=False, unique=True)
+    password_hash = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+    created_by = db.Column(db.Integer, db.ForeignKey("admin_login.id", ondelete="SET NULL"), nullable=True)
+
+    employee_details = db.relationship('EmployeeDetails', backref='employee_login', lazy=True, cascade='all, delete')
+
+    def __repr__(self):
+        return f"{self.email}"
+
+
+class EmployeeDetails(db.Model):
+    __tablename__ = 'employee_details'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    first_name = db.Column(String(50), nullable=False)
+    last_name = db.Column(String(50), nullable=False)
+    emailID = db.Column(String(100), nullable=False)
+    phoneNumber = db.Column(Integer, nullable=True)
+    address = db.Column(String(200), nullable=True)
+    created_at = db.Column(DateTime(timezone=True), server_default=func.now())
+
+    employee_login_id = db.Column(db.Integer, db.ForeignKey("employee_login.id"), nullable=False)
+
+    def __repr__(self):
+        return f"{self.first_name} {self.last_name}"
+
 
 # ========================================================
 # Routing
@@ -152,25 +224,25 @@ def _get_cookies(cookie_stack, names: list):
 
 
 # ======================
-
+# Routing Customer
 
 @app.route('/customer', methods=[GET])
 def customer_landing_page():
     req_method = request.method
-    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE])
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
 
     if req_method == GET:
-        if req_cookies[AUTH_COOKIE] is None:
+        if req_cookies[AUTH_COOKIE_CUST] is None:
             # No user is logged in
             cookies = [
-                [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
             redirect = _redirect(destination='customer_signin', cookies=cookies)
             return redirect, 302
         else:
             # User already logged in
             customer_login_db = CustomerLogin.query.filter(
-                CustomerLogin.user_name == req_cookies[AUTH_COOKIE],
+                CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
                 flag_user_exists = True
@@ -180,13 +252,13 @@ def customer_landing_page():
             if flag_user_exists:
                 # Existing Cookie belongs to user in DB
                 cookies = [
-                    [AUTH_COOKIE, req_cookies[AUTH_COOKIE], EXPIRE_1_WEEK],
+                    [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                 ]
                 redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
                 return redirect, 302
             else:
                 cookies = [
-                    [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+                    [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
                 redirect = _redirect(destination='customer_signin', cookies=cookies)
                 return redirect, 302
@@ -207,10 +279,10 @@ class CustomerSignin:
 @app.route('/customer/signin', methods=[GET, POST])
 def customer_signin():
     req_method = request.method
-    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE])
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
 
     if req_method == GET:
-        if req_cookies[AUTH_COOKIE] is None:
+        if req_cookies[AUTH_COOKIE_CUST] is None:
             # No user is logged in
             page_name = 'customer_loginpage.html'
             path = os.path.join(page_name)
@@ -218,7 +290,7 @@ def customer_signin():
         else:
             # User already logged in
             customer_login_db = CustomerLogin.query.filter(
-                CustomerLogin.user_name == req_cookies[AUTH_COOKIE],
+                CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
                 flag_user_exists = True
@@ -228,19 +300,19 @@ def customer_signin():
             if flag_user_exists:
                 # Existing Cookie belongs to user in DB
                 cookies = [
-                    [AUTH_COOKIE, req_cookies[AUTH_COOKIE], EXPIRE_1_WEEK],
+                    [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                 ]
                 redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
                 return redirect, 302
             else:
                 cookies = [
-                    [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+                    [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
                 redirect = _redirect(destination='customer_signin', cookies=cookies)
                 return redirect, 302
 
     elif req_method == POST:
-        if req_cookies[AUTH_COOKIE] is None:
+        if req_cookies[AUTH_COOKIE_CUST] is None:
             # No user is logged in
             form_data = request.form
             customer_signin_ref = CustomerSignin(
@@ -274,7 +346,7 @@ def customer_signin():
         else:
             # User already logged in
             customer_login_db = CustomerLogin.query.filter(
-                CustomerLogin.user_name == req_cookies[AUTH_COOKIE],
+                CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
                 flag_user_exists = True
@@ -284,13 +356,13 @@ def customer_signin():
             if flag_user_exists:
                 # Existing Cookie belongs to user in DB
                 cookies = [
-                    [AUTH_COOKIE, req_cookies[AUTH_COOKIE], EXPIRE_1_WEEK],
+                    [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                 ]
                 redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
                 return redirect, 302
             else:
                 cookies = [
-                    [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+                    [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
                 redirect = _redirect(destination='customer_signin', cookies=cookies)
                 return redirect, 302
@@ -306,20 +378,20 @@ class CustomerOrderPlacement:
 @app.route('/customer/orderplacement', methods=[GET, POST])
 def customer_OrderPlacement():
     req_method = request.method
-    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE])
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
 
     if req_method == GET:
-        if req_cookies[AUTH_COOKIE] is None:
+        if req_cookies[AUTH_COOKIE_CUST] is None:
             # No user logged in
             cookies = [
-                [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
             redirect = _redirect(destination='customer_signin', cookies=cookies)
             return redirect, 302
         else:
             # User already logged in
             customer_login_db = CustomerLogin.query.filter(
-                CustomerLogin.user_name == req_cookies[AUTH_COOKIE],
+                CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
                 flag_user_exists = True
@@ -333,7 +405,7 @@ def customer_OrderPlacement():
                 return render_template(path)
             else:
                 cookies = [
-                    [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+                    [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
                 redirect = _redirect(destination='customer_signin', cookies=cookies)
                 return redirect, 302
@@ -364,10 +436,10 @@ class CustomerSignup:
 @app.route('/customer/signup', methods=[GET, POST])
 def customer_SignUp():
     req_method = request.method
-    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE])
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
 
     if req_method == GET:
-        if req_cookies[AUTH_COOKIE] is None:
+        if req_cookies[AUTH_COOKIE_CUST] is None:
             # No user logged in
             page_name = 'customer_signup.html'
             path = os.path.join(page_name)
@@ -375,7 +447,7 @@ def customer_SignUp():
         else:
             # User already logged in
             customer_login_db = CustomerLogin.query.filter(
-                CustomerLogin.user_name == req_cookies[AUTH_COOKIE],
+                CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
                 flag_user_exists = True
@@ -385,7 +457,7 @@ def customer_SignUp():
             if flag_user_exists:
                 # Existing Cookie belongs to user in DB
                 cookies = [
-                    [AUTH_COOKIE, req_cookies[AUTH_COOKIE], EXPIRE_1_WEEK],
+                    [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                 ]
                 redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
                 return redirect, 302
@@ -442,7 +514,7 @@ def customer_SignUp():
         if flag_user_exists:
             # If user exists -> Redirect to Signup Page
             cookies = [
-                [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
             flash('Email ID Exists')
             redirect = _redirect(destination='customer_SignUp', cookies=cookies)
@@ -450,7 +522,7 @@ def customer_SignUp():
         else:
             # If New user -> Redirect to Order Placement Page
             cookies = [
-                [AUTH_COOKIE, customer_login_db.user_name, EXPIRE_1_WEEK],
+                [AUTH_COOKIE_CUST, customer_login_db.user_name, EXPIRE_1_WEEK],
             ]
             redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
             return redirect, 302
@@ -481,20 +553,20 @@ class CustomerEditProfile:
 @app.route('/customer/editprofile', methods=[GET, POST])
 def customer_editProfile():
     req_method = request.method
-    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE])
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
 
     if req_method == GET:
-        if req_cookies[AUTH_COOKIE] is None:
+        if req_cookies[AUTH_COOKIE_CUST] is None:
             # No user logged in
             cookies = [
-                [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
             redirect = _redirect(destination='customer_signin', cookies=cookies)
             return redirect, 302
         else:
             # User already logged in
             customer_login_db = CustomerLogin.query.filter(
-                CustomerLogin.user_name == req_cookies[AUTH_COOKIE],
+                CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
                 flag_user_exists = True
@@ -508,43 +580,43 @@ def customer_editProfile():
                 if customer_details_db is not None:
                     # Existing Cookie belongs to user in DB
                     data = {
-                                'first_name': customer_details_db.first_name,
-                                'last_name': customer_details_db.last_name,
-                                'email': customer_details_db.emailID,
-                                'mobile': customer_details_db.phoneNumber,
-                                'address': customer_details_db.address,
-                            }
+                        'first_name': customer_details_db.first_name,
+                        'last_name': customer_details_db.last_name,
+                        'email': customer_details_db.emailID,
+                        'mobile': customer_details_db.phoneNumber,
+                        'address': customer_details_db.address,
+                    }
                 else:
                     data = {
-                            'first_name': "Dummy Data",
-                            'last_name': "Dummy Data",
-                            'email': "Dummy Data",
-                            'mobile': "Dummy Data",
-                            'address': "Dummy Data",
-                        }
+                        'first_name': "Dummy Data",
+                        'last_name': "Dummy Data",
+                        'email': "Dummy Data",
+                        'mobile': "Dummy Data",
+                        'address': "Dummy Data",
+                    }
                 page_name = 'customer_editProfile.html'
                 path = os.path.join(page_name)
                 return render_template(path, data=data)
             else:
                 cookies = [
-                    [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+                    [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
                 redirect = _redirect(destination='customer_signin', cookies=cookies)
                 return redirect, 302
 
     elif req_method == POST:
         form_data = request.form
-        if req_cookies[AUTH_COOKIE] is None:
+        if req_cookies[AUTH_COOKIE_CUST] is None:
             # No user logged in
             cookies = [
-                [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
             redirect = _redirect(destination='customer_signin', cookies=cookies)
             return redirect, 302
         else:
             # User already logged in
             customer_login_db = CustomerLogin.query.filter(
-                CustomerLogin.user_name == req_cookies[AUTH_COOKIE],
+                CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
                 flag_user_exists = True
@@ -564,7 +636,7 @@ def customer_editProfile():
                 )
 
                 customer_login_db = CustomerLogin.query.filter(
-                    CustomerLogin.user_name == req_cookies[AUTH_COOKIE],
+                    CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
                 ).first()
                 if customer_login_db is not None:
                     # Check if email has been changed
@@ -578,7 +650,7 @@ def customer_editProfile():
                             if customer_login_db.id != customer_login_db_other.id:
                                 flash('Email Id already in use')
                                 cookies = [
-                                    [AUTH_COOKIE, req_cookies[AUTH_COOKIE], EXPIRE_1_WEEK],
+                                    [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                                 ]
                                 redirect = _redirect(destination='customer_editProfile', cookies=cookies)
                                 return redirect, 302
@@ -590,7 +662,7 @@ def customer_editProfile():
                         # Redirect to self using a message
                         flash('Existing Password is wrong')
                         cookies = [
-                            [AUTH_COOKIE, req_cookies[AUTH_COOKIE], EXPIRE_1_WEEK],
+                            [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                         ]
                         redirect = _redirect(destination='customer_editProfile', cookies=cookies)
                         return redirect, 302
@@ -616,14 +688,14 @@ def customer_editProfile():
                         # Redirect to self using a message
                         flash('Update Successful')
                         cookies = [
-                            [AUTH_COOKIE, req_cookies[AUTH_COOKIE], EXPIRE_1_WEEK],
+                            [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                         ]
                         redirect = _redirect(destination='customer_editProfile', cookies=cookies)
                         return redirect, 302
 
             else:
                 cookies = [
-                    [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+                    [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
                 redirect = _redirect(destination='customer_signin', cookies=cookies)
                 return redirect, 302
@@ -634,219 +706,685 @@ def customer_editProfile():
 @app.route('/customer/logout', methods=[GET])
 def customerLogout():
     req_method = request.method
-    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE])
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
 
     if req_method == GET:
         cookies = [
-            [AUTH_COOKIE, BLANK, EXPIRE_NOW],
+            [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
         ]
         redirect = _redirect(destination='customer_signin', cookies=cookies)
         return redirect, 302
     else:
         abort(401)
 
-@app.route('/customer/forget-password', methods=[GET,POST])
+
+class CustomerForgotPassword:
+    def __init__(self, email):
+        self.email = email
+
+
+@app.route('/customer/forget_password', methods=[GET, POST])
 def customerForgotPWD():
-    page_name = 'customer_forgotPwd.html'
-    path = os.path.join(page_name)
-    return render_template(path)
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
+
+    if req_method == GET:
+        page_name = 'customer_forgotPwd.html'
+        path = os.path.join(page_name)
+        return render_template(path)
+    elif req_method == POST:
+        form_data = request.form
+        customer_forgot_password_ref = CustomerForgotPassword(
+            email=form_data["email"]
+        )
+        # Check if email exists
+        customer_login_db = CustomerLogin.query.filter(
+            CustomerLogin.user_name == customer_forgot_password_ref.email.upper(),
+        ).first()
+        if customer_login_db is not None:
+            # Email in Database
+            char_list = f"{string.ascii_letters}{string.digits}{string.punctuation}"
+            new_password = []
+            for i in range(16):
+                new_password.append(random.choice(char_list))
+            new_password = "".join(new_password)
+            # Hash actual password
+            password_hash = hashlib.sha1()
+            password_hash.update(new_password.encode('utf-8'))
+            customer_login_db.password_hash = password_hash.hexdigest()[:254]
+            db.session.commit()
+            email_send_ref = EmailSend(
+                thread_name="Forgot Password",
+                email=customer_forgot_password_ref.email,
+                subject=f"{server_name} | Reset Password",
+                body=f"Your new password is : {new_password}"
+            )
+            email_send_ref.start()
+            flash('New Password sent to Email id')
+            cookies = [
+                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='customerForgotPWD', cookies=cookies)
+            return redirect, 302
+        else:
+            # Email not in Database
+            flash('Email does not exist')
+            cookies = [
+                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='customerForgotPWD', cookies=cookies)
+            return redirect, 302
+
 
 # ======================
-
+# Routing Employee
 
 class EmployeeSignin:
     def __init__(self, login_id: str, password: str):
         self.login_id = login_id.upper()
         self.password = password
+        # Hash actual password
+        password_hash = hashlib.sha1()
+        password_hash.update(self.password.encode('utf-8'))
+        self.password = password_hash.hexdigest()[:254]
 
 
 @app.route('/employee', methods=[GET, POST])
 def employee_signin():
-    page_name_2 = 'employee_welcome.html'
-    if request.method == GET:
-        page_name = 'employee_signin.html'
-        try:
-            auth = request.cookies.get('auth')
-            if auth is not None:
-                raise Exception("Cookie Found")
-        except Exception as e:
-            print(str(e))
-            cookies = [
-                ['auth', '', 0],
-            ]
-            redirect = _redirect(destination='employeeWelcome', cookies=cookies)
-            return redirect, 302
-        else:
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is None:
+            # No user logged in
+            page_name = 'employee_signin.html'
             path = os.path.join(page_name)
             return render_template(path)
-    elif request.method == POST:
-        form_data = request.form
-        employee_page_ref = EmployeeSignin(
-            login_id=form_data["loginID"],
-            password=form_data["password"],
-        )
-        path = os.path.join(page_name_2)
-        # return render_template(path)
-        res = make_response()
-        res.set_cookie(AUTH_COOKIE, "DATA HERE", 60 * 60 * 24 * 2)
-        res.headers['location'] = url_for('employeeWelcome')
-        return res, 302
+        else:
+            # User already logged in
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                # Existing Cookie belongs to user in DB
+                cookies = [
+                    [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                ]
+                redirect = _redirect(destination='employeeWelcome', cookies=cookies)
+                return redirect, 302
+            else:
+                page_name = 'employee_signin.html'
+                path = os.path.join(page_name)
+                return render_template(path)
+
+    elif req_method == POST:
+        if req_cookies[AUTH_COOKIE_EMP] is None:
+            # No user logged in
+            form_data = request.form
+            employee_signin_ref = EmployeeSignin(
+                login_id=form_data["loginID"],
+                password=form_data["password"],
+            )
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == employee_signin_ref.login_id.upper(),
+                EmployeeLogin.password_hash == employee_signin_ref.password,
+            ).first()
+            if employee_login_db is not None:
+                # Correct Credentials
+                cookies = [
+                    [AUTH_COOKIE_EMP, employee_login_db.user_name, EXPIRE_1_WEEK],
+                ]
+                redirect = _redirect(destination='employeeWelcome', cookies=cookies)
+                return redirect, 302
+            else:
+                # Wrong Credentials
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                flash('Incorrect Credentials !')
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
+        else:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                # Existing Cookie belongs to user in DB
+                cookies = [
+                    [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                ]
+                redirect = _redirect(destination='employeeWelcome', cookies=cookies)
+                return redirect, 302
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                flash('Enter Credentials again !')
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
+
     else:
         abort(401)
 
 
 @app.route('/employee/welcome', methods=[GET, POST])
-def employeeWelcome() -> str:
-    if request.method == GET:
-        try:
-            auth = request.cookies.get('auth')
-            if auth is None:
-                raise Exception("Cookie not found")
-        except Exception as e:
-            print(str(e))
-            res = make_response()
-            res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_signin')
-            return res, 302
+def employeeWelcome():
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                page_name = 'employee_welcome.html'
+                path = os.path.join(page_name)
+                return render_template(path)
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
         else:
-            page_name = 'employee_welcome.html'
-            path = os.path.join(page_name)
-            return render_template(path)
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            return redirect, 302
     else:
         abort(401)
 
 
 @app.route('/employee/inventory', methods=[GET, POST])
-def employeeInventory() -> str:
-    if request.method == GET:
-        try:
-            auth = request.cookies.get('auth')
-            if auth is None:
-                raise Exception("Cookie not found")
-        except Exception as e:
-            print(str(e))
-            res = make_response()
-            res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_signin')
-            return res, 302
+def employeeInventory():
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                page_name = 'employee_inventory.html'
+                path = os.path.join(page_name)
+                return render_template(path)
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
         else:
-            page_name = 'employee_inventory.html'
-            path = os.path.join(page_name)
-            return render_template(path)
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            return redirect, 302
+
     else:
         abort(401)
 
 
 @app.route('/employee/posTerminal', methods=[GET, POST])
-def employeePosTerminal() -> str:
-    if request.method == GET:
-        try:
-            auth = request.cookies.get('auth')
-            if auth is None:
-                raise Exception("Cookie not found")
-        except Exception as e:
-            print(str(e))
-            res = make_response()
-            res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_signin')
-            return res, 302
+def employeePosTerminal():
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                page_name = 'employee_posTerminal.html'
+                path = os.path.join(page_name)
+                return render_template(path)
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
         else:
-            page_name = 'employee_posTerminal.html'
-            path = os.path.join(page_name)
-            return render_template(path)
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            return redirect, 302
+
     else:
         abort(401)
 
 
 @app.route('/employee/monthlyRevenue', methods=[GET, POST])
-def employeeMonthlyRevenue() -> str:
-    if request.method == GET:
-        try:
-            auth = request.cookies.get('auth')
-            if auth is None:
-                raise Exception("Cookie not found")
-        except Exception as e:
-            print(str(e))
-            res = make_response()
-            res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_signin')
-            return res, 302
+def employeeMonthlyRevenue():
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                page_name = 'employee_monthlyRevenue.html'
+                path = os.path.join(page_name)
+                return render_template(path)
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
         else:
-            page_name = 'employee_monthlyRevenue.html'
-            path = os.path.join(page_name)
-            return render_template(path)
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            return redirect, 302
+
     else:
         abort(401)
 
 
 @app.route('/employee/orders', methods=[GET, POST])
-def employeeOrders() -> str:
-    if request.method == GET:
-        try:
-            auth = request.cookies.get('auth')
-            if auth is None:
-                raise Exception("Cookie not found")
-        except Exception as e:
-            print(str(e))
-            res = make_response()
-            res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_signin')
-            return res, 302
+def employeeOrders():
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                page_name = 'employee_orders.html'
+                path = os.path.join(page_name)
+                return render_template(path)
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
         else:
-            page_name = 'employee_orders.html'
-            path = os.path.join(page_name)
-            return render_template(path)
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            return redirect, 302
+
     else:
         abort(401)
 
 
 @app.route('/employee/returnItems', methods=[GET, POST])
-def employeereturnItems() -> str:
-    if request.method == GET:
-        try:
-            auth = request.cookies.get('auth')
-            if auth is None:
-                raise Exception("Cookie not found")
-        except Exception as e:
-            print(str(e))
-            res = make_response()
-            res.set_cookie(AUTH_COOKIE, '', 0)
-            res.headers['location'] = url_for('employee_signin')
-            return res, 302
+def employeereturnItems():
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                page_name = 'employee_returnItems.html'
+                path = os.path.join(page_name)
+                return render_template(path)
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
         else:
-            page_name = 'employee_returnItems.html'
-            path = os.path.join(page_name)
-            return render_template(path)
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            return redirect, 302
+
     else:
         abort(401)
 
 
 @app.route('/employee/logout', methods=[GET, POST])
 def employeeLogout():
-    if request.method == GET:
-        res = make_response()
-        res.set_cookie(AUTH_COOKIE, '', 0)
-        res.headers['location'] = url_for('employee_signin')
-        return res, 302
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        cookies = [
+            [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+        ]
+        redirect = _redirect(destination='employee_signin', cookies=cookies)
+        return redirect, 302
     else:
         abort(401)
 
-# ==========================================================
+
+# ======================
+# Routing Admin
+
+class AdminSignin:
+    def __init__(self, login_id: str, password: str):
+        self.login_id = login_id
+        self.password = password
+        # Hash actual password
+        password_hash = hashlib.sha1()
+        password_hash.update(self.password.encode('utf-8'))
+        self.password = password_hash.hexdigest()
+
 
 @app.route('/admin', methods=[GET, POST])
 def adminSignIn():
-    page_name = 'admin_signin.html'
-    path = os.path.join(page_name)
-    return render_template(path)
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
 
-@app.route('/admin/welcome', methods=[GET, POST])
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_ADMIN] is not None:
+            # Cookie Present
+            admin_login_db = AdminLogin.query.filter(
+                AdminLogin.user_name == req_cookies[AUTH_COOKIE_ADMIN],
+            ).first()
+            if admin_login_db is not None:
+                # Cookie is okay
+                cookies = [
+                    [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                ]
+                redirect = _redirect(destination='adminWelcome', cookies=cookies)
+                return redirect, 302
+            else:
+                # Cookie is wrong
+                cookies = [
+                    [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                return redirect, 302
+        else:
+            # No cookie present
+            page_name = 'admin_signin.html'
+            path = os.path.join(page_name)
+            return render_template(path)
+    elif req_method == POST:
+        form_data = request.form
+        admin_signin_ref = AdminSignin(
+            login_id=form_data["loginID"],
+            password=form_data["password"],
+        )
+        admin_login_db = AdminLogin.query.filter(
+            AdminLogin.user_name == admin_signin_ref.login_id.upper(),
+            AdminLogin.password_hash == admin_signin_ref.password
+        ).first()
+        if admin_login_db is not None:
+            cookies = [
+                [AUTH_COOKIE_ADMIN, admin_login_db.user_name, EXPIRE_1_WEEK],
+            ]
+            redirect = _redirect(destination='adminWelcome', cookies=cookies)
+            return redirect, 302
+        else:
+            flash('Invalid credentials provided !')
+            cookies = [
+                [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            return redirect, 302
+    else:
+        abort(401)
+
+
+@app.route('/admin/welcome', methods=[GET])
 def adminWelcome():
-    page_name = 'admin_welcome.html'
-    path = os.path.join(page_name)
-    return render_template(path)
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_ADMIN] is not None:
+            # Cookie Present
+            admin_login_db = AdminLogin.query.filter(
+                AdminLogin.user_name == req_cookies[AUTH_COOKIE_ADMIN],
+            ).first()
+            if admin_login_db is not None:
+                # Cookie is okay
+                page_name = 'admin_welcome.html'
+                path = os.path.join(page_name)
+                return render_template(path)
+            else:
+                # Cookie is wrong
+                cookies = [
+                    [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                return redirect, 302
+        else:
+            # No Cookie
+            cookies = [
+                [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            return redirect, 302
+    else:
+        abort(401)
+
+
+class AdminUserAcess:
+    def __init__(self, first_name: str, last_name: str, email: str, password: str):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.password = password
+        # Hash actual password
+        password_hash = hashlib.sha1()
+        password_hash.update(self.password.encode('utf-8'))
+        self.password = password_hash.hexdigest()
+
 
 @app.route('/admin/userAccess', methods=[GET, POST])
 def adminUserAccess():
-    page_name = 'admin_userAccess.html'
-    path = os.path.join(page_name)
-    return render_template(path)
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_ADMIN] is not None:
+            # Cookie Present
+            admin_login_db = AdminLogin.query.filter(
+                AdminLogin.user_name == req_cookies[AUTH_COOKIE_ADMIN],
+            ).first()
+            if admin_login_db is not None:
+                # Cookie is okay
+                page_name = 'admin_userAccess.html'
+                emp_details_db = EmployeeDetails.query.all()
+                data_send = []
+                for emp in emp_details_db:
+                    data_send.append({
+                        "id": emp.employee_login_id,
+                        "first_name": emp.first_name,
+                        "last_name": emp.last_name,
+                        "email": emp.emailID,
+                    })
+                path = os.path.join(page_name)
+                return render_template(path, data=data_send)
+            else:
+                # Cookie is wrong
+                cookies = [
+                    [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                return redirect, 302
+        else:
+            # No Cookie
+            cookies = [
+                [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            return redirect, 302
+    elif req_method == POST:
+        if req_cookies[AUTH_COOKIE_ADMIN] is not None:
+            # Cookie Present
+            admin_login_db = AdminLogin.query.filter(
+                AdminLogin.user_name == req_cookies[AUTH_COOKIE_ADMIN],
+            ).first()
+            if admin_login_db is not None:
+                # Cookie is okay
+                form_data = request.form
+                admin_user_access_ref = AdminUserAcess(
+                    first_name=form_data["first_name"],
+                    last_name=form_data["last_name"],
+                    email=form_data["email"],
+                    password=form_data["password"],
+                )
+                emp_login_db = EmployeeLogin.query.filter(
+                    EmployeeLogin.user_name == admin_user_access_ref.email.upper(),
+                ).first()
+                if emp_login_db is not None:
+                    # User exists
+                    flash("Email Id Exists !")
+                    cookies = [
+                        [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='adminUserAccess', cookies=cookies)
+                    return redirect, 302
+                else:
+                    # Create Employee
+                    emp_login_db = EmployeeLogin(
+                        user_name=admin_user_access_ref.email.upper(),
+                        password_hash=admin_user_access_ref.password
+                    )
+                    db.session.add(emp_login_db)
+                    db.session.commit()
+                    db.session.refresh(emp_login_db)
+                    emp_details_db = EmployeeDetails(
+                        first_name=admin_user_access_ref.first_name,
+                        last_name=admin_user_access_ref.last_name,
+                        emailID=admin_user_access_ref.email,
+                        employee_login_id=emp_login_db.id
+                    )
+                    db.session.add(emp_details_db)
+                    db.session.commit()
+                    flash("Employee Added")
+                    cookies = [
+                        [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='adminUserAccess', cookies=cookies)
+                    return redirect, 302
+            else:
+                # Cookie is wrong
+                cookies = [
+                    [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                return redirect, 302
+        else:
+            # No Cookie
+            cookies = [
+                [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            return redirect, 302
+
+    else:
+        abort(401)
+
+
+@app.route('/admin/editEmployee/<int:empid>', methods=[GET])
+def admin_editEmployee(empid: int):
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_ADMIN] is not None:
+            # Cookie Present
+            admin_login_db = AdminLogin.query.filter(
+                AdminLogin.user_name == req_cookies[AUTH_COOKIE_ADMIN],
+            ).first()
+            if admin_login_db is not None:
+                # Cookie is okay
+                abort(401)
+                # page_name = 'admin_welcome.html'
+                # path = os.path.join(page_name)
+                # return render_template(path)
+            else:
+                # Cookie is wrong
+                cookies = [
+                    [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                return redirect, 302
+        else:
+            # No Cookie
+            cookies = [
+                [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            return redirect, 302
+    else:
+        abort(401)
+
+
+@app.route('/admin/deleteEmployee/<int:empid>', methods=[GET])
+def admin_deleteEmployee(empid: int):
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_ADMIN] is not None:
+            # Cookie Present
+            admin_login_db = AdminLogin.query.filter(
+                AdminLogin.user_name == req_cookies[AUTH_COOKIE_ADMIN],
+            ).first()
+            if admin_login_db is not None:
+                # Cookie is okay
+                emp_login_db = EmployeeLogin.query.filter(
+                    EmployeeLogin.id == empid,
+                ).first()
+                if emp_login_db is not None:
+                    flash(f'Employee {emp_login_db.user_name} deleted')
+                    db.session.delete(emp_login_db)
+                    db.session.commit()
+                    cookies = [
+                        [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='adminUserAccess', cookies=cookies)
+                    return redirect, 302
+            else:
+                # Cookie is wrong
+                cookies = [
+                    [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                return redirect, 302
+        else:
+            # No Cookie
+            cookies = [
+                [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            return redirect, 302
+    else:
+        abort(401)
+
+
+@app.route('/admin/logout', methods=[GET])
+def admin_logout():
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
+
+    if req_method == GET:
+        cookies = [
+            [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+        ]
+        redirect = _redirect(destination='adminSignIn', cookies=cookies)
+        return redirect, 302
+    else:
+        abort(401)

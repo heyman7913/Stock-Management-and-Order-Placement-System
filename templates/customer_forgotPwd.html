@@ -19,7 +19,18 @@
                             <form action="" method="POST">
                                 <div class="form-group required">
                                     <label>Email ID</label>
-                                    <input type="text" class="form-control text-lowercase" id="" required="" name="" value="">
+                                    <input type="text" class="form-control text-lowercase" id="email" required="true" name="email" placeholder="Email Id">
+                                </div>
+                                <div style="color:red;">
+                                    {% with messages = get_flashed_messages() %}
+                                      {% if messages %}
+                                        <ul class=flashes>
+                                        {% for message in messages %}
+                                          <li>{{ message }}</li>
+                                        {% endfor %}
+                                        </ul>
+                                      {% endif %}
+                                    {% endwith %}
                                 </div>
                                 <div class="form-group pt-1">
                                     <button class="btn btn-primary btn-block" type="submit">Change Password</button>
