@@ -15,6 +15,7 @@ from sqlalchemy.sql import func
 # CONSTANTS
 
 SECRET = "SECRET"
+SERVER = "SERVER"
 DATABASE = "DATABASE"
 USERNAME = "USERNAME"
 PASSWORD = "PASSWORD"
@@ -51,7 +52,7 @@ try:
                 port=data[DATABASE][PORT],
                 database=data[DATABASE][NAME],
             )
-        app.config['SECRET_KEY'] = data[SECRET]
+        app.config['SECRET_KEY'] = data[SERVER][SECRET]
 except Exception as e:
     print(str(e))
     raise KeyboardInterrupt
