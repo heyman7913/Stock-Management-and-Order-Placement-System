@@ -245,11 +245,6 @@ def customer_landing_page():
                 CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
-                flag_user_exists = True
-            else:
-                flag_user_exists = False
-
-            if flag_user_exists:
                 # Existing Cookie belongs to user in DB
                 cookies = [
                     [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
@@ -262,6 +257,7 @@ def customer_landing_page():
                 ]
                 redirect = _redirect(destination='customer_signin', cookies=cookies)
                 return redirect, 302
+
     else:
         abort(401)
 
@@ -293,11 +289,6 @@ def customer_signin():
                 CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
-                flag_user_exists = True
-            else:
-                flag_user_exists = False
-
-            if flag_user_exists:
                 # Existing Cookie belongs to user in DB
                 cookies = [
                     [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
@@ -326,34 +317,25 @@ def customer_signin():
                 CustomerLogin.password_hash == customer_signin_ref.password,
             ).first()
             if customer_login_db is not None:
-                flag_user_exists = True
-            else:
-                flag_user_exists = False
-
-            if flag_user_exists:
                 cookies = [
-                    ['auth', customer_login_db.user_name, EXPIRE_1_WEEK],
+                    [AUTH_COOKIE_CUST, customer_login_db.user_name, EXPIRE_1_WEEK],
                 ]
                 redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
                 return redirect, 302
             else:
                 flash('Please Provide Correct Information')
                 cookies = [
-                    ['auth', BLANK, EXPIRE_NOW],
+                    [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
                 redirect = _redirect(destination='customer_signin', cookies=cookies)
                 return redirect, 302
+
         else:
             # User already logged in
             customer_login_db = CustomerLogin.query.filter(
                 CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
-                flag_user_exists = True
-            else:
-                flag_user_exists = False
-
-            if flag_user_exists:
                 # Existing Cookie belongs to user in DB
                 cookies = [
                     [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
@@ -366,6 +348,7 @@ def customer_signin():
                 ]
                 redirect = _redirect(destination='customer_signin', cookies=cookies)
                 return redirect, 302
+
     else:
         abort(401)
 
@@ -394,11 +377,6 @@ def customer_OrderPlacement():
                 CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
-                flag_user_exists = True
-            else:
-                flag_user_exists = False
-
-            if flag_user_exists:
                 # Existing Cookie belongs to user in DB
                 page_name = 'customer_OrderPlacement.html'
                 path = os.path.join(page_name)
@@ -450,11 +428,6 @@ def customer_SignUp():
                 CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
-                flag_user_exists = True
-            else:
-                flag_user_exists = False
-
-            if flag_user_exists:
                 # Existing Cookie belongs to user in DB
                 cookies = [
                     [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
@@ -483,11 +456,15 @@ def customer_SignUp():
         customer_login_db = CustomerLogin.query.filter(
             CustomerLogin.user_name == customer_signup_ref.email.upper()).first()
         if customer_login_db is not None:
-            # User exists -> Redirect to login page
-            flag_user_exists = True
+            # If user exists -> Redirect to Signup Page
+            cookies = [
+                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
+            ]
+            flash('Email ID Exists')
+            redirect = _redirect(destination='customer_SignUp', cookies=cookies)
+            return redirect, 302
         else:
             # User does not exists -> Create New user
-            flag_user_exists = False
             del customer_login_db
 
             customer_login_db = CustomerLogin(
@@ -509,17 +486,24 @@ def customer_SignUp():
             db.session.add(customer_details_db)
             db.session.commit()
 
-        # Creating Database Entry for New Customer Data <<<<<<<<<<<
+            email_send_ref = EmailSend(
+                thread_name="Customer Signup",
+                email=customer_signup_ref.email,
+                subject=f"{server_name} | Customer Account Created",
+                body=f"""
+                Hi {customer_signup_ref.first_name},
+                
+                Welcome to {server_name}
+                
+                User ID : {customer_signup_ref.email}
+                Password : {form_data["psw"]}
+                
+                Thanks and Regards,
+                Bot.
+                """
+            )
+            email_send_ref.start()
 
-        if flag_user_exists:
-            # If user exists -> Redirect to Signup Page
-            cookies = [
-                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
-            ]
-            flash('Email ID Exists')
-            redirect = _redirect(destination='customer_SignUp', cookies=cookies)
-            return redirect, 302
-        else:
             # If New user -> Redirect to Order Placement Page
             cookies = [
                 [AUTH_COOKIE_CUST, customer_login_db.user_name, EXPIRE_1_WEEK],
@@ -1272,6 +1256,25 @@ def adminUserAccess():
                     )
                     db.session.add(emp_details_db)
                     db.session.commit()
+
+                    email_send_ref = EmailSend(
+                        thread_name="Employee Creation",
+                        email=admin_user_access_ref.email,
+                        subject=f"{server_name} | Employee Account Created",
+                        body=f"""
+                        Hi {admin_user_access_ref.first_name},
+                        
+                        Welcome to {server_name}
+
+                        User ID : {admin_user_access_ref.email}
+                        Password : {form_data["password"]}
+
+                        Thanks and Regards,
+                        Bot.
+                        """
+                    )
+                    email_send_ref.start()
+
                     flash("Employee Added")
                     cookies = [
                         [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
@@ -1350,8 +1353,30 @@ def admin_deleteEmployee(empid: int):
                 ).first()
                 if emp_login_db is not None:
                     flash(f'Employee {emp_login_db.user_name} deleted')
+                    emp_details_db = EmployeeDetails.query.filter(
+                        EmployeeDetails.employee_login_id == empid,
+                    ).first()
+                    if emp_details_db is not None:
+                        email_send_ref = EmailSend(
+                            thread_name="Employee Deletion",
+                            email=emp_details_db.emailID,
+                            subject=f"{server_name} | Employee Account Deleted",
+                            body=f"""
+                            Hi {emp_details_db.first_name},
+                            
+                            Your employee access for user {emp_details_db.emailID}
+                            has been revoked.
+                            Thanks for being a valued employee.
+    
+                            Thanks and Regards,
+                            Bot.
+                            """
+                        )
+                        email_send_ref.start()
+
                     db.session.delete(emp_login_db)
                     db.session.commit()
+
                     cookies = [
                         [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
                     ]
