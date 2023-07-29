@@ -35,6 +35,8 @@ BLANK = ''
 AUTH_COOKIE_ADMIN = "auth_admin"
 AUTH_COOKIE_EMP = "auth_emp"
 AUTH_COOKIE_CUST = "auth_cust"
+
+INVALID_CRED = "Invalid credentials provided !"
 # ========================================================
 
 PROJECT_DIR = Path(__file__).resolve().parent
@@ -323,7 +325,7 @@ def customer_signin():
                 redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
                 return redirect, 302
             else:
-                flash('Please Provide Correct Information')
+                flash(INVALID_CRED)
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
@@ -825,7 +827,7 @@ def employee_signin():
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                flash('Incorrect Credentials !')
+                flash(INVALID_CRED)
                 redirect = _redirect(destination='employee_signin', cookies=cookies)
                 return redirect, 302
         else:
@@ -1118,7 +1120,7 @@ def adminSignIn():
             redirect = _redirect(destination='adminWelcome', cookies=cookies)
             return redirect, 302
         else:
-            flash('Invalid credentials provided !')
+            flash(INVALID_CRED)
             cookies = [
                 [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
             ]

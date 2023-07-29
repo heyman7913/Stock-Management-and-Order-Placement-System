@@ -25,7 +25,16 @@
                                     <label class="d-flex flex-row align-items-center" for="password">Password 
                                         <a class="ml-auto border-link small-xl" href="/customer/forget_password">Forget Password?</a></label>
                                     <input type="password" class="form-control" required="" id="password" name="password" value="">
-                                </div> 
+                                </div>
+                                <div style="color:red;">
+                                    {% with messages = get_flashed_messages() %}
+                                      {% if messages %}
+                                        {% for message in messages %}
+                                          {{ message }}<br>
+                                        {% endfor %}
+                                      {% endif %}
+                                    {% endwith %}
+                                </div>
                                 <div class="form-group pt-1">
                                     <button class="btn btn-primary btn-block" type="submit">Log In</button>
                                 </div>
@@ -42,17 +51,6 @@
                     </div>
                 </div>
             </div>
-</div>
-<div style="color:red;">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul class=flashes>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
 </div>
 <br>
 <p>Store Address:<br>
