@@ -1,5 +1,6 @@
 # ========================================================
 # IMPORTS
+import base64
 import hashlib
 import json
 import os
@@ -7,6 +8,7 @@ import random
 import string
 from pathlib import Path
 
+from cryptography.fernet import Fernet
 from flask import Flask, render_template, abort, request, make_response, url_for, flash
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -52,6 +54,7 @@ try:
         server_host = data[SERVER][HOST]
         server_port = data[SERVER][PORT]
         server_name = data[SERVER][NAME]
+        server_secret = data[SERVER][SECRET]
         if server_stat:
             DB_CON = "sqlite:///{database}.db".format(
                 database=data[DATABASE][NAME],
@@ -64,7 +67,7 @@ try:
                 port=data[DATABASE][PORT],
                 database=data[DATABASE][NAME],
             )
-        app.config['SECRET_KEY'] = data[SERVER][SECRET]
+        app.config['SECRET_KEY'] = server_secret
 except Exception as e:
     print(str(e))
     raise KeyboardInterrupt
@@ -209,6 +212,9 @@ def landingPage() -> str:
 def _redirect(destination: str, cookies: list):
     res = make_response()
     for cookie in cookies:
+        # base64_bytes = base64.b64encode(server_secret.encode('utf-8'))
+        # crypt = Fernet(base64_bytes)
+        # cookie[1] = crypt.encrypt(cookie[1].encode('utf-8'))
         res.set_cookie(cookie[0], cookie[1], cookie[2])
     res.headers['location'] = url_for(destination)
     return res
@@ -219,6 +225,9 @@ def _get_cookies(cookie_stack, names: list):
     for name in names:
         try:
             spec = cookie_stack.get(name)
+            # base64_bytes = base64.b64encode(server_secret.encode('utf-8'))
+            # crypt = Fernet(base64_bytes)
+            # spec = crypt.decrypt(spec)
         except Exception:
             spec = None
         cookies.update({name: spec})
