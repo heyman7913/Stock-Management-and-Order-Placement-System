@@ -1,6 +1,6 @@
 # ComputerScienceIA
 ___
-#### By Himanish Chitkara
+#### By Himansh Chitkara
 ___
 Commands:
 > Install prerequisites :
