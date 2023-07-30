@@ -181,7 +181,7 @@ class EmployeeDetails(db.Model):
     last_name = db.Column(String(50), nullable=False)
     emailID = db.Column(String(100), nullable=False)
     phoneNumber = db.Column(Integer, nullable=True)
-    address = db.Column(String(200), nullable=True)
+    address = db.Column(String(200), nullable=True) # Sir this field can be removed - not required in the DB.
     created_at = db.Column(DateTime(timezone=True), server_default=func.now())
 
     employee_login_id = db.Column(db.Integer, db.ForeignKey("employee_login.id"), nullable=False)
