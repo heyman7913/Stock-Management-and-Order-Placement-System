@@ -186,7 +186,7 @@ class EmployeeDetails(db.Model):
     last_name = db.Column(String(50), nullable=False)
     emailID = db.Column(String(100), nullable=False)
     phoneNumber = db.Column(Integer, nullable=True)
-    address = db.Column(String(200), nullable=True) # Sir this field can be removed - not required in the DB.
+    address = db.Column(String(200), nullable=True)  # Sir this field can be removed - not required in the DB.
     created_at = db.Column(DateTime(timezone=True), server_default=func.now())
 
     employee_login_id = db.Column(db.Integer, db.ForeignKey("employee_login.id"), nullable=False)
@@ -212,9 +212,6 @@ def landingPage() -> str:
 def _redirect(destination: str, cookies: list):
     res = make_response()
     for cookie in cookies:
-        # base64_bytes = base64.b64encode(server_secret.encode('utf-8'))
-        # crypt = Fernet(base64_bytes)
-        # cookie[1] = crypt.encrypt(cookie[1].encode('utf-8'))
         res.set_cookie(cookie[0], cookie[1], cookie[2])
     res.headers['location'] = url_for(destination)
     return res
@@ -225,9 +222,6 @@ def _get_cookies(cookie_stack, names: list):
     for name in names:
         try:
             spec = cookie_stack.get(name)
-            # base64_bytes = base64.b64encode(server_secret.encode('utf-8'))
-            # crypt = Fernet(base64_bytes)
-            # spec = crypt.decrypt(spec)
         except Exception:
             spec = None
         cookies.update({name: spec})
@@ -1311,7 +1305,20 @@ def adminUserAccess():
         abort(401)
 
 
-@app.route('/admin/editEmployee/<int:empid>', methods=[GET])
+class AdminEditEmployee:
+    def __init__(self, firstName, lastName, email, mobile, psw):
+        self.first_name = firstName
+        self.last_name = lastName
+        self.email = email
+        self.phone = mobile
+        self.password = psw
+        # Hash actual password
+        password_hash = hashlib.sha1()
+        password_hash.update(self.password.encode('utf-8'))
+        self.password = password_hash.hexdigest()
+
+
+@app.route('/admin/editEmployee/<int:empid>', methods=[GET, POST])
 def admin_editEmployee(empid: int):
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
@@ -1324,10 +1331,25 @@ def admin_editEmployee(empid: int):
             ).first()
             if admin_login_db is not None:
                 # Cookie is okay
-                abort(401)
-                # page_name = 'admin_welcome.html'
-                # path = os.path.join(page_name)
-                # return render_template(path)
+                employee_login_db = EmployeeLogin.query.filter(
+                    EmployeeLogin.id == empid,
+                ).first()
+                if employee_login_db is not None:
+                    employee_details_db = EmployeeDetails.query.filter(
+                        EmployeeDetails.employee_login_id == employee_login_db.id,
+                    ).first()
+                    if employee_details_db is not None:
+                        data = {
+                            "id": employee_login_db.id,
+                            "first_name": employee_details_db.first_name,
+                            "last_name": employee_details_db.last_name,
+                            "email": employee_details_db.emailID,
+                            "mobile": employee_details_db.phoneNumber,
+                        }
+                        page_name = 'admin_editProfile.html'
+                        path = os.path.join(page_name)
+                        return render_template(path, data=data)
+
             else:
                 # Cookie is wrong
                 cookies = [
@@ -1342,6 +1364,120 @@ def admin_editEmployee(empid: int):
             ]
             redirect = _redirect(destination='adminSignIn', cookies=cookies)
             return redirect, 302
+
+    elif req_method == POST:
+        recepients = []
+        if req_cookies[AUTH_COOKIE_ADMIN] is not None:
+            # Cookie Present
+            admin_login_db = AdminLogin.query.filter(
+                AdminLogin.user_name == req_cookies[AUTH_COOKIE_ADMIN],
+            ).first()
+            if admin_login_db is not None:
+                # Cookie is okay
+                form_data = request.form
+                admin_edit_employee_ref = AdminEditEmployee(
+                    firstName=form_data["firstName"],
+                    lastName=form_data["lastName"],
+                    email=form_data["email"],
+                    mobile=form_data["mobile"],
+                    psw=form_data["psw"],
+                )
+                emp_login_db = EmployeeLogin.query.filter(
+                    EmployeeLogin.id == empid,
+                ).first()
+                if emp_login_db is not None:
+                    # User exists
+                    employee_details_db = EmployeeDetails.query.filter(
+                        EmployeeDetails.employee_login_id == emp_login_db.id,
+                    ).first()
+                    if employee_details_db.emailID != admin_edit_employee_ref.email:
+                        emp_login_db_other = EmployeeLogin.query.filter(
+                            EmployeeLogin.user_name == admin_editEmployee.email.upper(),
+                        ).first()
+                        if emp_login_db_other is not None:
+                            if emp_login_db_other.id != emp_login_db.id:
+                                flash("Email Id Exists !")
+                                cookies = [
+                                    [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                                ]
+                                redirect = _redirect(destination='admin_editEmployee', cookies=cookies)
+                                return redirect, 302
+                        else:
+                            recepients.append(employee_details_db.emailID)  # Old Email
+                            employee_details_db.emailID = admin_edit_employee_ref.email
+                            emp_login_db.user_name = admin_edit_employee_ref.email()
+                            # Send email to both emails
+                            recepients.append(employee_details_db.emailID)  # New Email
+                    else:
+                        recepients.append(employee_details_db.emailID)  # Old Email
+
+                    actual_password = form_data["psw"]
+                    if (actual_password != BLANK
+                            and emp_login_db.password_hash != admin_edit_employee_ref):
+                        emp_login_db.password_hash = admin_edit_employee_ref.password
+                    else:
+                        actual_password = None
+
+                    employee_details_db.first_name = admin_edit_employee_ref.first_name
+                    employee_details_db.last_name = admin_edit_employee_ref.last_name
+                    employee_details_db.phoneNumber = admin_edit_employee_ref.phone
+
+                    for recepient in recepients:
+                        email_send_ref = EmailSend(
+                            thread_name="Employee Updation",
+                            email=recepient,
+                            subject=f"{server_name} | Employee Account Updated",
+                            body=f"""
+                            Hi {employee_details_db.first_name},
+    
+                            Your employee account has been updated by admin {req_cookies[AUTH_COOKIE_ADMIN]}.
+                            
+                            First Name : {employee_details_db.first_name}
+                            Last Name : {employee_details_db.last_name}
+                            Email Id : {employee_details_db.emailID}
+                            Phone Number : {employee_details_db.phoneNumber}
+                            Password : {actual_password if actual_password is not None else "Not Changed"}
+    
+                            Thanks and Regards,
+                            Bot.
+                            """
+                        )
+                        email_send_ref.start()
+
+                    db.session.commit()
+                    flash("Employee Account Updated")
+                    cookies = [
+                        [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='adminUserAccess', cookies=cookies)
+                    return redirect, 302
+
+                else:
+                    flash("Incorrect Employee Id")
+                    cookies = [
+                        [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='adminUserAccess', cookies=cookies)
+                    return redirect, 302
+
+
+
+
+            else:
+                # Cookie is wrong
+                cookies = [
+                    [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                return redirect, 302
+        else:
+            # No Cookie
+            cookies = [
+                [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            return redirect, 302
+
     else:
         abort(401)
 

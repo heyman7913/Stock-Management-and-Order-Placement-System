@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="{{ url_for('static', filename = 'css/customer_editProfile.css' ) }}">
-<form action="" method = "POST" style="border:1px solid #ccc">
+<form action="/admin/editEmployee/{{data['id']}}" method = "POST" style="border:1px solid #ccc">
   <div class="container">
 
     <table id="employeeDetails" style="width: 40%;">
@@ -24,10 +24,6 @@
         <tr>
             <label for="mobile"><b>Employee Mobile Number</b></label><br>
             <input class="mobileNumber" type="number" name="mobile" value="{{data['mobile']}}"><br>
-        </tr>
-        <tr>
-            <label for="psw_old"><b>Old Password</b></label><br>
-            <input class="password" type="password" name="psw_old" placeholder="Enter Old Password Here"><br>
         </tr>
         <tr>
             <label for="psw"><b>New Password</b></label><br>
