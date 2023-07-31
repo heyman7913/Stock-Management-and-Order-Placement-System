@@ -1,0 +1,58 @@
+<link rel="stylesheet" href="{{ url_for('static', filename = 'css/customer_editProfile.css' ) }}">
+<form action="" method = "POST" style="border:1px solid #ccc">
+  <div class="container">
+
+    <table id="productDetails" style="width: 40%;">
+        <tr>
+            <div class="logo">
+                <img src="{{ url_for('static', filename = 'images/logo.png' ) }}">
+            </div>
+            <h1 style="text-align: center">Edit Item Information</h1>
+            <p style="text-align: center">Please save all changes after you finish editing the item's details</p>
+            <hr>
+        </tr>
+        <tr>
+            <label for="itemName"><b>Item Name</b></label> <br>
+            <input class="editableitemname" type="text" name="itemName" maxlength="50" value=""><br>
+        </tr>
+        <tr>
+            <label for="price"><b>Price per Unit</b></label><br>
+            <input class="price" type="number"  name="price" value=""><br>
+        </tr>
+        <tr>
+            <label for="qtyAvailable"><b>Quantity Available</b></label><br>
+            <input class="qtyAvailable" type="number" name="qtyAvailable" value=""><br>
+        </tr>
+        <tr>
+            <label for="shelfLocation"><b>Shelf Location</b></label><br>
+            <input class="shelfLocation" type="text" name="shelfLocation" maxlength="50" value=""><br>
+        </tr>
+        <tr>
+            <label for="acceptReturns"><b>Accept Returns</b></label><br>
+            <select class="acceptReturns" name="acceptReturns">
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+        </tr>
+        <tr>
+            <label for="reorderQty"><b>Reorder Quantity</b></label><br>
+            <input class="reorderQty" type="number" name="reorderQty" value=""><br>
+        </tr>
+    </table>
+    <div style="color:red;">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+    </div>
+    <div class="clearfix">
+      <button type="button" class="cancelbtn" onclick="window.location.href = '/customer/orderplacement'">Cancel</button>
+      <button type="submit" class="savebtn">Save Changes</button>
+    </div>
+  </div>
+</form>

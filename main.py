@@ -8,7 +8,7 @@ import random
 import string
 from pathlib import Path
 
-from cryptography.fernet import Fernet
+#from cryptography.fernet import Fernet
 from flask import Flask, render_template, abort, request, make_response, url_for, flash
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -919,6 +919,11 @@ def employeeInventory():
     else:
         abort(401)
 
+@app.route('/employee/editItemInfo', methods=[GET, POST])
+def employeeEditItemInfo():
+    page_name = 'employee_inventoryEdit.html'
+    path = os.path.join(page_name)
+    return render_template(path)
 
 @app.route('/employee/posTerminal', methods=[GET, POST])
 def employeePosTerminal():

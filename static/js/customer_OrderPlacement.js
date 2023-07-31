@@ -15,7 +15,7 @@ var c=1;
 				var editQtyBtn = row.insertCell(3);
 				editQtyBtn.innerHTML = "<button class=\"plusBtn\" onclick = \"plusItem(this)\"><i class=\"fa fa-plus\"></i></button><button onclick = \"minusItem(this)\" class=\"minusBtn\" style=\"font-size:24px\"><i class=\"fa fa-minus\"></i></button>";
 				serial_no.innerHTML = c++;
-  				item.innerHTML = document.getElementById("itemName_input").value + "<button class=\"editItemNameBtn\" \"style=\"font-size:24px;\" onclick = \"editItemName(this)\"><i class = \"fa fa-edit center\"></i></button>";
+  				item.innerHTML = document.getElementById("itemName_input").value ;
 				if (document.getElementById("quantity_input").value == "Other"){
 					otherQty = prompt("Please enter the quantity of " + document.getElementById("itemName_input").value + " you wish to buy");
 					if (otherQty > 0){
@@ -31,7 +31,7 @@ var c=1;
 				document.getElementById("quantity_input").value="1";
 			};
 
-			function editItemName(element){	// Function for the edit icon which appears next to the item name in the table. It allows a user to correct any mistakes in the names of products.
+			/*function editItemName(element){	// Function for the edit icon which appears next to the item name in the table. It allows a user to correct any mistakes in the names of products.
 				var table = document.getElementById("orders_table");
 				var newItem = prompt("Please edit the name of the medicine");
 				if (newItem == table.rows[element.parentNode.parentNode.rowIndex].cells[1].innerHTML){
@@ -42,7 +42,7 @@ var c=1;
 					table.rows[element.parentNode.parentNode.rowIndex].cells[1].innerHTML = newItem + "<button \"style=\"font-size:24px\" onclick = \"editItemName(this)\"><i class = \"fas fa-edit\"></i></button>";
 				}
 
-			};
+			};*/
 
 			function plusItem(element){  // Increase quantity of the item at a later stage.
 				var table = document.getElementById("orders_table");

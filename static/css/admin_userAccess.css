@@ -104,7 +104,7 @@ th {
 	background-color:green;
 	Color:white;
 	font-size: 15px;
-    width: 160px;
+    width: 185px;
 	text-align:center;
 	border:1px solid black;
 	padding: 5px;
@@ -131,7 +131,7 @@ button{
 	position: fixed;
 }
 .buttonsTable{
-	margin: 20px 0px 0px 60%;
+	margin: 20px 0px 0px 75%;
 	position: fixed;
 }
 tr{
@@ -139,7 +139,8 @@ tr{
 }
 td{
     padding: 5px;
-    width: 160px;
+    width: 190px;
+    text-wrap: break-word;
     text-align: center;
 }
 .addUser:hover{

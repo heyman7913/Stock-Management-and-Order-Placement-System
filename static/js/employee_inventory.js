@@ -1,5 +1,6 @@
 var c=1;
 			var row, productID, productName, price, qtyAvailable, shelfLocation, acceptReturns, reorderQty, otherQtyAvailable, otherReorderQuantity, deleteBtn;
+
             function addItem(){
 				var table = document.getElementById("inventoryTable");
                 console.log(c);
@@ -15,8 +16,10 @@ var c=1;
                 var shelfLocation= row.insertCell(4);
                 var acceptReturns= row.insertCell(5);
                 var reorderQty= row.insertCell(6);
-                var deleteBtn = row.insertCell(7);
-                deleteBtn.innerHTML = "<button class=\"deleteButton\" onclick =\"deleteItem(this)\"><i class=\"ri-delete-bin-line\"></i></button>"
+                var editItemInfo = row.insertCell(7);
+                var deleteBtn = row.insertCell(8);
+                editItemInfo.innerHTML = "<button class=\"editItemInfo\" onclick = \"window.location.href = '/employee/editItemInfo'\"\"style=\"font-size:24px;\"><i class = \"fa fa-edit center\"></i></button>";
+                deleteBtn.innerHTML = "<button class=\"deleteButton\" onclick =\"deleteItem(this)\"><i class=\"ri-delete-bin-line\"></i></button>";
 
                 if(document.getElementById("quantityAvailable").value == "Other"){
                     otherQtyAvailable = prompt("Please enter the quantity available for " + document.getElementById("productName").value);
@@ -25,10 +28,10 @@ var c=1;
                         otherQtyAvailable = prompt("Please enter the quantity available for " + document.getElementById("productName").value);
                     }
                     if (otherQtyAvailable>0){
-                        qtyAvailable.innerHTML = otherQtyAvailable +  "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
+                        qtyAvailable.innerHTML = otherQtyAvailable; //+  "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
                     }
                 }else{
-                    qtyAvailable.innerHTML = document.getElementById("quantityAvailable").value + "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
+                    qtyAvailable.innerHTML = document.getElementById("quantityAvailable").value;//+ "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
                 }
 
                 if(document.getElementById("reorderQty").value == "Other"){
@@ -38,22 +41,22 @@ var c=1;
                         otherReorderQuantity = prompt("Please enter the reorder quantity for " + document.getElementById("productName").value);
                     }
                     if (reorderQty>0){
-                        reorderQty.innerHTML = otherQtyAvailable +  "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
+                        reorderQty.innerHTML = otherQtyAvailable;// +  "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
                     }
                 }else{
-                    reorderQty.innerHTML = document.getElementById("reorderQty").value +  "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
+                    reorderQty.innerHTML = document.getElementById("reorderQty").value ;//+  "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
                 }
 				productID.innerHTML = c++;
   				productName.innerHTML = document.getElementById("productName").value ;
-                price.innerHTML = document.getElementById("productPrice").value +  "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
-				shelfLocation.innerHTML = document.getElementById("shelfLocation").value +  "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
+                price.innerHTML = document.getElementById("productPrice").value;// +  "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
+				shelfLocation.innerHTML = document.getElementById("shelfLocation").value;// +  "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
                 acceptReturns.innerHTML = document.getElementById("acceptReturns").value ;
                 document.getElementById("productName").value = "";
                 document.getElementById("productPrice").value = "";
                 document.getElementById("shelfLocation").value = "";
                 document.getElementById("acceptReturns").value = "Accept Returns";
                 document.getElementById("reorderQty").value = "Reorder Quantity";
-                document.getElementById("quantityAvailable").value = "Quantity Available"
+                document.getElementById("quantityAvailable").value = "Quantity Available";
 			};
             function deleteItem(element){
                 var table = document.getElementById("inventoryTable");
@@ -67,7 +70,7 @@ var c=1;
 					}
 				}
             }
-            function editItemInfo(element){	// Function for the edit icon which appears next to the item name in the table. It allows a user to correct any mistakes in the names of products.
+            /*function editItemInfo(element){	// Function for the edit icon which appears next to the item name in the table. It allows a user to correct any mistakes in the names of products.
 				var table = document.getElementById("inventoryTable");
 				var newValue = prompt("Please enter the new value for this field"); //FOr the Accept Returns column - separate function
 				if (newValue == table.rows[element.parentNode.parentNode.rowIndex].cells[element.parentNode.cellIndex].innerHTML){
@@ -78,4 +81,4 @@ var c=1;
 					table.rows[element.parentNode.parentNode.rowIndex].cells[element.parentNode.cellIndex].innerHTML = newValue + "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
 				}
 
-			};
+			};*/
