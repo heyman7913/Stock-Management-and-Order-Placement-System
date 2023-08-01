@@ -36,14 +36,70 @@
                     <th>Price(₹)/Unit</th>
                     <th>Quantity</th>
                     <th>Sub Total(₹)</th>
+                    <th>Delete Line</th>
                 </tr>
+                {% for item in data %}
+                <tr>
+                    <td>{{item.id}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.price}}</td>
+                    <td>
+                        {{item.quantity}}
+                        <a href="/employee/posTerminalEdit/{{item.order_id}}/+">
+                            <button class="plusBtn">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </a>
+                        <a href="/employee/posTerminalEdit/{{item.order_id}}/-">
+                            <button class="minusBtn" style="font-size:24px">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                        </a>
+                    </td>
+                    <td>{{item.subtotal}}</td>
+                    <td>
+                        <a href="/employee/posTerminalDel/{{item.order_id}}">
+                            <button class="deleteButton">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
             </table>
         </div>
-        <h3 style="position: fixed; margin-left: 925px; margin-top: -475px;">To add items into the POS Terminal, <br>please enter their product ID  <br>below and click add item to cart.</h3>
-        <table class = "inputBoxes" style="position: fixed; margin-left: 925px; margin-top: -400px;">
-            <td><input type="number" min = "1" id="productID" placeholder="Product ID" required style ="height: 40px; font-size: 20px;"></td>
-            <td><button class="addItem" onclick="addItem()">Add Item to Cart</button></td>
-        </table>
         <p id = "grandTotal"><strong>Grand Total</strong></p>
+        <form action="/employee/posTerminalAdd/" method="post">
+            <h3 style="position: fixed; margin-left: 1200px; margin-top: -475px;">To add items into the POS Terminal, <br>please enter their product ID  <br>below and click add item to cart.</h3>
+            <table class = "inputBoxes" style="position: fixed; margin-left: 1200px; margin-top: -400px;">
+                <td>
+                    <input type="number" min = "1" id="productID" name="productID" placeholder="Product ID" required style ="height: 40px; font-size: 20px;">
+                </td>
+                <td>
+                    <button class="addItem" type="submit">Add Item to Cart</button>
+                </td>
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    {% for message in messages %}
+                        <td>{{ message }}</td>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+            </table>
+        </form>
+        <table class = "inputBoxes" style="position: fixed; margin-left: 1200px; margin-top: -200px;">
+            <td>
+                <a href="/employee/posTerminalDel/0">
+                    <button class="addItem">Delete Order</button>
+                </a>
+            </td>
+        </table>
+        <form action="/employee/posTerminal/" method="post">
+            <table class = "inputBoxes" style="position: fixed; margin-left: 1200px; margin-top: -100px;">
+                <td>
+                    <button class="addItem" type="submit">Submit Order</button>
+                </td>
+            </table>
+        </form>
     </body>
 </html>

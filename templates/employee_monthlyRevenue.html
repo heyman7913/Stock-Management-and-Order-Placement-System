@@ -35,6 +35,13 @@
                     <th>Total Number of Orders</th>
                     <th>Monthly Revenue</th>
                 </tr>
+                {% for item in data %}
+                <tr>
+                    <td>{{item.period}}</td>
+                    <td>{{item.orders}}</td>
+                    <td>{{item.revenue}}</td>
+                </tr>
+                {% endfor %}
             </table>
             <h3 style="position: fixed; margin-left: 1000px">To view current month revenue, <br> please click button below</h3>
             <table class = "inputBoxes" style="position: fixed; margin-left: 1000px; margin-top: 60px;">
