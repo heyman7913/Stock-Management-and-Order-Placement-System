@@ -8,7 +8,7 @@ import random
 import string
 from pathlib import Path
 
-#from cryptography.fernet import Fernet
+# from cryptography.fernet import Fernet
 from flask import Flask, render_template, abort, request, make_response, url_for, flash
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -92,7 +92,7 @@ class CustomerLogin(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     customer_details = db.relationship('CustomerDetails', backref='customer_login', lazy=True, cascade='all, delete')
-    customer_sales = db.relationship('CustomerSales', backref='customer_login', lazy=True, cascade='all, delete')
+    customer_order = db.relationship('CustomerOrder', backref='customer_login', lazy=True, cascade='all, delete')
 
     def __repr__(self):
         return f"{self.email}"
@@ -113,18 +113,6 @@ class CustomerDetails(db.Model):
 
     def __repr__(self):
         return f"{self.first_name} {self.last_name}"
-
-
-class CustomerSales(db.Model):
-    __tablename__ = 'customer_sales'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
-
-    customer_login_id = db.Column(db.Integer, db.ForeignKey("customer_login.id"), nullable=False)
-
-    def __repr__(self):
-        return f"SALE ID : {self.id}"
 
 
 # =========================
@@ -148,11 +136,11 @@ class AdminDetails(db.Model):
     __tablename__ = 'admin_details'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    first_name = db.Column(String(50), nullable=False)
-    last_name = db.Column(String(50), nullable=False)
-    emailID = db.Column(String(100), nullable=False)
-    phoneNumber = db.Column(Integer, nullable=False)
-    created_at = db.Column(DateTime(timezone=True), server_default=func.now())
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    emailID = db.Column(db.String(100), nullable=False)
+    phoneNumber = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     admin_login_id = db.Column(db.Integer, db.ForeignKey("admin_login.id"), nullable=False)
 
@@ -182,17 +170,87 @@ class EmployeeDetails(db.Model):
     __tablename__ = 'employee_details'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    first_name = db.Column(String(50), nullable=False)
-    last_name = db.Column(String(50), nullable=False)
-    emailID = db.Column(String(100), nullable=False)
-    phoneNumber = db.Column(Integer, nullable=True)
-    address = db.Column(String(200), nullable=True)  # Sir this field can be removed - not required in the DB.
-    created_at = db.Column(DateTime(timezone=True), server_default=func.now())
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    emailID = db.Column(db.String(100), nullable=False)
+    phoneNumber = db.Column(db.Integer, nullable=True)
+    address = db.Column(db.String(200), nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     employee_login_id = db.Column(db.Integer, db.ForeignKey("employee_login.id"), nullable=False)
 
     def __repr__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+# =========================
+# Product Models
+
+class Product(db.Model):
+    __tablename__ = 'product'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), nullable=False)
+    available_quant = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    shelf_loc = db.Column(db.String(10), nullable=True)
+    accp_return = db.Column(db.Boolean, nullable=True)
+    reorder_quant = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+    order = db.relationship('Order', backref='product', lazy=True, cascade='all, delete')
+
+    def __repr__(self):
+        return f"{self.id} {self.name}"
+
+
+# =========================
+# Order Models
+
+class Order(db.Model):
+    __tablename__ = 'order'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), nullable=False)
+    available_quant = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    shelf_loc = db.Column(db.String(10), nullable=True)
+    accp_return = db.Column(db.Boolean, nullable=True)
+    reorder_quant = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+    product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
+
+    order = db.relationship('CustomerOrder', backref='order', lazy=True, cascade='all, delete')
+
+    def __repr__(self):
+        return f"{self.id} {self.name}"
+
+
+class CustomerOrder(db.Model):
+    __tablename__ = 'customer_order'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    status = db.Column(db.String(30), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+    order_id = db.Column(db.Integer, db.ForeignKey("order.id"), nullable=False)
+    customer_id = db.Column(db.Integer, db.ForeignKey("customer_login.id"), nullable=False)
+
+    def __repr__(self):
+        return f"{self.id} {self.name}"
+
+
+class OrderStatus:
+    ORDER_INCOMPLETE = "ORDER INCOMPLETE"
+    ORDER_IN_PROGRESS = "ORDER IN PROGRESS"
+    ORDER_COMPLETE = "ORDER COMPLETE"
+    ORDER_ACCEPTED = "ORDER ACCEPTED"
+    ORDER_REJECTED = "ORDER REJECTED"
+    IN_PACK = "PACKAGING"
+    IN_SHIP = "SHIPPING"
+    COMPLETE = "COMPLETE"
+    DELAY = "DELAY"
 
 
 # ========================================================
@@ -888,6 +946,16 @@ def employeeWelcome():
         abort(401)
 
 
+class EmployeeInventory:
+    def __init__(self, name: str, price: str, shelf:str, quant_a: str, returns: str, quant_r: str):
+        self.name = name.upper()
+        self.price = float(price)
+        self.quant_a = int(quant_a)
+        self.quant_r = int(quant_r)
+        self.returns = True if returns.upper() == "YES" else False
+        self.shelf = shelf.upper()
+
+
 @app.route('/employee/inventory', methods=[GET, POST])
 def employeeInventory():
     req_method = request.method
@@ -900,9 +968,243 @@ def employeeInventory():
                 EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
             ).first()
             if employee_login_db is not None:
+                products_db = Product.query.all()
+                data = []
+                for product in products_db:
+                    data.append({
+                        "id": product.id,
+                        "name": product.name,
+                        "price": product.price,
+                        "quant_a": product.available_quant,
+                        "shelf": product.shelf_loc,
+                        "returns": "Yes" if product.accp_return is True else "No",
+                        "quant_r": product.reorder_quant,
+                    })
                 page_name = 'employee_inventory.html'
                 path = os.path.join(page_name)
-                return render_template(path)
+                return render_template(path, data=data)
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
+        else:
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            return redirect, 302
+
+    elif req_method == POST:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Cookie Present
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                # Cookie is okay
+                form_data = request.form
+                employee_inventory_ref = EmployeeInventory(
+                    name=form_data["productName"],
+                    price=form_data["productPrice"],
+                    quant_a=form_data["quantityAvailable"],
+                    quant_r=form_data["reorderQty"],
+                    returns=form_data["acceptReturns"],
+                    shelf=form_data["shelfLocation"],
+                )
+                product_db = Product.query.filter(
+                    Product.name == employee_inventory_ref.name,
+                ).first()
+                if product_db is not None:
+                    # Product exists
+                    flash(f"Product Exists : {product_db.id}")
+                    cookies = [
+                        [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    return redirect, 302
+                else:
+                    # Create Product
+                    product_db = Product(
+                        name=employee_inventory_ref.name,
+                        available_quant=employee_inventory_ref.quant_a,
+                        reorder_quant=employee_inventory_ref.quant_r,
+                        price=employee_inventory_ref.price,
+                        shelf_loc=employee_inventory_ref.shelf,
+                        accp_return=employee_inventory_ref.returns,
+                    )
+                    db.session.add(product_db)
+                    db.session.commit()
+                    db.session.refresh(product_db)
+
+                    flash(f"Product Added : {product_db.id}")
+                    cookies = [
+                        [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    return redirect, 302
+            else:
+                # Cookie is wrong
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
+        else:
+            # No Cookie
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            return redirect, 302
+
+    else:
+        abort(401)
+
+
+@app.route('/employee/editItemInfo/<int:prod_id>', methods=[GET, POST])
+def employeeEditItemInfo(prod_id:int):
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                product_db = Product.query.filter(
+                    Product.id == prod_id,
+                ).first()
+                if product_db is not None:
+                    data = {
+                        "id": product_db.id,
+                        "name": product_db.name,
+                        "price": product_db.price,
+                        "quant_a": product_db.available_quant,
+                        "shelf": product_db.shelf_loc,
+                        "returns": "Yes" if product_db.accp_return is True else "No",
+                        "quant_r": product_db.reorder_quant,
+                    }
+                    page_name = 'employee_inventoryEdit.html'
+                    path = os.path.join(page_name)
+                    return render_template(path, data=data)
+                else:
+                    flash(f"Invalid Product Id : {prod_id}")
+                    cookies = [
+                        [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    return redirect, 302
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
+        else:
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            return redirect, 302
+
+    elif req_method == POST:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Cookie Present
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                # Cookie is okay
+                product_db = Product.query.filter(
+                    Product.id == prod_id,
+                ).first()
+                if product_db is not None:
+                    form_data = request.form
+                    employee_inventory_ref = EmployeeInventory(
+                        name=form_data["itemName"],
+                        price=form_data["price"],
+                        quant_a=form_data["qtyAvailable"],
+                        quant_r=form_data["reorderQty"],
+                        returns=form_data["acceptReturns"],
+                        shelf=form_data["shelfLocation"],
+                    )
+
+                    product_db.name = employee_inventory_ref.name
+                    product_db.available_quant = employee_inventory_ref.quant_a
+                    product_db.price = employee_inventory_ref.price
+                    product_db.shelf_loc = employee_inventory_ref.shelf
+                    product_db.accp_return = employee_inventory_ref.returns
+                    product_db.reorder_quant = employee_inventory_ref.quant_r
+                    db.session.commit()
+
+                    flash(f"Product Info Updated : {product_db.id}")
+                    cookies = [
+                        [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    return redirect, 302
+                else:
+                    flash(f"Product does not Exist : {prod_id}")
+                    cookies = [
+                        [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    return redirect, 302
+            else:
+                # Cookie is wrong
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                return redirect, 302
+        else:
+            # No Cookie
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            return redirect, 302
+
+    else:
+        abort(401)
+
+@app.route('/employee/delItemInfo/<int:prod_id>', methods=[GET])
+def employeeDelItemInfo(prod_id:int):
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                product_db = Product.query.filter(
+                    Product.id == prod_id,
+                ).first()
+                if product_db is not None:
+
+                    db.session.delete(product_db)
+                    db.session.commit()
+
+                    flash(f"Product Deleted : {prod_id}")
+                    cookies = [
+                        [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    return redirect, 302
+                else:
+                    flash(f"Invalid Product Id : {prod_id}")
+                    cookies = [
+                        [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
@@ -918,12 +1220,6 @@ def employeeInventory():
 
     else:
         abort(401)
-
-@app.route('/employee/editItemInfo', methods=[GET, POST])
-def employeeEditItemInfo():
-    page_name = 'employee_inventoryEdit.html'
-    path = os.path.join(page_name)
-    return render_template(path)
 
 @app.route('/employee/posTerminal', methods=[GET, POST])
 def employeePosTerminal():

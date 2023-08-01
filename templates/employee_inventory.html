@@ -41,58 +41,106 @@
                     <th>Edit Item</th>
                     <th>Delete Item</th>
                 </tr>
+                {% for item in data %}
+                <tr>
+                    <td>{{item.id}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.price}}</td>
+                    <td>{{item.quant_a}}</td>
+                    <td>{{item.shelf}}</td>
+                    <td>{{item.returns}}</td>
+                    <td>{{item.quant_r}}</td>
+                    <td>
+                        <a href="/employee/editItemInfo/{{item.id}}">
+                            <button class="editUserPassword" style="font-size:24px;">
+                                <i class = "fa fa-edit center"></i>
+                            </button>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="/employee/delItemInfo/{{item.id}}">
+                            <button class="deleteButton">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
             </table>
         </div>
+        <div style="color:red;">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <ul class=flashes>
+                {% for message in messages %}
+                  <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+              {% endif %}
+            {% endwith %}
+        </div>
+        <form method="POST" action="/employee/inventory">
             <table class="inputTable">
                 <h3 style="margin-left: 20px; margin-bottom: -25px;">Fill the form below to add items into inventory</h3>
                 <tr>
+                    <th>Product Name</th>
+                    <th>Price(₹)/Unit</th>
+                    <th>Quantity Available</th>
+                    <th>Shelf Location</th>
+                    <th>Accept Returns</th>
+                    <th>Reorder Quantity</th>
+                </tr>
+                <tr>
                     <div class="inputBoxes">
-                        <td><input type="text" id="productName" placeholder="Name of the Product" required>
+                        <td>
+                            <input type="text" id="productName" name="productName" placeholder="Name of the Product" required>
                         </td>
-                        <td><input type="number" id="productPrice" placeholder="Price in Rupees" required></td>
-                        <td><select id="quantityAvailable" placeholder="Quantity Available" required>
-                                <option disabled selected>Quantity Available</option>
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                                <option>6</option>
-                                <option>7</option>
-                                <option>8</option>
-                                <option>9</option>
-                                <option>10</option>
-                                <option>Other</option>
+                        <td>
+                            <input type="number" id="productPrice" name="productPrice" placeholder="Price in Rupees" required>
+                        </td>
+                        <td>
+                            <select id="quantityAvailable" name="quantityAvailable" placeholder="Quantity Available" required>
+                                <option selected>10</option>
+                                <option>20</option>
+                                <option>30</option>
+                                <option>40</option>
+                                <option>50</option>
+                                <option>60</option>
+                                <option>70</option>
+                                <option>80</option>
+                                <option>90</option>
+                                <option>100</option>
                             </select>
                         </td>
-                        <td><input type="text" id="shelfLocation" placeholder="Shelf Location" required></td>
                         <td>
-                            <select id="acceptReturns" required>
-                                <option disabled selected>Accept Returns</option>
-                                <option>Yes</option>
+                            <input type="text" id="shelfLocation" name="shelfLocation" placeholder="Shelf Location" required>
+                        </td>
+                        <td>
+                            <select id="acceptReturns" name="acceptReturns" required>
+                                <option selected>Yes</option>
                                 <option>No</option>
                             </select>
                         </td>
-                        <td><select id="reorderQty" placeholder="Reorder Available" required>
-                                <option disabled selected>Reorder Quantity</option>
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                                <option>6</option>
-                                <option>7</option>
-                                <option>8</option>
-                                <option>9</option>
-                                <option>10</option>
-                                <option>Other</option>
+                        <td>
+                            <select id="reorderQty" name="reorderQty" placeholder="Reorder Available" required>
+                                <option selected>10</option>
+                                <option>20</option>
+                                <option>30</option>
+                                <option>40</option>
+                                <option>50</option>
+                                <option>60</option>
+                                <option>70</option>
+                                <option>80</option>
+                                <option>90</option>
+                                <option>100</option>
                             </select>
                         </td>
                     </div>
                 </tr>
             </table>
             <div class="buttonsTable">
-                <button class="addItem" onclick="addItem()">Add Item</button>
+                <button class="addItem" type="submit">Add Item</button>
             </div>
+        </form>
     </body>
 </html>

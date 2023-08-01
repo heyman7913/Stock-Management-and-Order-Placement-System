@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="{{ url_for('static', filename = 'css/customer_editProfile.css' ) }}">
-<form action="" method = "POST" style="border:1px solid #ccc">
+<form action="/employee/editItemInfo/{{data['id']}}" method = "POST" style="border:1px solid #ccc">
   <div class="container">
 
     <table id="productDetails" style="width: 40%;">
@@ -13,30 +13,31 @@
         </tr>
         <tr>
             <label for="itemName"><b>Item Name</b></label> <br>
-            <input class="editableitemname" type="text" name="itemName" maxlength="50" value=""><br>
+            <input class="editableitemname" type="text" name="itemName" maxlength="50" value="{{data['name']}}"><br>
         </tr>
         <tr>
             <label for="price"><b>Price per Unit</b></label><br>
-            <input class="price" type="number"  name="price" value=""><br>
+            <input class="price" type="number"  name="price" value="{{data['price']}}"><br>
         </tr>
         <tr>
             <label for="qtyAvailable"><b>Quantity Available</b></label><br>
-            <input class="qtyAvailable" type="number" name="qtyAvailable" value=""><br>
+            <input class="qtyAvailable" type="number" name="qtyAvailable" value="{{data['quant_a']}}"><br>
         </tr>
         <tr>
             <label for="shelfLocation"><b>Shelf Location</b></label><br>
-            <input class="shelfLocation" type="text" name="shelfLocation" maxlength="50" value=""><br>
+            <input class="shelfLocation" type="text" name="shelfLocation" maxlength="50" value="{{data['shelf']}}"><br>
         </tr>
         <tr>
             <label for="acceptReturns"><b>Accept Returns</b></label><br>
             <select class="acceptReturns" name="acceptReturns">
+                <option selected>{{data['returns']}}</option>
                 <option>Yes</option>
                 <option>No</option>
             </select>
         </tr>
         <tr>
             <label for="reorderQty"><b>Reorder Quantity</b></label><br>
-            <input class="reorderQty" type="number" name="reorderQty" value=""><br>
+            <input class="reorderQty" type="number" name="reorderQty" value="{{data['quant_r']}}"><br>
         </tr>
     </table>
     <div style="color:red;">
@@ -51,7 +52,7 @@
         {% endwith %}
     </div>
     <div class="clearfix">
-      <button type="button" class="cancelbtn" onclick="window.location.href = '/customer/orderplacement'">Cancel</button>
+      <button type="button" class="cancelbtn" onclick="window.location.href = '/employee/inventory'">Cancel</button>
       <button type="submit" class="savebtn">Save Changes</button>
     </div>
   </div>
