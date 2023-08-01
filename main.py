@@ -1502,6 +1502,7 @@ def adminUserAccess():
                         "first_name": emp.first_name,
                         "last_name": emp.last_name,
                         "email": emp.emailID,
+                        "phoneNumber": emp.phoneNumber,
                     })
                 path = os.path.join(page_name)
                 return render_template(path, data=data_send)
