@@ -5,9 +5,11 @@ import hashlib
 import json
 import os
 import random
+import sqlite3
 import string
 import calendar
 from pathlib import Path
+from time import sleep
 
 # from cryptography.fernet import Fernet
 from flask import Flask, render_template, abort, request, make_response, url_for, flash
@@ -1062,7 +1064,12 @@ def employeeInventory():
                         accp_return=employee_inventory_ref.returns,
                     )
                     db.session.add(product_db)
-                    db.session.commit()
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
                     db.session.refresh(product_db)
 
                     flash(f"Product Added : {product_db.id}")
