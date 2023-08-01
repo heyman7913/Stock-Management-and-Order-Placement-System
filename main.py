@@ -572,11 +572,21 @@ def customer_SignUp():
             )
 
             db.session.add(customer_login_db)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except sqlite3.OperationalError as e:
+                print(f"Error : {str(e)}")
+                sleep(1)
+                db.session.commit()
             db.session.refresh(customer_login_db)
             customer_details_db.customer_login_id = customer_login_db.id
             db.session.add(customer_details_db)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except sqlite3.OperationalError as e:
+                print(f"Error : {str(e)}")
+                sleep(1)
+                db.session.commit()
 
             email_send_ref = EmailSend(
                 thread_name="Customer Signup",
@@ -759,7 +769,12 @@ def customer_editProfile():
                         customer_details_db.address = customer_edit_profile_ref.address
 
                         # Commit all changes
-                        db.session.commit()
+                        try:
+                            db.session.commit()
+                        except sqlite3.OperationalError as e:
+                            print(f"Error : {str(e)}")
+                            sleep(1)
+                            db.session.commit()
 
                         # Redirect to self using a message
                         flash('Update Successful')
@@ -828,7 +843,12 @@ def customerForgotPWD():
             password_hash = hashlib.sha1()
             password_hash.update(new_password.encode('utf-8'))
             customer_login_db.password_hash = password_hash.hexdigest()[:254]
-            db.session.commit()
+            try:
+                db.session.commit()
+            except sqlite3.OperationalError as e:
+                print(f"Error : {str(e)}")
+                sleep(1)
+                db.session.commit()
             email_send_ref = EmailSend(
                 thread_name="Forgot Password",
                 email=customer_forgot_password_ref.email,
@@ -1173,7 +1193,12 @@ def employeeEditItemInfo(prod_id: int):
                     product_db.shelf_loc = employee_inventory_ref.shelf
                     product_db.accp_return = employee_inventory_ref.returns
                     product_db.reorder_quant = employee_inventory_ref.quant_r
-                    db.session.commit()
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
 
                     flash(f"Product Info Updated : {product_db.id}")
                     cookies = [
@@ -1225,7 +1250,12 @@ def employeeDelItemInfo(prod_id: int):
                 if product_db is not None:
 
                     db.session.delete(product_db)
-                    db.session.commit()
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
 
                     flash(f"Product Deleted : {prod_id}")
                     cookies = [
@@ -1290,7 +1320,12 @@ def employeePosTerminalAdd():
                         product_id=employee_pos_terminal_add_ref.prod_id,
                     )
                     db.session.add(order_line_db)
-                    db.session.commit()
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
                     db.session.refresh(order_line_db)
 
                     employee_order_db = EmployeeOrder(
@@ -1299,7 +1334,12 @@ def employeePosTerminalAdd():
                         employee_id=employee_login_db.id,
                     )
                     db.session.add(employee_order_db)
-                    db.session.commit()
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
 
                     flash(f"Product Added : {product_db.name}")
                     cookies = [
@@ -1377,7 +1417,12 @@ def employeePosTerminalEdit(order_id: int, action: str):
                                         flash(f"Order Line Updated : {order_line_db.id}")
                                 else:
                                     pass
-                                db.session.commit()
+                                try:
+                                    db.session.commit()
+                                except sqlite3.OperationalError as e:
+                                    print(f"Error : {str(e)}")
+                                    sleep(1)
+                                    db.session.commit()
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
@@ -1437,7 +1482,12 @@ def employeePosTerminalDel(order_id: int):
                             ).first()
                             if order_line_db is not None:
                                 db.session.delete(order_line_db)
-                db.session.commit()
+                try:
+                    db.session.commit()
+                except sqlite3.OperationalError as e:
+                    print(f"Error : {str(e)}")
+                    sleep(1)
+                    db.session.commit()
                 flash(f"Order Lines Deleted : {'All' if order_id == 0 else order_id}")
                 cookies = [
                     [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
@@ -1555,7 +1605,12 @@ def employeePosTerminal():
                         price=price,
                     )
                     db.session.add(order_head_db)
-                    db.session.commit()
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
                     db.session.refresh(order_head_db)
 
                     for employee_order in employee_orders_db:
@@ -1566,7 +1621,12 @@ def employeePosTerminal():
                         if order_line_db is not None:
                             order_line_db.order_head_id = order_head_db.id
 
-                    db.session.commit()
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
 
                     emp_details_db = EmployeeDetails.query.filter(
                         EmployeeDetails.employee_login_id == employee_login_db.id,
@@ -1944,7 +2004,12 @@ def adminUserAccess():
                         password_hash=admin_user_access_ref.password
                     )
                     db.session.add(emp_login_db)
-                    db.session.commit()
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
                     db.session.refresh(emp_login_db)
                     emp_details_db = EmployeeDetails(
                         first_name=admin_user_access_ref.first_name,
@@ -1954,7 +2019,12 @@ def adminUserAccess():
                         employee_login_id=emp_login_db.id,
                     )
                     db.session.add(emp_details_db)
-                    db.session.commit()
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
 
                     email_send_ref = EmailSend(
                         thread_name="Employee Creation",
@@ -2138,7 +2208,12 @@ def admin_editEmployee(empid: int):
                         )
                         email_send_ref.start()
 
-                    db.session.commit()
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
                     flash("Employee Account Updated")
                     cookies = [
                         [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
@@ -2216,7 +2291,12 @@ def admin_deleteEmployee(empid: int):
                         email_send_ref.start()
 
                     db.session.delete(emp_login_db)
-                    db.session.commit()
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
 
                     cookies = [
                         [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
