@@ -1599,17 +1599,17 @@ def employeePosTerminal():
                             if product_db is not None:
                                 if len(order_content_str) <= 0:
                                     order_content_str.append(
-                                        "{}\t{}\t{}\t{}".format("Product Name",
-                                                                "Quantity",
-                                                                "Price per Unit",
-                                                                "Subtotal")
+                                        "{}\t\t{}\t\t{}\t\t{}".format("Product Name",
+                                                                      "Quantity",
+                                                                      "Price per Unit",
+                                                                      "Subtotal")
                                     )
                                 order_content_str.append(
-                                    "{}\t{}\t{}\t{}".format(product_db.name,
-                                                            order_line_db.quant,
-                                                            order_line_db.price,
-                                                            order_line_db.quant * order_line_db.price,
-                                                            )
+                                    "{}\t\t\t{}\t\t\t{}\t\t\t{}".format(product_db.name,
+                                                                  order_line_db.quant,
+                                                                  order_line_db.price,
+                                                                  order_line_db.quant * order_line_db.price,
+                                                                  )
                                 )
                     order_head_db = OrderHead(
                         price=price,
@@ -1642,25 +1642,30 @@ def employeePosTerminal():
                         EmployeeDetails.employee_login_id == employee_login_db.id,
                     ).first()
                     if emp_details_db is not None:
+                        body = f'''
+                        Hi {emp_details_db.first_name},
+                            
+                        You have placed an Order from POS.
+                            
+                        Order ID : {order_head_db.id}
+                            
+                        Order Contents are
+                        '''
+                        for order in order_content_str:
+                            body = body + f'''
+                            {order}
+                            '''
+                        body = body + f'''
+                        Total : {order_head_db.price}
+                            
+                        Thanks and Regards,
+                        Bot.
+                        '''
                         email_send_ref = EmailSend(
                             thread_name="Employee Order Creation",
                             email=emp_details_db.emailID,
                             subject=f"{server_name} | Employee | Order Created | {order_head_db.id}",
-                            body=f"""
-                            Hi {emp_details_db.first_name},
-                            
-                            You have placed an Order from POS.
-                            
-                            Order ID : {order_head_db.id}
-                            
-                            Order Contents are
-                            {order_content_str}
-                            
-                            Total : {order_head_db.price}
-                            
-                            Thanks and Regards,
-                            Bot.
-                            """
+                            body=body
                         )
                         email_send_ref.start()
 
@@ -1716,7 +1721,7 @@ def employeeMonthlyRevenue():
                             })
 
                 data_revenue = []
-                for key in sorted(data_raw.keys(),reverse= True):
+                for key in sorted(data_raw.keys(), reverse=True):
                     period = f"{calendar.month_name[int(key[5:])]}/{key[0:4]}"
                     data_revenue.append({
                         "period": period,
