@@ -31,6 +31,7 @@
                     <th>Employee First Name</th>
                     <th>Employee Last Name</th>
                     <th>Email ID</th>
+                    <th>Mobile Number</th>
                     <th>Edit Employee</th>
                     <th>Delete Access</th>
                 </tr>
@@ -40,6 +41,7 @@
                     <td>{{item.first_name}}</td>
                     <td>{{item.last_name}}</td>
                     <td>{{item.email}}</td>
+                    <td>{{item.phoneNumber}}</td>
                     <td>
                         <a href="/admin/editEmployee/{{item.id}}">
                             <button class="editUserPassword" style="font-size:24px;">
@@ -82,6 +84,9 @@
                         </td>
                         <td>
                             <input type="text" id="EmpEmailID" name="email" placeholder="Emp Email ID">
+                        </td>
+                        <td>
+                            <input type="number" id="EmpMobileNum" name="mobile" placeholder="Emp Mobile Number">
                         </td>
                         <td>
                             <input type="text" id="EmpPassword" name="password" placeholder="Password">

@@ -7,7 +7,7 @@ body{
 	background-size: cover;
 }
 /* Full-width input fields */
-  .editablefirstname,.editablelastname, .emailID, .mobileNumber, .address, .password {
+  .editablefirstname,.editablelastname, .emailID, .mobileNumber, .address, .password, .editableitemname, .price, .qtyAvailable, .shelfLocation, .acceptReturns, .reorderQty {
   width: 100%;
   padding: 15px;
   margin: 5px 0 22px 0;
@@ -16,7 +16,7 @@ body{
   background: #f1f1f1;
 }
 
- .editablefirstname, .editablelastname, .mobileNumber, .address, .password{
+ .editablefirstname, .editablelastname, .mobileNumber, .address, .password, .editableitemname, .price, .qtyAvailable, .shelfLocation, .acceptReturns, .reorderQty{
   background-color: #ddd;
   outline: none;
 }
@@ -81,7 +81,7 @@ button:hover {
   }
 }
 
-.customerDetails{
+.customerDetails, .productDetails, .employeeDetails{
 	height: 280px;
 	overflow: auto;
 }
