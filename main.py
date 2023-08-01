@@ -1469,6 +1469,11 @@ def employeePosTerminalDel(order_id: int):
                                 OrderLine.id == employee_order.order_line_id
                             ).first()
                             if order_line_db is not None:
+                                product_db = Product.query.filter(
+                                    Product.id == order_line_db.product_id
+                                ).first()
+                                if product_db is not None:
+                                    product_db.available_quant = product_db.available_quant + order_line_db.quant
                                 db.session.delete(order_line_db)
                 else:
                     if employee_orders_db is not None and employee_orders_db.count() > 0:
@@ -1481,6 +1486,11 @@ def employeePosTerminalDel(order_id: int):
 
                             ).first()
                             if order_line_db is not None:
+                                product_db = Product.query.filter(
+                                    Product.id == order_line_db.product_id
+                                ).first()
+                                if product_db is not None:
+                                    product_db.available_quant = product_db.available_quant + order_line_db.quant
                                 db.session.delete(order_line_db)
                 try:
                     db.session.commit()
