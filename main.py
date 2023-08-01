@@ -1469,10 +1469,11 @@ def adminWelcome():
 
 
 class AdminUserAcess:
-    def __init__(self, first_name: str, last_name: str, email: str, password: str):
+    def __init__(self, first_name: str,phone:str, last_name: str, email: str, password: str):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
+        self.phone = phone
         self.password = password
         # Hash actual password
         password_hash = hashlib.sha1()
@@ -1534,6 +1535,7 @@ def adminUserAccess():
                     last_name=form_data["last_name"],
                     email=form_data["email"],
                     password=form_data["password"],
+                    phone = form_data["mobile"],
                 )
                 emp_login_db = EmployeeLogin.query.filter(
                     EmployeeLogin.user_name == admin_user_access_ref.email.upper(),
@@ -1559,7 +1561,8 @@ def adminUserAccess():
                         first_name=admin_user_access_ref.first_name,
                         last_name=admin_user_access_ref.last_name,
                         emailID=admin_user_access_ref.email,
-                        employee_login_id=emp_login_db.id
+                        phoneNumber=admin_user_access_ref.phone,
+                        employee_login_id=emp_login_db.id,
                     )
                     db.session.add(emp_details_db)
                     db.session.commit()
