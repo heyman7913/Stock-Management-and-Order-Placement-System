@@ -31,33 +31,26 @@
             <table id ="activeordersTable">
                 <tr style="position: fixed; margin-top: -50px;">
                     <th>Order ID</th>
-                    <th>Product Name</th>
-                    <th>Quantity Ordered</th>
                     <th>Order Date</th>
+                    <th>Order By</th>
                     <th>Amount Due</th>
-                    <th>Accept/Decline Order</th>
                     <th>Delivery Choice (Home/PickUp)</th>
+                    <th>View Order</th>
                 </tr>
-                {% for item in data %}
+                {% for item in data.table_1 %}
                 <tr>
                     <td>{{item.order_id}}</td>
-                    <td>{{item.name}}</td>
-                    <td>{{item.quant}}</td>
                     <td>{{item.date}}</td>
+                    <td>{{item.name}}</td>
                     <td>{{item.price}}</td>
+                    <td>{{item.delivery}}</td>
                     <td>
-                        <a href="/employee/orders/{{item.order_id}}/+">
-                            <button class="plusBtn">
-                                <i class="fa fa-plus"></i>
-                            </button>
-                        </a>
-                        <a href="/employee/orders/{{item.order_id}}/-">
-                            <button class="minusBtn" style="font-size:24px">
-                                <i class="fa fa-minus"></i>
+                        <a href="/employee/orderView/{{item.order_id}}">
+                            <button class="editUserPassword" style="font-size:24px;">
+                                <i class = "fa fa-edit center"></i>
                             </button>
                         </a>
                     </td>
-                    <td>{{item.delivery}}</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -67,11 +60,28 @@
             <table id ="elapsedordersTable">
                 <tr style="position: fixed; margin-top: -50px;">
                     <th>Order ID</th>
-                    <th>Product Name</th>
-                    <th>Quantity Ordered</th>
                     <th>Order Date</th>
+                    <th>Order By</th>
                     <th>Amount Received</th>
+                    <th>View Order</th>
+                    <th>Order Type</th>
                 </tr>
+                {% for item in data.table_2 %}
+                <tr>
+                    <td>{{item.order_id}}</td>
+                    <td>{{item.date}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.price}}</td>
+                    <td>
+                        <a href="/employee/orderView/{{item.order_id}}">
+                            <button class="editUserPassword" style="font-size:24px;">
+                                <i class = "fa fa-edit center"></i>
+                            </button>
+                        </a>
+                    </td>
+                    <td>{{item.type}}</td>
+                </tr>
+                {% endfor %}
             </table>
         </div>
     </body>

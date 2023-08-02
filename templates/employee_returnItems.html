@@ -38,12 +38,69 @@
                     <th>Accept Returns</th>
                     <th>Delete Item</th>
                 </tr>
+				{% for item in data %}
+                <tr>
+                    <form action="/employee/returnItemsEdit/{{item.order_id}}" method="post">
+                        <td>
+                            <input type="text" name="prod_id" value="{{item.prod_id}}" disabled readonly>
+                        </td>
+                        <td>
+                            <input type="text" name="prod_name" value="{{item.prod_name}}" disabled readonly>
+                        </td>
+                        <td>
+                            <input type="number" name="prod_price" value="0" {{item.readonly}} {{item.disabled}}/>
+                        </td>
+                        <td>
+                            <input type="number" name="prod_quant" value="0" {{item.readonly}} {{item.disabled}}/>
+                        </td>
+                        <td>
+                            <input type="text" name="prod_return" value="{{item.prod_return}}" disabled readonly>
+                        </td>
+                    </form>
+                    <td>
+                        <a href="/employee/returnDel/{{item.order_id}}">
+                            <button class="editUserPassword" style="font-size:24px;">
+                                <i class = "fa fa-edit center"></i>
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
             </table>
         </div>
+
 		<h3 style="position: fixed; margin-left: 1055px; margin-top: -475px;">To return any purchased items <br>please enter their product ID  <br>below and click return item.</h3>
         <table class = "inputBoxes" style="position: fixed; margin-left: 1055px; margin-top: -400px;">
-            <td><input type="number" min = "1" id="productID" placeholder="Product ID" required style ="height: 40px; font-size: 20px;"></td>
-            <td><button class="returnItem" onclick="returnItem()">Return Item</button></td>
+            <tr>
+                <form action="/employee/returnItemsAdd" method="post">
+                    <td><input type="number" min = "1" id="productID" name="productID" placeholder="Product ID" required style ="height: 40px; font-size: 20px;"></td>
+                    <td><button class="returnItem" type="submit">Return Item</button></td>
+                </form>
+            </tr>
+            <tr>
+                <form action="/employee/returnItemsAdd" method="post">
+                    <td>
+                        {% with messages = get_flashed_messages() %}
+                          {% if messages %}
+                            <ul class=flashes>
+                            {% for message in messages %}
+                              <li>{{ message }}</li>
+                            {% endfor %}
+                            </ul>
+                          {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td><button class="returnItem" type="submit">Submit Form</button></td>
+                </form>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <a href="/employee/returnItemsDel">
+                        <button class="returnItem">Clear Form</button>
+                    </a>
+                </td>
+            </tr>
         </table>
     </body>
 </html>
