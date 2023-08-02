@@ -456,34 +456,165 @@ def customer_OrderPlacement():
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
 
     if req_method == GET:
-        if req_cookies[AUTH_COOKIE_CUST] is None:
-            # No user logged in
-            cookies = [
-                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
-            ]
-            redirect = _redirect(destination='customer_signin', cookies=cookies)
-            return redirect, 302
-        else:
-            # User already logged in
+        if req_cookies[AUTH_COOKIE_CUST] is not None:
+            # Check Cookie
             customer_login_db = CustomerLogin.query.filter(
                 CustomerLogin.user_name == req_cookies[AUTH_COOKIE_CUST],
             ).first()
             if customer_login_db is not None:
-                # Existing Cookie belongs to user in DB
+                customer_orders_db = CustomerOrder.query.filter(
+                    CustomerOrder.customer_id == customer_login_db.id,
+                    CustomerOrder.status == OrderStatus.ORDER_INCOMPLETE,
+                )
+
+                order_lines = []
+                if customer_orders_db is not None and customer_orders_db.count() > 0:
+                    for customer_order in customer_orders_db:
+                        order_line_db = OrderLine.query.filter(
+                            OrderLine.id == customer_order.order_line_id
+                        ).first()
+                        if order_line_db is not None:
+                            product_db = Product.query.filter(
+                                Product.id == order_line_db.product_id,
+                            ).first()
+                            order_lines.append({
+                                "name": product_db.name if product_db is not None else None,
+                                "price": order_line_db.price,
+                                "quantity": order_line_db.quant,
+                                "order_id": order_line_db.id,
+                                "subtotal": order_line_db.price * order_line_db.quant,
+                            })
+
                 page_name = 'customer_OrderPlacement.html'
                 path = os.path.join(page_name)
-                return render_template(path)
+                return render_template(path, data=order_lines)
             else:
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
                 redirect = _redirect(destination='customer_signin', cookies=cookies)
                 return redirect, 302
+        else:
+            cookies = [
+                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='customer_signin', cookies=cookies)
+            return redirect, 302
 
     elif req_method == POST:
-        form_data = request.form
-        print(form_data)
-        abort(401)
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                employee_orders_db = EmployeeOrder.query.filter(
+                    EmployeeOrder.employee_id == employee_login_db.id,
+                    EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
+                )
+                if employee_orders_db is not None and employee_orders_db.count() > 0:
+                    price = 0
+                    order_content_str = []
+                    for employee_order in employee_orders_db:
+                        order_line_db = OrderLine.query.filter(
+                            OrderLine.id == employee_order.order_line_id
+                        ).first()
+                        if order_line_db is not None:
+                            price = price + (order_line_db.quant * order_line_db.price)
+                            product_db = Product.query.filter(
+                                Product.id == order_line_db.product_id,
+                            ).first()
+                            if product_db is not None:
+                                if len(order_content_str) <= 0:
+                                    order_content_str.append(
+                                        "{}\t\t{}\t\t{}\t\t{}".format("Product Name",
+                                                                      "Quantity",
+                                                                      "Price per Unit",
+                                                                      "Subtotal")
+                                    )
+                                order_content_str.append(
+                                    "{}\t\t\t{}\t\t\t{}\t\t\t{}".format(product_db.name,
+                                                                        order_line_db.quant,
+                                                                        order_line_db.price,
+                                                                        order_line_db.quant * order_line_db.price,
+                                                                        )
+                                )
+                    order_head_db = OrderHead(
+                        price=price,
+                    )
+                    db.session.add(order_head_db)
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
+                    db.session.refresh(order_head_db)
+
+                    for employee_order in employee_orders_db:
+                        employee_order.status = OrderStatus.COMPLETE
+                        order_line_db = OrderLine.query.filter(
+                            OrderLine.id == employee_order.order_line_id
+                        ).first()
+                        if order_line_db is not None:
+                            order_line_db.order_head_id = order_head_db.id
+
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
+
+                    emp_details_db = EmployeeDetails.query.filter(
+                        EmployeeDetails.employee_login_id == employee_login_db.id,
+                    ).first()
+                    if emp_details_db is not None:
+                        body = f'''
+                            Hi {emp_details_db.first_name},
+
+                            You have placed an Order from POS.
+
+                            Order ID : {order_head_db.id}
+
+                            Order Contents are
+                            '''
+                        for order in order_content_str:
+                            body = body + f'''
+                                {order}
+                                '''
+                        body = body + f'''
+                            Total : {order_head_db.price}
+
+                            Thanks and Regards,
+                            Bot.
+                            '''
+                        email_send_ref = EmailSend(
+                            thread_name="Employee Order Creation",
+                            email=emp_details_db.emailID,
+                            subject=f"{server_name} | Employee | Order Created | {order_head_db.id}",
+                            body=body
+                        )
+                        email_send_ref.start()
+
+                    flash(f"Order Created : {order_head_db.id}")
+                cookies = [
+                    [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                ]
+                redirect = _redirect(destination='employeePosTerminal', cookies=cookies)
+                return redirect, 302
+            else:
+                cookies = [
+                    [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination='customer_signin', cookies=cookies)
+                return redirect, 302
+        else:
+            cookies = [
+                [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination='customer_signin', cookies=cookies)
+            return redirect, 302
 
     else:
         abort(401)
@@ -1606,10 +1737,10 @@ def employeePosTerminal():
                                     )
                                 order_content_str.append(
                                     "{}\t\t\t{}\t\t\t{}\t\t\t{}".format(product_db.name,
-                                                                  order_line_db.quant,
-                                                                  order_line_db.price,
-                                                                  order_line_db.quant * order_line_db.price,
-                                                                  )
+                                                                        order_line_db.quant,
+                                                                        order_line_db.price,
+                                                                        order_line_db.quant * order_line_db.price,
+                                                                        )
                                 )
                     order_head_db = OrderHead(
                         price=price,
@@ -1782,7 +1913,7 @@ def employeeOrders():
 
 
 @app.route('/employee/returnItems', methods=[GET, POST])
-def employeereturnItems():
+def employeeReturnItems():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
 
