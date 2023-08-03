@@ -13,7 +13,7 @@ var c=1;
   				var item = row.insertCell(1);
   				var qty = row.insertCell(2);
 				var editQtyBtn = row.insertCell(3);
-				editQtyBtn.innerHTML = "<button class=\"plusBtn\" onclick = \"plusItem(this)\"><i class=\"fa fa-plus\"></i></button><button onclick = \"minusItem(this)\" class=\"minusBtn\" style=\"font-size:24px\"><i class=\"fa fa-minus\"></i></button>";
+				editQtyBtn.innerHTML = "<button class=\"plusBtn\" onclick = \"plusItem(this)\" style=\"font-size:10px\"><i class=\"fa fa-plus\"></i></button><button onclick = \"minusItem(this)\" class=\"minusBtn\" style=\"font-size:10px\"><i class=\"fa fa-minus\"></i></button>";
 				serial_no.innerHTML = c++;
   				item.innerHTML = document.getElementById("itemName_input").value ;
 				if (document.getElementById("quantity_input").value == "Other"){
