@@ -64,7 +64,8 @@
                     <th>Order By</th>
                     <th>Amount Received</th>
                     <th>View Order</th>
-                    <th>Order Type</th>
+                    <th>Order Type (Internal/External)</th>
+                    <th>Order Type (Accepted/Rejected)</th>
                 </tr>
                 {% for item in data.table_2 %}
                 <tr>
@@ -79,7 +80,8 @@
                             </button>
                         </a>
                     </td>
-                    <td>{{item.type}}</td>
+                    <td>{{item.type1}}</td>
+                    <td>{{item.type2}}</td>
                 </tr>
                 {% endfor %}
             </table>

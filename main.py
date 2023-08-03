@@ -2174,7 +2174,8 @@ def employeeOrders():
                                     "date": f"{order_head_db.created_at.date()}",
                                     "name": f"{customer_details_db.first_name} {customer_details_db.last_name}",
                                     "price": f"{order_head_db.price}",
-                                    "type": "External",
+                                    "type1": "External",
+                                    "type2": "Accepted",
                                 })
 
                 employee_orders_db = EmployeeOrder.query.filter(
@@ -2198,7 +2199,8 @@ def employeeOrders():
                                     "date": f"{order_head_db.created_at.date()}",
                                     "name": f"{employee_details_db.first_name} {employee_details_db.last_name}",
                                     "price": f"{order_head_db.price}",
-                                    "type": "Internal",
+                                    "type1": "Internal",
+                                    "type2": "Accepted",
                                 })
 
                 page_name = 'employee_orders.html'
