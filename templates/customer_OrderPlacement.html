@@ -1,6 +1,3 @@
-<!--
-This code contains mainly HTML and JS for the customer order placement page. In certain areas it has a bit of CSS.
--->
 <!DOCTYPE html>
 <html>
 	<head>
@@ -17,9 +14,9 @@ This code contains mainly HTML and JS for the customer order placement page. In 
 		<h1>Welcome to Lodha Chemist</h1>
 		<h2>Please place your order below</h2>
 		<div class="orderTable">
-			<h3 style="position: fixed;">Order Details</h3>
-			<table id="orders_table" style="width: 55%; margin-top: 20px; text-align: center; ">
-				<tr style="position: sticky">
+			<h3 style="position: absolute; margin-top:-20px;">Order Details</h3>
+			<table id="orders_table" style="width: 55%; margin-top: 18px; text-align: center; column-width: 150px;">
+				<tr style="position: sticky; top:0;">
 					<th>Serial No.</th>
 					<th>Item Name</th>
 					<th>Quantity</th>
@@ -51,48 +48,69 @@ This code contains mainly HTML and JS for the customer order placement page. In 
 			</table>
 		</div>
 		<a href="/customer/orderDel">
-			<div class="submitOrder">
-					<button type = "submit" class="button4" style="font-size: 25px;">Reset Order</button>
+			<div class="resetOrder">
+					<button type = "submit" class="button5" style="font-size: 25px;">Reset Order</button>
 			</div>
 		</a>
 		<form action="/customer/orderplacement" method="POST">
-			<div class="submitOrder">
-				<button type = "submit" class="button4" style="font-size: 25px;">Submit Order</button>
-			</div>
-			<div class="deliveryButton">
-				<input type="radio" id="homeDelivery" name="deliveryChoice" value="HD" required>
-				<label for="homeDelivery">Home Delivery</label><br>
-			</div>
-			<div class ="deliveryButton">
-				<input type="radio" id="pickUp" name="deliveryChoice" value="PU" checked>
-				<label for="pickUp">Pick Up From Store</label><br>-
-			</div>
-
-		</form>
-		<form action="/customer/addorder" method="POST">
-			<table class="buttonsTable" style="width: 40%; border:2px solid black; float: right; margin-right: 40px;">
+			<table>
 				<tr>
-					<div class="inputBoxes">
-						<td style= "width: 45%"><input type="text" id="itemName_input" name="name" placeholder="Name of the Product" required></td>
-						<td><select name ="quantity" id="quantity_input" placeholder = "Quantity Required" required>
-							<option selected>1</option>
-							<option>2</option>
-							<option>3</option>
-							<option>4</option>
-							<option>5</option>
-							<option>6</option>
-							<option>7</option>
-							<option>8</option>
-							<option>9</option>
-							<option>10</option>
-						</select>
-						</td>
+					<div class="submitOrder">
+						<button type = "submit" class="button4" style="font-size: 25px;">Submit Order</button>
 					</div>
+				</tr>
+				<tr>
+					<td>
+						<div class="deliveryButton">
+							<input type="radio" id="homeDelivery" name="deliveryChoice" value="HD" required>
+							<label for="homeDelivery">Home Delivery</label><br>
+						</div>
+					</td>
+					<td>
+						<div class ="deliveryButton">
+							<input type="radio" id="pickUp" name="deliveryChoice" value="PU" checked>
+							<label for="pickUp">Pick Up From Store</label><br>-
+						</div>
+					</td>
+				</tr>
+			</table>
+		</form>
+		<form class="form-inline" action="/customer/addorder" method="POST" style="margin-top: -300px;">
+			<table class="buttonsTable" style="width: 40%; float: right; position: relative; column-width:150px; align-items: center;">
+				<tr>
+						<tr>
+							<div style="float: right; margin-top: -260px; margin-right: 30px; position: relative;">
+								<h2>Add Item To Cart Here!</h2>
+								<p style="font-size: 15px;">To add items to your cart, please type their names into the <br> textbox below.
+								Once done, please select the quantity and then <br> click on the add item button.
+								</p>
+							</div>
+						</tr>
+						<tr>
+							<div class="inputBoxes, form-group"  >
+							<td style= "width: 45%;"><input type="text" id="itemName_input" name="name" placeholder="Name of the Product" required></td>
+							<td style=><select name ="quantity" id="quantity_input" placeholder = "Quantity Required" required>
+								<option selected>1</option>
+								<option>2</option>
+								<option>3</option>
+								<option>4</option>
+								<option>5</option>
+								<option>6</option>
+								<option>7</option>
+								<option>8</option>
+								<option>9</option>
+								<option>10</option>
+								</select>
+							</td>
+							</div>
 					<div class="cartButtons">
 						<td style = "margin-left: 50px;"><button class="button1" type="submit">Add Item</button></td>
 					</div>
 				</tr>
 				<tr>
+
+				</tr>
+				</table>
 					<div style="color:red;">
 						{% with messages = get_flashed_messages() %}
 						  {% if messages %}
@@ -104,24 +122,26 @@ This code contains mainly HTML and JS for the customer order placement page. In 
 						  {% endif %}
 						{% endwith %}
 					</div>
-				</tr>
-
-			</table>
 		</form>
-		<a href="/customer/editprofile">
-			<div class="changeProfile">
-			<button class="button7" onclick = "window.location.href = '/customer/editprofile'">Change Profile Details</button>
+		<div style="float: right; margin-right: 50px; margin-top: -470px; display: flex; align-items: center;">
+			<a href="/customer/editprofile">
+				<div class="changeProfile">
+					<button class="button7" onclick = "window.location.href = '/customer/editprofile'" style="margin: 0 auto; display: inline;">Change Profile Details</button>
+				</div>
+			</a>
+
+			<a href="/customer/logout">
+				<div class="logout" >
+					<button class="button8" onclick = "window.location.href = '/customer/logout'" style="margin: 0 auto; display: inline;">Logout</button>
+				</div>
+			</a>
 		</div>
-		</a>
 
-
-		<a href="/customer/logout">
-			<div class="logout">
-				<button class="button8" onclick = "window.location.href = '/customer/logout'">Logout</button>
-			</div>
-		</a>
+		<h2 style="position: absolute; top: 70%; left: 78%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); display:in-line;">
+			Please Upload Your Prescription Below For Reference!
+		</h2>
 		<a href="/customer/UploadPrescription">
-			<div class="attachPrescription">
+			<div class="attachPrescription" style="margin: 0;position: absolute; top: 80%; left: 80%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);">
 				<input required type="file" class="uploadBox" id="inputPrescription">
 				<label class="uploadBoxLabel" style="font-size:24px" for="inputPrescription">Upload Your Prescription<i class="fa fa-upload"></i></label>
 			</div>
