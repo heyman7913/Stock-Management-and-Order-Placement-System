@@ -15,7 +15,7 @@ h1{
 	text-align: center;
 	padding-top: 80px;
 }
-h2{
+.centerText{
 	text-align: center;
 }
 .logo{
@@ -154,4 +154,15 @@ th {
          vertical-align: middle;
       }
 .form-inline .form-group { margin-right:20px;}
+
+#grandTotal{
+    background-color:green;
+	Color:white;
+	font-size: 20px;
+    width: 160px;
+	text-align:center;
+	border:1px solid black;
+	padding: 5px;
+    margin-left: 480px;
+}
 
