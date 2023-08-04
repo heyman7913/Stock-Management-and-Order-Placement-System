@@ -1,0 +1,75 @@
+*{
+	margin: 0px 0px 0px 0px;
+	font-family: monospace;
+
+}
+body{
+	background-image: url('../images/background_medicine.jpg');
+	background-repeat: no-repeat;
+	background-position: top;
+	background-blend-mode: multiply;
+	background-size: cover;
+}
+
+h1{
+	text-align: center;
+	padding-top: 80px;
+}
+.centerText{
+	text-align: center;
+}
+.logo{
+	flex-basis: 20%;
+	position: absolute;
+}
+.logo img{
+	width: 180px;
+	height: auto;
+	margin: 10px 0px 0px 0px;
+}
+button {
+  background-color: #04AA6D;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+button:hover {
+  opacity:1;
+}
+.cancelbtn, .backbtn {
+  padding: 14px 20px;
+  background-color: #f44336;
+}
+.cancelbtn, .acceptbtn {
+  float: left;
+  width: 50%;
+}
+
+table {
+	border-collapse: collapse;
+	font-size: 20px;
+}
+.orderInfoTable{
+    height: 420px;
+    overflow-y: auto;
+    width: 1200px;
+    column-width:240px;
+    border-collapse: collapse;
+
+}
+th {
+	background-color:green;
+	position: sticky;
+	top: 0;
+	Color:white;
+	height: 10px;
+	font-size: 15px;
+    width: 240px;
+	text-align:center;
+	border:1px solid black;
+	padding: 5px;
+}

@@ -1,10 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+	<title>Employee Order Info</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename = 'css/normalize.css' ) }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename = 'css/employee_orderView.css' ) }}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-
+    <div class="logo">
+        <img src="{{ url_for('static', filename = 'images/logo.png' ) }}">
+    </div>
+    <h1>Order Information</h1>
+    <h2 style="margin-left: 10px;">Order ID:</h2>
+    <label style="margin-left:10px; font-size: 18px;">Data will go here</label>
+    <h2 style="margin-left: 10px">Customer Details:</h2>
+    <div>
+        <label style="font-size: 18px; margin-left:10px">Customer First Name: </label>
+        <label style="font-size: 18px; margin-left:10px">Data will go here</label>
+        <br>
+        <label style="font-size: 18px; margin-left:10px">Customer Mobile Number: </label>
+        <label style="font-size: 18px; margin-left:10px">Data will go here </label>
+        <br>
+        <label style="font-size: 18px; margin-left:10px">Customer Address:</label>
+        <label style="font-size: 18px; margin-left:10px">Data will go here</label>
+        <br>
+    </div>
+    <table class="orderInfoTable" style="margin-left: 6%;  top:35%;">
+        <tr style="position: absolute;">
+            <th>Order Sub ID</th>
+            <th>Product Name</th>
+            <th>Price Per Unit</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </tr>
+    </table>
+    <div class="clearfix">
+        <button type="button" class="cancelbtn" onclick="window.location.href = ''">Cancel</button>
+        <button type="submit" class="acceptbtn">Accept</button>
+    </div>
+    <div>
+        <button type="button" class="backbtn" onclick="window.location.href">Back</button>
+    </div>
 </body>
 </html>

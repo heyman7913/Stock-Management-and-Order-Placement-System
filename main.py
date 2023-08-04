@@ -2223,6 +2223,12 @@ def employeeOrders():
         abort(401)
 
 
+@app.route('/employee/orderView', methods=[GET, POST])
+def employeeViewOrderInfo():
+    page_name = 'employee_viewOrderInfo.html'
+    path = os.path.join(page_name)
+    return render_template(path)
+
 @app.route('/employee/returnItems', methods=[GET, POST])
 def employeeReturnItems():
     req_method = request.method
@@ -2723,7 +2729,6 @@ def admin_editEmployee(empid: int):
 
     else:
         abort(401)
-
 
 @app.route('/admin/deleteEmployee/<int:empid>', methods=[GET])
 def admin_deleteEmployee(empid: int):
