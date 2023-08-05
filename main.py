@@ -851,7 +851,7 @@ def customer_OrderPlacement():
                     price = 0
                     order_content_str = []
                     for customer_order in customer_orders_db:
-                        customer_order.type = customer_order_ref.deliveryChoice
+                        customer_order.delivery = customer_order_ref.deliveryChoice
 
                         order_line_db = OrderLine.query.filter(
                             OrderLine.id == customer_order.order_line_id
@@ -2553,6 +2553,9 @@ def employeeViewOrderInfo(order_id: int, action: str):
                 EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
             ).first()
             if employee_login_db is not None:
+                employee_detail_db = EmployeeDetails.query.filter(
+                    EmployeeDetails.employee_login_id == employee_login_db.id
+                ).first()
                 order_head_db = OrderHead.query.filter(
                     OrderHead.id == order_id,
                 ).first()
@@ -2566,6 +2569,7 @@ def employeeViewOrderInfo(order_id: int, action: str):
                         "last_name": BLANK,
                         "phone": BLANK,
                         "address": BLANK,
+                        "type": BLANK,
                         "order_details": [],
                     }
 
@@ -2607,6 +2611,28 @@ def employeeViewOrderInfo(order_id: int, action: str):
                                                     )
                                             db.session.commit()
 
+                                    customer_detail_db = CustomerDetails.query.filter(
+                                        CustomerDetails.customer_login_id
+                                        == customer_order_db.customer_id,
+                                    ).first()
+                                    if customer_detail_db is not None:
+                                        email_send_ref = EmailSend(
+                                            thread_name="Employee Order Accept",
+                                            email=customer_detail_db.emailID,
+                                            subject=f"{server_name} | Order Accepted | {order_head_db.id}",
+                                            body=f"""
+                                            Hi {customer_detail_db.first_name},
+                                        
+                                            Your Online order : {order_head_db.id}
+                                            Is being processed by {employee_detail_db.first_name}
+                                            Order Type : {'Home Delivery' if customer_order_db.delivery == 'HD' else 'In Store Pick Up'}
+                                            
+                                            Thanks and Regards,
+                                            Bot.
+                                            """,
+                                        )
+                                        email_send_ref.start()
+
                                 elif action == "-":
                                     for order_line_db in order_lines_db:
                                         customer_order_db = CustomerOrder.query.filter(
@@ -2619,6 +2645,29 @@ def employeeViewOrderInfo(order_id: int, action: str):
                                             )
                                             db.session.commit()
 
+                                    customer_detail_db = CustomerDetails.query.filter(
+                                        CustomerDetails.customer_login_id
+                                        == customer_order_db.customer_id,
+                                    ).first()
+                                    if customer_detail_db is not None:
+                                        email_send_ref = EmailSend(
+                                            thread_name="Employee Order Reject",
+                                            email=customer_detail_db.emailID,
+                                            subject=f"{server_name} | Order Rejected | {order_head_db.id}",
+                                            body=f"""
+                                            Hi {customer_detail_db.first_name},
+                                    
+                                            Your Online order : {order_head_db.id}
+                                            Has being rejected by {employee_detail_db.first_name},
+                                            due to stock shortage.
+                                            Order Type : {'Home Delivery' if customer_order_db.delivery == 'HD' else 'In Store Pick Up'}
+                                    
+                                            Thanks and Regards,
+                                            Bot.
+                                            """,
+                                        )
+                                        email_send_ref.start()
+
                                 else:
                                     pass
 
@@ -2628,6 +2677,11 @@ def employeeViewOrderInfo(order_id: int, action: str):
                                 ).first()
                                 if customer_detail_db is not None:
                                     data["word"] = "Customer"
+                                    data["type"] = (
+                                        "Home Delivery"
+                                        if customer_order_db.delivery == "HD"
+                                        else "In Store Pick Up"
+                                    )
                                     data["status"] = customer_order_db.status
                                     if (
                                         customer_order_db.status
