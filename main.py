@@ -2606,10 +2606,16 @@ def employeeViewOrderInfo(order_id: int, action: str):
                                                         - order_line_db.quant
                                                     )
                                                 else:
+                                                    diff = (
+                                                        order_line_db.quant
+                                                        - product_db.available_quant
+                                                    ) * order_line_db.price
                                                     order_line_db.quant = (
                                                         product_db.available_quant
                                                     )
+                                                    order_head_db.price - diff
                                             db.session.commit()
+                                            db.session.refresh(order_head_db)
 
                                     customer_detail_db = CustomerDetails.query.filter(
                                         CustomerDetails.customer_login_id
@@ -2626,6 +2632,7 @@ def employeeViewOrderInfo(order_id: int, action: str):
                                             Your Online order : {order_head_db.id}
                                             Is being processed by {employee_detail_db.first_name}
                                             Order Type : {'Home Delivery' if customer_order_db.delivery == 'HD' else 'In Store Pick Up'}
+                                            Amount: {order_head_db.price}
                                             
                                             Thanks and Regards,
                                             Bot.
