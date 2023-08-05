@@ -36,7 +36,7 @@ GET = "GET"
 POST = "POST"
 EXPIRE_NOW = 0
 EXPIRE_1_WEEK = 60 * 60 * 24 * 7
-BLANK = ''
+BLANK = ""
 AUTH_COOKIE_ADMIN = "auth_admin"
 AUTH_COOKIE_EMP = "auth_emp"
 AUTH_COOKIE_CUST = "auth_cust"
@@ -70,39 +70,44 @@ try:
                 port=data[DATABASE][PORT],
                 database=data[DATABASE][NAME],
             )
-        app.config['SECRET_KEY'] = server_secret
+        app.config["SECRET_KEY"] = server_secret
 except Exception as e:
     print(str(e))
     raise KeyboardInterrupt
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = DB_CON
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+    app.config["SQLALCHEMY_DATABASE_URI"] = DB_CON
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
     db = SQLAlchemy(app)
-    migrate = Migrate(app, db, command='migrate')
+    migrate = Migrate(app, db, command="migrate")
 
 
 # ========================================================
 # Models
 
+
 # =========================
 # Customer Models
 class CustomerLogin(db.Model):
-    __tablename__ = 'customer_login'
+    __tablename__ = "customer_login"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_name = db.Column(db.String(100), nullable=False, unique=True)
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    customer_details = db.relationship('CustomerDetails', backref='customer_login', lazy=True, cascade='all, delete')
-    customer_order = db.relationship('CustomerOrder', backref='customer_login', lazy=True, cascade='all, delete')
+    customer_details = db.relationship(
+        "CustomerDetails", backref="customer_login", lazy=True, cascade="all, delete"
+    )
+    customer_order = db.relationship(
+        "CustomerOrder", backref="customer_login", lazy=True, cascade="all, delete"
+    )
 
     def __repr__(self):
         return f"{self.email}"
 
 
 class CustomerDetails(db.Model):
-    __tablename__ = 'customer_details'
+    __tablename__ = "customer_details"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(String(50), nullable=False)
@@ -112,7 +117,9 @@ class CustomerDetails(db.Model):
     address = db.Column(String(200), nullable=False)
     created_at = db.Column(DateTime(timezone=True), server_default=func.now())
 
-    customer_login_id = db.Column(db.Integer, db.ForeignKey("customer_login.id"), nullable=False)
+    customer_login_id = db.Column(
+        db.Integer, db.ForeignKey("customer_login.id"), nullable=False
+    )
 
     def __repr__(self):
         return f"{self.first_name} {self.last_name}"
@@ -121,22 +128,26 @@ class CustomerDetails(db.Model):
 # =========================
 # Admin Models
 class AdminLogin(db.Model):
-    __tablename__ = 'admin_login'
+    __tablename__ = "admin_login"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_name = db.Column(db.String(100), nullable=False, unique=True)
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    admin_details = db.relationship('AdminDetails', backref='admin_login', lazy=True, cascade='all, delete')
-    employee_login = db.relationship('EmployeeLogin', backref='admin_login', lazy=True, cascade='all, delete')
+    admin_details = db.relationship(
+        "AdminDetails", backref="admin_login", lazy=True, cascade="all, delete"
+    )
+    employee_login = db.relationship(
+        "EmployeeLogin", backref="admin_login", lazy=True, cascade="all, delete"
+    )
 
     def __repr__(self):
         return f"{self.email}"
 
 
 class AdminDetails(db.Model):
-    __tablename__ = 'admin_details'
+    __tablename__ = "admin_details"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(50), nullable=False)
@@ -145,7 +156,9 @@ class AdminDetails(db.Model):
     phoneNumber = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    admin_login_id = db.Column(db.Integer, db.ForeignKey("admin_login.id"), nullable=False)
+    admin_login_id = db.Column(
+        db.Integer, db.ForeignKey("admin_login.id"), nullable=False
+    )
 
     def __repr__(self):
         return f"{self.first_name} {self.last_name}"
@@ -154,24 +167,30 @@ class AdminDetails(db.Model):
 # =========================
 # Employee Models
 class EmployeeLogin(db.Model):
-    __tablename__ = 'employee_login'
+    __tablename__ = "employee_login"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_name = db.Column(db.String(100), nullable=False, unique=True)
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    created_by = db.Column(db.Integer, db.ForeignKey("admin_login.id", ondelete="SET NULL"), nullable=True)
+    created_by = db.Column(
+        db.Integer, db.ForeignKey("admin_login.id", ondelete="SET NULL"), nullable=True
+    )
 
-    employee_details = db.relationship('EmployeeDetails', backref='employee_login', lazy=True, cascade='all, delete')
-    employee_order = db.relationship('EmployeeOrder', backref='employee_login', lazy=True, cascade='all, delete')
+    employee_details = db.relationship(
+        "EmployeeDetails", backref="employee_login", lazy=True, cascade="all, delete"
+    )
+    employee_order = db.relationship(
+        "EmployeeOrder", backref="employee_login", lazy=True, cascade="all, delete"
+    )
 
     def __repr__(self):
         return f"{self.email}"
 
 
 class EmployeeDetails(db.Model):
-    __tablename__ = 'employee_details'
+    __tablename__ = "employee_details"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(50), nullable=False)
@@ -181,7 +200,9 @@ class EmployeeDetails(db.Model):
     address = db.Column(db.String(200), nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    employee_login_id = db.Column(db.Integer, db.ForeignKey("employee_login.id"), nullable=False)
+    employee_login_id = db.Column(
+        db.Integer, db.ForeignKey("employee_login.id"), nullable=False
+    )
 
     def __repr__(self):
         return f"{self.first_name} {self.last_name}"
@@ -190,8 +211,9 @@ class EmployeeDetails(db.Model):
 # =========================
 # Product Models
 
+
 class Product(db.Model):
-    __tablename__ = 'product'
+    __tablename__ = "product"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
@@ -202,7 +224,9 @@ class Product(db.Model):
     reorder_quant = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    order_line = db.relationship('OrderLine', backref='product', lazy=True, cascade='all, delete')
+    order_line = db.relationship(
+        "OrderLine", backref="product", lazy=True, cascade="all, delete"
+    )
 
     def __repr__(self):
         return f"{self.id} {self.name}"
@@ -211,21 +235,24 @@ class Product(db.Model):
 # =========================
 # Order Models
 
+
 class OrderHead(db.Model):
-    __tablename__ = 'order_head'
+    __tablename__ = "order_head"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     price = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    order_line = db.relationship('OrderLine', backref='order_head', lazy=True, cascade='all, delete')
+    order_line = db.relationship(
+        "OrderLine", backref="order_head", lazy=True, cascade="all, delete"
+    )
 
     def __repr__(self):
         return f"{self.id} {self.name}"
 
 
 class OrderLine(db.Model):
-    __tablename__ = 'order_line'
+    __tablename__ = "order_line"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     quant = db.Column(db.Integer, nullable=False)
@@ -235,37 +262,49 @@ class OrderLine(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
     order_head_id = db.Column(db.Integer, db.ForeignKey("order_head.id"), nullable=True)
 
-    customer_order = db.relationship('CustomerOrder', backref='order_line', lazy=True, cascade='all, delete')
-    employee_order = db.relationship('EmployeeOrder', backref='order_line', lazy=True, cascade='all, delete')
+    customer_order = db.relationship(
+        "CustomerOrder", backref="order_line", lazy=True, cascade="all, delete"
+    )
+    employee_order = db.relationship(
+        "EmployeeOrder", backref="order_line", lazy=True, cascade="all, delete"
+    )
 
     def __repr__(self):
         return f"{self.id} {self.name}"
 
 
 class CustomerOrder(db.Model):
-    __tablename__ = 'customer_order'
+    __tablename__ = "customer_order"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     status = db.Column(db.String(30), nullable=False)
     delivery = db.Column(db.String(2), nullable=True)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    order_line_id = db.Column(db.Integer, db.ForeignKey("order_line.id"), nullable=False)
-    customer_id = db.Column(db.Integer, db.ForeignKey("customer_login.id"), nullable=False)
+    order_line_id = db.Column(
+        db.Integer, db.ForeignKey("order_line.id"), nullable=False
+    )
+    customer_id = db.Column(
+        db.Integer, db.ForeignKey("customer_login.id"), nullable=False
+    )
 
     def __repr__(self):
         return f"{self.id} {self.name}"
 
 
 class EmployeeOrder(db.Model):
-    __tablename__ = 'employee_order'
+    __tablename__ = "employee_order"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     status = db.Column(db.String(30), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    order_line_id = db.Column(db.Integer, db.ForeignKey("order_line.id"), nullable=False)
-    employee_id = db.Column(db.Integer, db.ForeignKey("employee_login.id"), nullable=False)
+    order_line_id = db.Column(
+        db.Integer, db.ForeignKey("order_line.id"), nullable=False
+    )
+    employee_id = db.Column(
+        db.Integer, db.ForeignKey("employee_login.id"), nullable=False
+    )
 
     def __repr__(self):
         return f"{self.id} {self.name}"
@@ -286,11 +325,12 @@ class OrderStatus:
 # ========================================================
 # Routing
 
-@app.route('/', methods=[GET])
+
+@app.route("/", methods=[GET])
 def landingPage() -> str:
     req_method = request.method
     if req_method == GET:
-        page_name = 'landingpage.html'
+        page_name = "landingpage.html"
         path = os.path.join(page_name)
         return render_template(path)
     else:
@@ -301,7 +341,7 @@ def _redirect(destination: str, cookies: list):
     res = make_response()
     for cookie in cookies:
         res.set_cookie(cookie[0], cookie[1], cookie[2])
-    res.headers['location'] = url_for(destination)
+    res.headers["location"] = url_for(destination)
     return res
 
 
@@ -319,7 +359,8 @@ def _get_cookies(cookie_stack, names: list):
 # ======================
 # Routing Customer
 
-@app.route('/customer', methods=[GET])
+
+@app.route("/customer", methods=[GET])
 def customer_landing_page():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
@@ -330,7 +371,7 @@ def customer_landing_page():
             cookies = [
                 [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='customer_signin', cookies=cookies)
+            redirect = _redirect(destination="customer_signin", cookies=cookies)
             return redirect, 302
         else:
             # User already logged in
@@ -342,13 +383,15 @@ def customer_landing_page():
                 cookies = [
                     [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+                redirect = _redirect(
+                    destination="customer_OrderPlacement", cookies=cookies
+                )
                 return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='customer_signin', cookies=cookies)
+                redirect = _redirect(destination="customer_signin", cookies=cookies)
                 return redirect, 302
 
     else:
@@ -361,11 +404,11 @@ class CustomerSignin:
         self.password = password
         # Hash actual password
         password_hash = hashlib.sha1()
-        password_hash.update(self.password.encode('utf-8'))
+        password_hash.update(self.password.encode("utf-8"))
         self.password = password_hash.hexdigest()[:254]
 
 
-@app.route('/customer/signin', methods=[GET, POST])
+@app.route("/customer/signin", methods=[GET, POST])
 def customer_signin():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
@@ -373,7 +416,7 @@ def customer_signin():
     if req_method == GET:
         if req_cookies[AUTH_COOKIE_CUST] is None:
             # No user is logged in
-            page_name = 'customer_loginpage.html'
+            page_name = "customer_loginpage.html"
             path = os.path.join(page_name)
             return render_template(path)
         else:
@@ -386,13 +429,15 @@ def customer_signin():
                 cookies = [
                     [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+                redirect = _redirect(
+                    destination="customer_OrderPlacement", cookies=cookies
+                )
                 return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='customer_signin', cookies=cookies)
+                redirect = _redirect(destination="customer_signin", cookies=cookies)
                 return redirect, 302
 
     elif req_method == POST:
@@ -400,8 +445,8 @@ def customer_signin():
             # No user is logged in
             form_data = request.form
             customer_signin_ref = CustomerSignin(
-                login_id=form_data['loginID'],
-                password=form_data['password'],
+                login_id=form_data["loginID"],
+                password=form_data["password"],
             )
 
             # Check database for user
@@ -413,14 +458,16 @@ def customer_signin():
                 cookies = [
                     [AUTH_COOKIE_CUST, customer_login_db.user_name, EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+                redirect = _redirect(
+                    destination="customer_OrderPlacement", cookies=cookies
+                )
                 return redirect, 302
             else:
                 flash(INVALID_CRED)
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='customer_signin', cookies=cookies)
+                redirect = _redirect(destination="customer_signin", cookies=cookies)
                 return redirect, 302
 
         else:
@@ -433,20 +480,22 @@ def customer_signin():
                 cookies = [
                     [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+                redirect = _redirect(
+                    destination="customer_OrderPlacement", cookies=cookies
+                )
                 return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='customer_signin', cookies=cookies)
+                redirect = _redirect(destination="customer_signin", cookies=cookies)
                 return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/customer/editorder/<int:order_id>/<action>', methods=[GET])
+@app.route("/customer/editorder/<int:order_id>/<action>", methods=[GET])
 def customer_editOrder(order_id: int, action: str):
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
@@ -469,27 +518,34 @@ def customer_editOrder(order_id: int, action: str):
                     if customer_order is not None:
                         order_line_db = OrderLine.query.filter(
                             OrderLine.id == customer_order.order_line_id,
-
                         ).first()
                         if order_line_db is not None:
                             product_db = Product.query.filter(
                                 Product.id == order_line_db.product_id,
                             ).first()
                             if product_db is not None:
-                                if action == '+':
+                                if action == "+":
                                     order_line_db.quant = order_line_db.quant + 1
-                                    if product_db.available_quant <= order_line_db.quant:
+                                    if (
+                                        product_db.available_quant
+                                        <= order_line_db.quant
+                                    ):
                                         order_line_db.quant = order_line_db.quant - 1
-                                        flash(
-                                            f"Product : {product_db.name}, Stock Insufficient")
+                                        flash(f"Product : {product_db.name}")
+                                        flash(f"Stock Insufficient")
                                     else:
-                                        flash(f"Order Line Updated : {order_line_db.id}")
-                                elif action == '-':
+                                        flash(f"Order Line Updated")
+                                elif action == "-":
                                     if order_line_db.quant > 0:
                                         order_line_db.quant = order_line_db.quant - 1
-                                        flash(f"Order Line Updated : {order_line_db.id}")
+                                        flash(f"Order Line Updated")
                                 else:
                                     pass
+
+                                if order_line_db.quant == 0:
+                                    db.session.delete(order_line_db)
+                                    flash("Order Line Deleted")
+
                                 try:
                                     db.session.commit()
                                 except sqlite3.OperationalError as e:
@@ -497,21 +553,27 @@ def customer_editOrder(order_id: int, action: str):
                                     sleep(1)
                                     db.session.commit()
                     cookies = [
-                        [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
+                        [
+                            AUTH_COOKIE_CUST,
+                            req_cookies[AUTH_COOKIE_CUST],
+                            EXPIRE_1_WEEK,
+                        ],
                     ]
-                    redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+                    redirect = _redirect(
+                        destination="customer_OrderPlacement", cookies=cookies
+                    )
                     return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='customer_signin', cookies=cookies)
+                redirect = _redirect(destination="customer_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='customer_signin', cookies=cookies)
+            redirect = _redirect(destination="customer_signin", cookies=cookies)
             return redirect, 302
 
     else:
@@ -524,7 +586,7 @@ class CustomerOrderAdd:
         self.quantity = int(quantity)
 
 
-@app.route('/customer/addorder/', methods=[POST])
+@app.route("/customer/addorder/", methods=[POST])
 def customer_addOrder():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
@@ -545,75 +607,111 @@ def customer_addOrder():
                     Product.name == customer_order_add_ref.name,
                 ).first()
                 if product_db is not None:
-                    if product_db.available_quant <= customer_order_add_ref.quantity:
-                        flash(f"Product : {product_db.name}, Stock Insufficient ")
+                    flag_prod_exists = False
+                    customer_orders_db = CustomerOrder.query.filter(
+                        CustomerOrder.customer_id == customer_login_db.id,
+                        CustomerOrder.status == OrderStatus.ORDER_INCOMPLETE,
+                    )
+                    if customer_orders_db is not None:
+                        for customer_order_db in customer_orders_db:
+                            order_line_db = OrderLine.query.filter(
+                                OrderLine.id == customer_order_db.order_line_id,
+                            ).first()
+                            if order_line_db is not None:
+                                if order_line_db.product_id == product_db.id:
+                                    flag_prod_exists = True
+                                    break
+
+                    if flag_prod_exists:
+                        flash(f"Product: [{product_db.id}] {product_db.name}")
+                        flash("Product Exists in Cart")
                     else:
-                        order_line_db = OrderLine(
-                            quant=customer_order_add_ref.quantity,
-                            price=product_db.price,
-                            product_id=product_db.id,
-                        )
-                        db.session.add(order_line_db)
-                        try:
-                            db.session.commit()
-                        except sqlite3.OperationalError as e:
-                            print(f"Error : {str(e)}")
-                            sleep(1)
-                            db.session.commit()
-                        db.session.refresh(order_line_db)
+                        if product_db.available_quant < customer_order_add_ref.quantity:
+                            flash(f"Product : {product_db.name}")
+                            flash("Stock Insufficient")
+                        else:
+                            order_line_db = OrderLine(
+                                quant=customer_order_add_ref.quantity,
+                                price=product_db.price,
+                                product_id=product_db.id,
+                            )
+                            db.session.add(order_line_db)
+                            try:
+                                db.session.commit()
+                            except sqlite3.OperationalError as e:
+                                print(f"Error : {str(e)}")
+                                sleep(1)
+                                db.session.commit()
+                            db.session.refresh(order_line_db)
 
-                        customer_order_db = CustomerOrder(
-                            status=OrderStatus.ORDER_INCOMPLETE,
-                            order_line_id=order_line_db.id,
-                            customer_id=customer_login_db.id,
-                        )
-                        db.session.add(customer_order_db)
-                        try:
-                            db.session.commit()
-                        except sqlite3.OperationalError as e:
-                            print(f"Error : {str(e)}")
-                            sleep(1)
-                            db.session.commit()
+                            customer_order_db = CustomerOrder(
+                                status=OrderStatus.ORDER_INCOMPLETE,
+                                order_line_id=order_line_db.id,
+                                customer_id=customer_login_db.id,
+                            )
+                            db.session.add(customer_order_db)
+                            try:
+                                db.session.commit()
+                            except sqlite3.OperationalError as e:
+                                print(f"Error : {str(e)}")
+                                sleep(1)
+                                db.session.commit()
 
-                        flash(f"Product Added : {product_db.name}")
+                            flash(f"Product : {product_db.name}")
+                            flash(f"Added to Cart")
                     cookies = [
-                        [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
+                        [
+                            AUTH_COOKIE_CUST,
+                            req_cookies[AUTH_COOKIE_CUST],
+                            EXPIRE_1_WEEK,
+                        ],
                     ]
-                    redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+                    redirect = _redirect(
+                        destination="customer_OrderPlacement", cookies=cookies
+                    )
                     return redirect, 302
                 else:
-                    flash(f"Invalid Product Name : {customer_order_add_ref.name}")
+                    flash(f"Product : {customer_order_add_ref.name}")
+                    flash(f"Invalid Product Name")
 
                     products_db = Product.query.filter(
                         Product.name.like(f"%{customer_order_add_ref.name}%")
-                    ).all()
-                    if products_db is not None:
+                    )
+                    if products_db is not None and products_db.count() > 0:
                         flash("Possible Entries :")
                         for product in products_db:
-                            flash(f"{product.name}")
+                            flash(f"Product : {product.name}")
                     cookies = [
-                        [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
+                        [
+                            AUTH_COOKIE_CUST,
+                            req_cookies[AUTH_COOKIE_CUST],
+                            EXPIRE_1_WEEK,
+                        ],
                     ]
-                    redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+                    redirect = _redirect(
+                        destination="customer_OrderPlacement", cookies=cookies
+                    )
                     return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+                redirect = _redirect(
+                    destination="customer_OrderPlacement", cookies=cookies
+                )
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='customer_signin', cookies=cookies)
+            redirect = _redirect(destination="customer_signin", cookies=cookies)
             return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/customer/orderDel', methods=[GET])
+@app.route("/customer/orderDel", methods=[GET])
 def customer_orderDel():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
@@ -642,23 +740,25 @@ def customer_orderDel():
                     print(f"Error : {str(e)}")
                     sleep(1)
                     db.session.commit()
-                flash(f"Order Lines Deleted : All")
+                flash(f"Order Lines Deleted")
                 cookies = [
                     [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+                redirect = _redirect(
+                    destination="customer_OrderPlacement", cookies=cookies
+                )
                 return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='customer_signin', cookies=cookies)
+                redirect = _redirect(destination="customer_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='customer_signin', cookies=cookies)
+            redirect = _redirect(destination="customer_signin", cookies=cookies)
             return redirect, 302
 
     else:
@@ -673,7 +773,7 @@ class CustomerOrderPlacement:
         self.deliveryChoice = self.deliveryChoice.upper()
 
 
-@app.route('/customer/orderplacement', methods=[GET, POST])
+@app.route("/customer/orderplacement", methods=[GET, POST])
 def customer_OrderPlacement():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
@@ -692,7 +792,9 @@ def customer_OrderPlacement():
 
                 order_lines = []
                 if customer_orders_db is not None and customer_orders_db.count() > 0:
+                    count = 0
                     for customer_order in customer_orders_db:
+                        count = count + 1
                         order_line_db = OrderLine.query.filter(
                             OrderLine.id == customer_order.order_line_id
                         ).first()
@@ -700,28 +802,34 @@ def customer_OrderPlacement():
                             product_db = Product.query.filter(
                                 Product.id == order_line_db.product_id,
                             ).first()
-                            order_lines.append({
-                                "order_id": order_line_db.id,
-                                "name": product_db.name if product_db is not None else None,
-                                "price": order_line_db.price,
-                                "quantity": order_line_db.quant,
-                                "subtotal": order_line_db.price * order_line_db.quant,
-                            })
+                            order_lines.append(
+                                {
+                                    "sl_no": count,
+                                    "order_id": order_line_db.id,
+                                    "name": product_db.name
+                                    if product_db is not None
+                                    else None,
+                                    "price": order_line_db.price,
+                                    "quantity": order_line_db.quant,
+                                    "subtotal": order_line_db.price
+                                    * order_line_db.quant,
+                                }
+                            )
 
-                page_name = 'customer_OrderPlacement.html'
+                page_name = "customer_OrderPlacement.html"
                 path = os.path.join(page_name)
                 return render_template(path, data=order_lines)
             else:
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='customer_signin', cookies=cookies)
+                redirect = _redirect(destination="customer_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='customer_signin', cookies=cookies)
+            redirect = _redirect(destination="customer_signin", cookies=cookies)
             return redirect, 302
 
     elif req_method == POST:
@@ -756,17 +864,20 @@ def customer_OrderPlacement():
                             if product_db is not None:
                                 if len(order_content_str) <= 0:
                                     order_content_str.append(
-                                        "{}\t\t{}\t\t{}\t\t{}".format("Product Name",
-                                                                      "Quantity",
-                                                                      "Price per Unit",
-                                                                      "Subtotal")
+                                        "{}\t\t{}\t\t{}\t\t{}".format(
+                                            "Product Name",
+                                            "Quantity",
+                                            "Price per Unit",
+                                            "Subtotal",
+                                        )
                                     )
                                 order_content_str.append(
-                                    "{}\t\t\t{}\t\t\t{}\t\t\t{}".format(product_db.name,
-                                                                        order_line_db.quant,
-                                                                        order_line_db.price,
-                                                                        order_line_db.quant * order_line_db.price,
-                                                                        )
+                                    "{}\t\t\t{}\t\t\t{}\t\t\t{}".format(
+                                        product_db.name,
+                                        order_line_db.quant,
+                                        order_line_db.price,
+                                        order_line_db.quant * order_line_db.price,
+                                    )
                                 )
                     order_head_db = OrderHead(
                         price=price,
@@ -799,7 +910,7 @@ def customer_OrderPlacement():
                         CustomerDetails.customer_login_id == customer_login_db.id,
                     ).first()
                     if cust_details_db is not None:
-                        body = f'''
+                        body = f"""
                             Hi {cust_details_db.first_name},
 
                             You have placed an Online Order.
@@ -808,42 +919,50 @@ def customer_OrderPlacement():
                             Order ID : {order_head_db.id}
 
                             Order Contents are
-                            '''
+                            """
                         for order in order_content_str:
-                            body = body + f'''
+                            body = (
+                                body
+                                + f"""
                                 {order}
-                                '''
-                        body = body + f'''
+                                """
+                            )
+                        body = (
+                            body
+                            + f"""
                             Total : {order_head_db.price}
 
                             Thanks and Regards,
                             Bot.
-                            '''
+                            """
+                        )
                         email_send_ref = EmailSend(
                             thread_name="Customer Order Creation",
                             email=cust_details_db.emailID,
                             subject=f"{server_name} | Customer | Order Created | {order_head_db.id}",
-                            body=body
+                            body=body,
                         )
                         email_send_ref.start()
-
-                    flash(f"Order Created : {order_head_db.id}")
+                    flash(f"Order Id : {order_head_db.id}")
+                    flash(f"Order Created")
                 cookies = [
                     [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+                redirect = _redirect(
+                    destination="customer_OrderPlacement", cookies=cookies
+                )
                 return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='customer_signin', cookies=cookies)
+                redirect = _redirect(destination="customer_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='customer_signin', cookies=cookies)
+            redirect = _redirect(destination="customer_signin", cookies=cookies)
             return redirect, 302
 
     else:
@@ -851,7 +970,15 @@ def customer_OrderPlacement():
 
 
 class CustomerSignup:
-    def __init__(self, first_name: str, last_name: str, email: str, phone: str, address: str, password: str):
+    def __init__(
+        self,
+        first_name: str,
+        last_name: str,
+        email: str,
+        phone: str,
+        address: str,
+        password: str,
+    ):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -860,11 +987,11 @@ class CustomerSignup:
         self.password = password
         # Hash actual password
         password_hash = hashlib.sha1()
-        password_hash.update(self.password.encode('utf-8'))
+        password_hash.update(self.password.encode("utf-8"))
         self.password = password_hash.hexdigest()[:254]
 
 
-@app.route('/customer/signup', methods=[GET, POST])
+@app.route("/customer/signup", methods=[GET, POST])
 def customer_SignUp():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
@@ -872,7 +999,7 @@ def customer_SignUp():
     if req_method == GET:
         if req_cookies[AUTH_COOKIE_CUST] is None:
             # No user logged in
-            page_name = 'customer_signup.html'
+            page_name = "customer_signup.html"
             path = os.path.join(page_name)
             return render_template(path)
         else:
@@ -885,10 +1012,12 @@ def customer_SignUp():
                 cookies = [
                     [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+                redirect = _redirect(
+                    destination="customer_OrderPlacement", cookies=cookies
+                )
                 return redirect, 302
             else:
-                page_name = 'customer_signup.html'
+                page_name = "customer_signup.html"
                 path = os.path.join(page_name)
                 return render_template(path)
 
@@ -907,14 +1036,15 @@ def customer_SignUp():
 
         # Check if same email <> username exists or not
         customer_login_db = CustomerLogin.query.filter(
-            CustomerLogin.user_name == customer_signup_ref.email.upper()).first()
+            CustomerLogin.user_name == customer_signup_ref.email.upper()
+        ).first()
         if customer_login_db is not None:
             # If user exists -> Redirect to Signup Page
             cookies = [
                 [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
-            flash('Email ID Exists')
-            redirect = _redirect(destination='customer_SignUp', cookies=cookies)
+            flash("Email ID Exists")
+            redirect = _redirect(destination="customer_SignUp", cookies=cookies)
             return redirect, 302
         else:
             # User does not exists -> Create New user
@@ -929,7 +1059,7 @@ def customer_SignUp():
                 last_name=customer_signup_ref.last_name.upper(),
                 emailID=customer_signup_ref.email,
                 phoneNumber=customer_signup_ref.phone,
-                address=customer_signup_ref.address
+                address=customer_signup_ref.address,
             )
 
             db.session.add(customer_login_db)
@@ -963,7 +1093,7 @@ def customer_SignUp():
                 
                 Thanks and Regards,
                 Bot.
-                """
+                """,
             )
             email_send_ref.start()
 
@@ -971,7 +1101,7 @@ def customer_SignUp():
             cookies = [
                 [AUTH_COOKIE_CUST, customer_login_db.user_name, EXPIRE_1_WEEK],
             ]
-            redirect = _redirect(destination='customer_OrderPlacement', cookies=cookies)
+            redirect = _redirect(destination="customer_OrderPlacement", cookies=cookies)
             return redirect, 302
 
     else:
@@ -979,7 +1109,16 @@ def customer_SignUp():
 
 
 class CustomerEditProfile:
-    def __init__(self, first_name: str, last_name: str, email: str, mobile: str, address: str, psw_old: str, psw: str):
+    def __init__(
+        self,
+        first_name: str,
+        last_name: str,
+        email: str,
+        mobile: str,
+        address: str,
+        psw_old: str,
+        psw: str,
+    ):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -988,16 +1127,16 @@ class CustomerEditProfile:
         self.password_old = psw_old
         # Hash actual password
         password_hash = hashlib.sha1()
-        password_hash.update(self.password_old.encode('utf-8'))
+        password_hash.update(self.password_old.encode("utf-8"))
         self.password_old = password_hash.hexdigest()[:254]
         self.password_new = psw
         # Hash actual password
         password_hash = hashlib.sha1()
-        password_hash.update(self.password_new.encode('utf-8'))
+        password_hash.update(self.password_new.encode("utf-8"))
         self.password_new = password_hash.hexdigest()[:254]
 
 
-@app.route('/customer/editprofile', methods=[GET, POST])
+@app.route("/customer/editprofile", methods=[GET, POST])
 def customer_editProfile():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
@@ -1008,7 +1147,7 @@ def customer_editProfile():
             cookies = [
                 [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='customer_signin', cookies=cookies)
+            redirect = _redirect(destination="customer_signin", cookies=cookies)
             return redirect, 302
         else:
             # User already logged in
@@ -1027,28 +1166,28 @@ def customer_editProfile():
                 if customer_details_db is not None:
                     # Existing Cookie belongs to user in DB
                     data = {
-                        'first_name': customer_details_db.first_name,
-                        'last_name': customer_details_db.last_name,
-                        'email': customer_details_db.emailID,
-                        'mobile': customer_details_db.phoneNumber,
-                        'address': customer_details_db.address,
+                        "first_name": customer_details_db.first_name,
+                        "last_name": customer_details_db.last_name,
+                        "email": customer_details_db.emailID,
+                        "mobile": customer_details_db.phoneNumber,
+                        "address": customer_details_db.address,
                     }
                 else:
                     data = {
-                        'first_name': "Dummy Data",
-                        'last_name': "Dummy Data",
-                        'email': "Dummy Data",
-                        'mobile': "Dummy Data",
-                        'address': "Dummy Data",
+                        "first_name": "Dummy Data",
+                        "last_name": "Dummy Data",
+                        "email": "Dummy Data",
+                        "mobile": "Dummy Data",
+                        "address": "Dummy Data",
                     }
-                page_name = 'customer_editProfile.html'
+                page_name = "customer_editProfile.html"
                 path = os.path.join(page_name)
                 return render_template(path, data=data)
             else:
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='customer_signin', cookies=cookies)
+                redirect = _redirect(destination="customer_signin", cookies=cookies)
                 return redirect, 302
 
     elif req_method == POST:
@@ -1058,7 +1197,7 @@ def customer_editProfile():
             cookies = [
                 [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='customer_signin', cookies=cookies)
+            redirect = _redirect(destination="customer_signin", cookies=cookies)
             return redirect, 302
         else:
             # User already logged in
@@ -1087,46 +1226,78 @@ def customer_editProfile():
                 ).first()
                 if customer_login_db is not None:
                     # Check if email has been changed
-                    if customer_login_db.user_name != customer_edit_profile_ref.email.upper():
+                    if (
+                        customer_login_db.user_name
+                        != customer_edit_profile_ref.email.upper()
+                    ):
                         # Check if someone else has the same email id
                         customer_login_db_other = CustomerLogin.query.filter(
-                            CustomerLogin.user_name == customer_edit_profile_ref.email.upper(),
+                            CustomerLogin.user_name
+                            == customer_edit_profile_ref.email.upper(),
                         ).first()
                         if customer_login_db_other is not None:
                             # Redirect to self using a message
                             if customer_login_db.id != customer_login_db_other.id:
-                                flash('Email Id already in use')
+                                flash("Email ID Exists")
                                 cookies = [
-                                    [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
+                                    [
+                                        AUTH_COOKIE_CUST,
+                                        req_cookies[AUTH_COOKIE_CUST],
+                                        EXPIRE_1_WEEK,
+                                    ],
                                 ]
-                                redirect = _redirect(destination='customer_editProfile', cookies=cookies)
+                                redirect = _redirect(
+                                    destination="customer_editProfile", cookies=cookies
+                                )
                                 return redirect, 302
                             else:
-                                customer_login_db.user_name = customer_edit_profile_ref.email.upper()
+                                customer_login_db.user_name = (
+                                    customer_edit_profile_ref.email.upper()
+                                )
 
                     # Check if old and existing password matches
-                    if customer_edit_profile_ref.password_old != customer_login_db.password_hash:
+                    if (
+                        customer_edit_profile_ref.password_old
+                        != customer_login_db.password_hash
+                    ):
                         # Redirect to self using a message
-                        flash('Existing Password is wrong')
+                        flash("Existing Password is wrong")
                         cookies = [
-                            [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
+                            [
+                                AUTH_COOKIE_CUST,
+                                req_cookies[AUTH_COOKIE_CUST],
+                                EXPIRE_1_WEEK,
+                            ],
                         ]
-                        redirect = _redirect(destination='customer_editProfile', cookies=cookies)
+                        redirect = _redirect(
+                            destination="customer_editProfile", cookies=cookies
+                        )
                         return redirect, 302
                     else:
                         # Check if old password and new passwords are different
-                        if customer_edit_profile_ref.password_old != customer_edit_profile_ref.password_new:
-                            customer_login_db.password_hash = customer_edit_profile_ref.password_new
+                        if (
+                            customer_edit_profile_ref.password_old
+                            != customer_edit_profile_ref.password_new
+                        ):
+                            customer_login_db.password_hash = (
+                                customer_edit_profile_ref.password_new
+                            )
 
                     # Get related Customer Details Entry
                     customer_details_db = CustomerDetails.query.filter(
                         CustomerDetails.customer_login_id == customer_login_db.id,
                     ).first()
                     if customer_details_db is not None:
-                        customer_details_db.first_name = customer_edit_profile_ref.first_name
-                        customer_details_db.last_name = customer_edit_profile_ref.last_name
+                        customer_details_db.first_name = (
+                            customer_edit_profile_ref.first_name
+                        )
+                        customer_details_db.last_name = (
+                            customer_edit_profile_ref.last_name
+                        )
                         customer_details_db.emailID = customer_edit_profile_ref.email
-                        customer_details_db.phoneNumber = customer_edit_profile_ref.mobile
+                        customer_details_db.phoneNumber = (
+                            customer_edit_profile_ref.mobile
+                        )
                         customer_details_db.address = customer_edit_profile_ref.address
 
                         # Commit all changes
@@ -1138,24 +1309,30 @@ def customer_editProfile():
                             db.session.commit()
 
                         # Redirect to self using a message
-                        flash('Update Successful')
+                        flash("Update Successful")
                         cookies = [
-                            [AUTH_COOKIE_CUST, req_cookies[AUTH_COOKIE_CUST], EXPIRE_1_WEEK],
+                            [
+                                AUTH_COOKIE_CUST,
+                                req_cookies[AUTH_COOKIE_CUST],
+                                EXPIRE_1_WEEK,
+                            ],
                         ]
-                        redirect = _redirect(destination='customer_editProfile', cookies=cookies)
+                        redirect = _redirect(
+                            destination="customer_editProfile", cookies=cookies
+                        )
                         return redirect, 302
 
             else:
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='customer_signin', cookies=cookies)
+                redirect = _redirect(destination="customer_signin", cookies=cookies)
                 return redirect, 302
     else:
         abort(401)
 
 
-@app.route('/customer/logout', methods=[GET])
+@app.route("/customer/logout", methods=[GET])
 def customerLogout():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
@@ -1164,7 +1341,7 @@ def customerLogout():
         cookies = [
             [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
         ]
-        redirect = _redirect(destination='customer_signin', cookies=cookies)
+        redirect = _redirect(destination="customer_signin", cookies=cookies)
         return redirect, 302
     else:
         abort(401)
@@ -1175,20 +1352,18 @@ class CustomerForgotPassword:
         self.email = email
 
 
-@app.route('/customer/forget_password', methods=[GET, POST])
+@app.route("/customer/forget_password", methods=[GET, POST])
 def customerForgotPWD():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_CUST])
 
     if req_method == GET:
-        page_name = 'customer_forgotPwd.html'
+        page_name = "customer_forgotPwd.html"
         path = os.path.join(page_name)
         return render_template(path)
     elif req_method == POST:
         form_data = request.form
-        customer_forgot_password_ref = CustomerForgotPassword(
-            email=form_data["email"]
-        )
+        customer_forgot_password_ref = CustomerForgotPassword(email=form_data["email"])
         # Check if email exists
         customer_login_db = CustomerLogin.query.filter(
             CustomerLogin.user_name == customer_forgot_password_ref.email.upper(),
@@ -1202,7 +1377,7 @@ def customerForgotPWD():
             new_password = "".join(new_password)
             # Hash actual password
             password_hash = hashlib.sha1()
-            password_hash.update(new_password.encode('utf-8'))
+            password_hash.update(new_password.encode("utf-8"))
             customer_login_db.password_hash = password_hash.hexdigest()[:254]
             try:
                 db.session.commit()
@@ -1214,27 +1389,28 @@ def customerForgotPWD():
                 thread_name="Forgot Password",
                 email=customer_forgot_password_ref.email,
                 subject=f"{server_name} | Reset Password",
-                body=f"Your new password is : {new_password}"
+                body=f"Your new password is : {new_password}",
             )
             email_send_ref.start()
-            flash('New Password sent to Email id')
+            flash("New Password sent to Email id")
             cookies = [
                 [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='customerForgotPWD', cookies=cookies)
+            redirect = _redirect(destination="customerForgotPWD", cookies=cookies)
             return redirect, 302
         else:
             # Email not in Database
-            flash('Email does not exist')
+            flash("Email does not exist")
             cookies = [
                 [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='customerForgotPWD', cookies=cookies)
+            redirect = _redirect(destination="customerForgotPWD", cookies=cookies)
             return redirect, 302
 
 
 # ======================
 # Routing Employee
+
 
 class EmployeeSignin:
     def __init__(self, login_id: str, password: str):
@@ -1242,11 +1418,11 @@ class EmployeeSignin:
         self.password = password
         # Hash actual password
         password_hash = hashlib.sha1()
-        password_hash.update(self.password.encode('utf-8'))
+        password_hash.update(self.password.encode("utf-8"))
         self.password = password_hash.hexdigest()[:254]
 
 
-@app.route('/employee', methods=[GET, POST])
+@app.route("/employee", methods=[GET, POST])
 def employee_signin():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -1254,7 +1430,7 @@ def employee_signin():
     if req_method == GET:
         if req_cookies[AUTH_COOKIE_EMP] is None:
             # No user logged in
-            page_name = 'employee_signin.html'
+            page_name = "employee_signin.html"
             path = os.path.join(page_name)
             return render_template(path)
         else:
@@ -1267,10 +1443,10 @@ def employee_signin():
                 cookies = [
                     [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='employeeWelcome', cookies=cookies)
+                redirect = _redirect(destination="employeeWelcome", cookies=cookies)
                 return redirect, 302
             else:
-                page_name = 'employee_signin.html'
+                page_name = "employee_signin.html"
                 path = os.path.join(page_name)
                 return render_template(path)
 
@@ -1291,7 +1467,7 @@ def employee_signin():
                 cookies = [
                     [AUTH_COOKIE_EMP, employee_login_db.user_name, EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='employeeWelcome', cookies=cookies)
+                redirect = _redirect(destination="employeeWelcome", cookies=cookies)
                 return redirect, 302
             else:
                 # Wrong Credentials
@@ -1299,7 +1475,7 @@ def employee_signin():
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
                 flash(INVALID_CRED)
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             # Check Cookie
@@ -1311,21 +1487,21 @@ def employee_signin():
                 cookies = [
                     [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='employeeWelcome', cookies=cookies)
+                redirect = _redirect(destination="employeeWelcome", cookies=cookies)
                 return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                flash('Enter Credentials again !')
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                flash("Enter Credentials again !")
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/employee/welcome', methods=[GET, POST])
+@app.route("/employee/welcome", methods=[GET, POST])
 def employeeWelcome():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -1337,27 +1513,35 @@ def employeeWelcome():
                 EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
             ).first()
             if employee_login_db is not None:
-                page_name = 'employee_welcome.html'
+                page_name = "employee_welcome.html"
                 path = os.path.join(page_name)
                 return render_template(path)
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
     else:
         abort(401)
 
 
 class EmployeeInventory:
-    def __init__(self, name: str, price: str, shelf: str, quant_a: str, returns: str, quant_r: str):
+    def __init__(
+        self,
+        name: str,
+        price: str,
+        shelf: str,
+        quant_a: str,
+        returns: str,
+        quant_r: str,
+    ):
         self.name = name.upper()
         self.price = float(price)
         self.quant_a = int(quant_a)
@@ -1366,7 +1550,7 @@ class EmployeeInventory:
         self.shelf = shelf.upper()
 
 
-@app.route('/employee/inventory', methods=[GET, POST])
+@app.route("/employee/inventory", methods=[GET, POST])
 def employeeInventory():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -1381,29 +1565,31 @@ def employeeInventory():
                 products_db = Product.query.all()
                 data = []
                 for product in products_db:
-                    data.append({
-                        "id": product.id,
-                        "name": product.name,
-                        "price": product.price,
-                        "quant_a": product.available_quant,
-                        "shelf": product.shelf_loc,
-                        "returns": "Yes" if product.accp_return is True else "No",
-                        "quant_r": product.reorder_quant,
-                    })
-                page_name = 'employee_inventory.html'
+                    data.append(
+                        {
+                            "id": product.id,
+                            "name": product.name,
+                            "price": product.price,
+                            "quant_a": product.available_quant,
+                            "shelf": product.shelf_loc,
+                            "returns": "Yes" if product.accp_return is True else "No",
+                            "quant_r": product.reorder_quant,
+                        }
+                    )
+                page_name = "employee_inventory.html"
                 path = os.path.join(page_name)
                 return render_template(path, data=data)
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     elif req_method == POST:
@@ -1428,11 +1614,14 @@ def employeeInventory():
                 ).first()
                 if product_db is not None:
                     # Product exists
-                    flash(f"Product Exists : {product_db.id}")
+                    flash(f"Product : [{product_db.id}] {product_db.name}")
+                    flash(f"Product Exists")
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
-                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    redirect = _redirect(
+                        destination="employeeInventory", cookies=cookies
+                    )
                     return redirect, 302
                 else:
                     # Create Product
@@ -1453,32 +1642,35 @@ def employeeInventory():
                         db.session.commit()
                     db.session.refresh(product_db)
 
-                    flash(f"Product Added : {product_db.id}")
+                    flash(f"Product : [{product_db.id}] {product_db.name}")
+                    flash("Product Added")
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
-                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    redirect = _redirect(
+                        destination="employeeInventory", cookies=cookies
+                    )
                     return redirect, 302
             else:
                 # Cookie is wrong
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             # No Cookie
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/employee/editItemInfo/<int:prod_id>', methods=[GET, POST])
+@app.route("/employee/editItemInfo/<int:prod_id>", methods=[GET, POST])
 def employeeEditItemInfo(prod_id: int):
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -1503,27 +1695,30 @@ def employeeEditItemInfo(prod_id: int):
                         "returns": "Yes" if product_db.accp_return is True else "No",
                         "quant_r": product_db.reorder_quant,
                     }
-                    page_name = 'employee_inventoryEdit.html'
+                    page_name = "employee_inventoryEdit.html"
                     path = os.path.join(page_name)
                     return render_template(path, data=data)
                 else:
-                    flash(f"Invalid Product Id : {prod_id}")
+                    flash(f"Product Id : {prod_id}")
+                    flash(f"Invalid Id")
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
-                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    redirect = _redirect(
+                        destination="employeeInventory", cookies=cookies
+                    )
                     return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     elif req_method == POST:
@@ -1561,39 +1756,45 @@ def employeeEditItemInfo(prod_id: int):
                         sleep(1)
                         db.session.commit()
 
-                    flash(f"Product Info Updated : {product_db.id}")
+                    flash(f"Product : [{product_db.id}] {product_db.name}")
+                    flash(f"Info Updated")
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
-                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    redirect = _redirect(
+                        destination="employeeInventory", cookies=cookies
+                    )
                     return redirect, 302
                 else:
-                    flash(f"Product does not Exist : {prod_id}")
+                    flash(f"Product Id : {prod_id}")
+                    flash("Invalid ID")
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
-                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    redirect = _redirect(
+                        destination="employeeInventory", cookies=cookies
+                    )
                     return redirect, 302
             else:
                 # Cookie is wrong
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             # No Cookie
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/employee/delItemInfo/<int:prod_id>', methods=[GET])
+@app.route("/employee/delItemInfo/<int:prod_id>", methods=[GET])
 def employeeDelItemInfo(prod_id: int):
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -1608,8 +1809,9 @@ def employeeDelItemInfo(prod_id: int):
                 product_db = Product.query.filter(
                     Product.id == prod_id,
                 ).first()
+                prod_name = None
                 if product_db is not None:
-
+                    prod_name = product_db.name
                     db.session.delete(product_db)
                     try:
                         db.session.commit()
@@ -1618,30 +1820,36 @@ def employeeDelItemInfo(prod_id: int):
                         sleep(1)
                         db.session.commit()
 
-                    flash(f"Product Deleted : {prod_id}")
+                    flash(f"Product : [{prod_id}] {prod_name}")
+                    flash("Product Deleted")
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
-                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    redirect = _redirect(
+                        destination="employeeInventory", cookies=cookies
+                    )
                     return redirect, 302
                 else:
-                    flash(f"Invalid Product Id : {prod_id}")
+                    flash(f"Product Id : {prod_id}")
+                    flash(f"Invalid ID")
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
-                    redirect = _redirect(destination='employeeInventory', cookies=cookies)
+                    redirect = _redirect(
+                        destination="employeeInventory", cookies=cookies
+                    )
                     return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     else:
@@ -1654,7 +1862,7 @@ class EmployeePosTerminalAdd:
         self.prod_id = prod_id
 
 
-@app.route('/employee/posTerminalAdd/', methods=[POST])
+@app.route("/employee/posTerminalAdd/", methods=[POST])
 def employeePosTerminalAdd():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -1669,70 +1877,105 @@ def employeePosTerminalAdd():
                 form_data = request.form
                 employee_pos_terminal_add_ref = EmployeePosTerminalAdd(
                     prod_id=int(form_data["productID"]),
-                    quantity=0,
+                    quantity=1,
                 )
                 product_db = Product.query.filter(
                     Product.id == employee_pos_terminal_add_ref.prod_id,
                 ).first()
                 if product_db is not None:
-                    order_line_db = OrderLine(
-                        quant=employee_pos_terminal_add_ref.quantity,
-                        price=product_db.price,
-                        product_id=employee_pos_terminal_add_ref.prod_id,
+                    employee_orders_db = EmployeeOrder.query.filter(
+                        EmployeeOrder.employee_id == employee_login_db.id,
+                        EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
                     )
-                    db.session.add(order_line_db)
-                    try:
-                        db.session.commit()
-                    except sqlite3.OperationalError as e:
-                        print(f"Error : {str(e)}")
-                        sleep(1)
-                        db.session.commit()
-                    db.session.refresh(order_line_db)
+                    flag_prod_exists = False
+                    if employee_orders_db is not None:
+                        for employee_order_db in employee_orders_db:
+                            order_line_db = OrderLine.query.filter(
+                                OrderLine.id == employee_order_db.order_line_id,
+                            ).first()
+                            if order_line_db is not None:
+                                if order_line_db.product_id == product_db.id:
+                                    flag_prod_exists = True
+                            if flag_prod_exists:
+                                break
+                    if flag_prod_exists:
+                        flash(f"Product : [{product_db.id}] {product_db.name}")
+                        flash(f"Exists in Cart")
+                    else:
+                        if product_db.available_quant > 0:
+                            order_line_db = OrderLine(
+                                quant=employee_pos_terminal_add_ref.quantity,
+                                price=product_db.price,
+                                product_id=employee_pos_terminal_add_ref.prod_id,
+                            )
+                            if (
+                                product_db.available_quant
+                                < product_db.reorder_quant / 2
+                            ):
+                                flash(f"Product: {product_db.name}")
+                                flash(f"Stock Left: {product_db.available_quant - 1}")
+                            db.session.add(order_line_db)
+                        else:
+                            flash(f"Product: {product_db.name}")
+                            flash(f"Stock Left: {product_db.available_quant}")
+                        try:
+                            db.session.commit()
+                        except sqlite3.OperationalError as e:
+                            print(f"Error : {str(e)}")
+                            sleep(1)
+                            db.session.commit()
+                        db.session.refresh(order_line_db)
 
-                    employee_order_db = EmployeeOrder(
-                        status=OrderStatus.ORDER_INCOMPLETE,
-                        order_line_id=order_line_db.id,
-                        employee_id=employee_login_db.id,
-                    )
-                    db.session.add(employee_order_db)
-                    try:
-                        db.session.commit()
-                    except sqlite3.OperationalError as e:
-                        print(f"Error : {str(e)}")
-                        sleep(1)
-                        db.session.commit()
+                        employee_order_db = EmployeeOrder(
+                            status=OrderStatus.ORDER_INCOMPLETE,
+                            order_line_id=order_line_db.id,
+                            employee_id=employee_login_db.id,
+                        )
+                        db.session.add(employee_order_db)
+                        try:
+                            db.session.commit()
+                        except sqlite3.OperationalError as e:
+                            print(f"Error : {str(e)}")
+                            sleep(1)
+                            db.session.commit()
 
-                    flash(f"Product Added : {product_db.name}")
+                        flash(f"Product : [{product_db.id}] {product_db.name}")
+                        flash(f"Added To Cart")
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
-                    redirect = _redirect(destination='employeePosTerminal', cookies=cookies)
+                    redirect = _redirect(
+                        destination="employeePosTerminal", cookies=cookies
+                    )
                     return redirect, 302
                 else:
-                    flash(f"Invalid Product Id : {employee_pos_terminal_add_ref.prod_id}")
+                    flash(f"Product Id : {employee_pos_terminal_add_ref.prod_id}")
+                    flash("Invalid ID")
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
-                    redirect = _redirect(destination='employeePosTerminal', cookies=cookies)
+                    redirect = _redirect(
+                        destination="employeePosTerminal", cookies=cookies
+                    )
                     return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employeePosTerminal', cookies=cookies)
+                redirect = _redirect(destination="employeePosTerminal", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/employee/posTerminalEdit/<int:order_id>/<action>', methods=[GET])
+@app.route("/employee/posTerminalEdit/<int:order_id>/<action>", methods=[GET])
 def employeePosTerminalEdit(order_id: int, action: str):
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -1755,29 +1998,43 @@ def employeePosTerminalEdit(order_id: int, action: str):
                     if employee_order is not None:
                         order_line_db = OrderLine.query.filter(
                             OrderLine.id == employee_order.order_line_id,
-
                         ).first()
                         if order_line_db is not None:
                             product_db = Product.query.filter(
                                 Product.id == order_line_db.product_id,
                             ).first()
                             if product_db is not None:
-                                if action == '+':
-                                    order_line_db.quant = order_line_db.quant + 1
-                                    if product_db.available_quant < (product_db.reorder_quant / 2):
-                                        order_line_db.quant = order_line_db.quant - 1
-                                        flash(
-                                            f"Product : {product_db.name}, Quantity left : {product_db.available_quant}")
-                                    else:
-                                        product_db.available_quant = product_db.available_quant - 1
-                                        flash(f"Order Line Updated : {order_line_db.id}")
-                                elif action == '-':
+                                if action == "+":
+                                    if product_db.available_quant > 0:
+                                        order_line_db.quant = order_line_db.quant + 1
+                                        product_db.available_quant = (
+                                            product_db.available_quant - 1
+                                        )
+                                        if product_db.available_quant < (
+                                            product_db.reorder_quant / 2
+                                        ):
+                                            flash(
+                                                f"Product : [{product_db.id}] {product_db.name}"
+                                            )
+                                            flash(
+                                                f"Quantity left : {product_db.available_quant}"
+                                            )
+                                        else:
+                                            flash(f"Order Line Updated")
+                                elif action == "-":
                                     if order_line_db.quant > 0:
                                         order_line_db.quant = order_line_db.quant - 1
-                                        product_db.available_quant = product_db.available_quant + 1
-                                        flash(f"Order Line Updated : {order_line_db.id}")
+                                        product_db.available_quant = (
+                                            product_db.available_quant + 1
+                                        )
+                                        flash(f"Order Line Updated")
                                 else:
                                     pass
+
+                                if order_line_db.quant == 0:
+                                    db.session.delete(order_line_db)
+                                    flash(f"Order Line Deleted")
+
                                 try:
                                     db.session.commit()
                                 except sqlite3.OperationalError as e:
@@ -1787,26 +2044,28 @@ def employeePosTerminalEdit(order_id: int, action: str):
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
-                    redirect = _redirect(destination='employeePosTerminal', cookies=cookies)
+                    redirect = _redirect(
+                        destination="employeePosTerminal", cookies=cookies
+                    )
                     return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employeePosTerminal', cookies=cookies)
+                redirect = _redirect(destination="employeePosTerminal", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/employee/posTerminalDel/<int:order_id>', methods=[GET])
+@app.route("/employee/posTerminalDel/<int:order_id>", methods=[GET])
 def employeePosTerminalDel(order_id: int):
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -1824,7 +2083,10 @@ def employeePosTerminalDel(order_id: int):
                 )
 
                 if order_id == 0:  # Delete All
-                    if employee_orders_db is not None and employee_orders_db.count() > 0:
+                    if (
+                        employee_orders_db is not None
+                        and employee_orders_db.count() > 0
+                    ):
                         for employee_order in employee_orders_db:
                             order_line_db = OrderLine.query.filter(
                                 OrderLine.id == employee_order.order_line_id
@@ -1834,24 +2096,30 @@ def employeePosTerminalDel(order_id: int):
                                     Product.id == order_line_db.product_id
                                 ).first()
                                 if product_db is not None:
-                                    product_db.available_quant = product_db.available_quant + order_line_db.quant
+                                    product_db.available_quant = (
+                                        product_db.available_quant + order_line_db.quant
+                                    )
                                 db.session.delete(order_line_db)
                 else:
-                    if employee_orders_db is not None and employee_orders_db.count() > 0:
+                    if (
+                        employee_orders_db is not None
+                        and employee_orders_db.count() > 0
+                    ):
                         employee_order = employee_orders_db.filter(
                             EmployeeOrder.order_line_id == order_id,
                         ).first()
                         if employee_order is not None:
                             order_line_db = OrderLine.query.filter(
                                 OrderLine.id == employee_order.order_line_id,
-
                             ).first()
                             if order_line_db is not None:
                                 product_db = Product.query.filter(
                                     Product.id == order_line_db.product_id
                                 ).first()
                                 if product_db is not None:
-                                    product_db.available_quant = product_db.available_quant + order_line_db.quant
+                                    product_db.available_quant = (
+                                        product_db.available_quant + order_line_db.quant
+                                    )
                                 db.session.delete(order_line_db)
                 try:
                     db.session.commit()
@@ -1859,30 +2127,30 @@ def employeePosTerminalDel(order_id: int):
                     print(f"Error : {str(e)}")
                     sleep(1)
                     db.session.commit()
-                flash(f"Order Lines Deleted : {'All' if order_id == 0 else order_id}")
+                flash(f"Order Line{'s' if order_id == 0 else BLANK} Deleted")
                 cookies = [
                     [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='employeePosTerminal', cookies=cookies)
+                redirect = _redirect(destination="employeePosTerminal", cookies=cookies)
                 return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/employee/posTerminal/', methods=[GET, POST])
+@app.route("/employee/posTerminal/", methods=[GET, POST])
 def employeePosTerminal():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -1901,7 +2169,9 @@ def employeePosTerminal():
 
                 order_lines = []
                 if employee_orders_db is not None and employee_orders_db.count() > 0:
+                    count = 0
                     for employee_order in employee_orders_db:
+                        count = count + 1
                         order_line_db = OrderLine.query.filter(
                             OrderLine.id == employee_order.order_line_id
                         ).first()
@@ -1909,29 +2179,37 @@ def employeePosTerminal():
                             product_db = Product.query.filter(
                                 Product.id == order_line_db.product_id,
                             ).first()
-                            order_lines.append({
-                                "id": product_db.id if product_db is not None else None,
-                                "name": product_db.name if product_db is not None else None,
-                                "price": order_line_db.price,
-                                "quantity": order_line_db.quant,
-                                "order_id": order_line_db.id,
-                                "subtotal": order_line_db.price * order_line_db.quant,
-                            })
+                            order_lines.append(
+                                {
+                                    "id": product_db.id
+                                    if product_db is not None
+                                    else None,
+                                    "name": product_db.name
+                                    if product_db is not None
+                                    else None,
+                                    "price": order_line_db.price,
+                                    "quantity": order_line_db.quant,
+                                    "sl_no": count,
+                                    "order_id": order_line_db.id,
+                                    "subtotal": order_line_db.price
+                                    * order_line_db.quant,
+                                }
+                            )
 
-                page_name = 'employee_posTerminal.html'
+                page_name = "employee_posTerminal.html"
                 path = os.path.join(page_name)
                 return render_template(path, data=order_lines)
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     elif req_method == POST:
@@ -1960,17 +2238,20 @@ def employeePosTerminal():
                             if product_db is not None:
                                 if len(order_content_str) <= 0:
                                     order_content_str.append(
-                                        "{}\t\t{}\t\t{}\t\t{}".format("Product Name",
-                                                                      "Quantity",
-                                                                      "Price per Unit",
-                                                                      "Subtotal")
+                                        "{}\t\t{}\t\t{}\t\t{}".format(
+                                            "Product Name",
+                                            "Quantity",
+                                            "Price per Unit",
+                                            "Subtotal",
+                                        )
                                     )
                                 order_content_str.append(
-                                    "{}\t\t\t{}\t\t\t{}\t\t\t{}".format(product_db.name,
-                                                                        order_line_db.quant,
-                                                                        order_line_db.price,
-                                                                        order_line_db.quant * order_line_db.price,
-                                                                        )
+                                    "{}\t\t\t{}\t\t\t{}\t\t\t{}".format(
+                                        product_db.name,
+                                        order_line_db.quant,
+                                        order_line_db.price,
+                                        order_line_db.quant * order_line_db.price,
+                                    )
                                 )
                     order_head_db = OrderHead(
                         price=price,
@@ -2003,7 +2284,7 @@ def employeePosTerminal():
                         EmployeeDetails.employee_login_id == employee_login_db.id,
                     ).first()
                     if emp_details_db is not None:
-                        body = f'''
+                        body = f"""
                         Hi {emp_details_db.first_name},
                             
                         You have placed an Order from POS.
@@ -2011,49 +2292,56 @@ def employeePosTerminal():
                         Order ID : {order_head_db.id}
                             
                         Order Contents are
-                        '''
+                        """
                         for order in order_content_str:
-                            body = body + f'''
+                            body = (
+                                body
+                                + f"""
                             {order}
-                            '''
-                        body = body + f'''
+                            """
+                            )
+                        body = (
+                            body
+                            + f"""
                         Total : {order_head_db.price}
                             
                         Thanks and Regards,
                         Bot.
-                        '''
+                        """
+                        )
                         email_send_ref = EmailSend(
                             thread_name="Employee Order Creation",
                             email=emp_details_db.emailID,
                             subject=f"{server_name} | Employee | Order Created | {order_head_db.id}",
-                            body=body
+                            body=body,
                         )
                         email_send_ref.start()
 
-                    flash(f"Order Created : {order_head_db.id}")
+                    flash(f"Order ID : {order_head_db.id}")
+                    flash(f"Order Created")
                 cookies = [
                     [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='employeePosTerminal', cookies=cookies)
+                redirect = _redirect(destination="employeePosTerminal", cookies=cookies)
                 return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employeePosTerminal', cookies=cookies)
+                redirect = _redirect(destination="employeePosTerminal", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/employee/monthlyRevenue', methods=[GET])
+@app.route("/employee/monthlyRevenue", methods=[GET])
 def employeeMonthlyRevenue():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -2074,43 +2362,47 @@ def employeeMonthlyRevenue():
                             data_raw[period][0] = data_raw[period][0] + 1
                             data_raw[period][1] = data_raw[period][1] + order_head.price
                         except:
-                            data_raw.update({
-                                period: [
-                                    1,
-                                    order_head.price,
-                                ]
-                            })
+                            data_raw.update(
+                                {
+                                    period: [
+                                        1,
+                                        order_head.price,
+                                    ]
+                                }
+                            )
 
                 data_revenue = []
                 for key in sorted(data_raw.keys(), reverse=True):
                     period = f"{calendar.month_name[int(key[5:])]}/{key[0:4]}"
-                    data_revenue.append({
-                        "period": period,
-                        "orders": data_raw[key][0],
-                        "revenue": data_raw[key][1],
-                    })
+                    data_revenue.append(
+                        {
+                            "period": period,
+                            "orders": data_raw[key][0],
+                            "revenue": data_raw[key][1],
+                        }
+                    )
 
-                page_name = 'employee_monthlyRevenue.html'
+                page_name = "employee_monthlyRevenue.html"
                 path = os.path.join(page_name)
                 return render_template(path, data=data_revenue)
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/employee/orders', methods=[GET])
+@app.route("/employee/orders", methods=[GET])
 def employeeOrders():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -2126,6 +2418,7 @@ def employeeOrders():
                     "table_1": [],
                     "table_2": [],
                 }
+                orders = []
 
                 # Open Orders
                 customer_orders_db = CustomerOrder.query.filter(
@@ -2137,24 +2430,35 @@ def employeeOrders():
                             OrderLine.id == customer_order.order_line_id,
                         ).first()
                         customer_details_db = CustomerDetails.query.filter(
-                            CustomerDetails.customer_login_id == customer_order.customer_id,
+                            CustomerDetails.customer_login_id
+                            == customer_order.customer_id,
                         ).first()
                         if order_line_db is not None:
                             order_head_db = OrderHead.query.filter(
                                 OrderHead.id == order_line_db.order_head_id,
                             ).first()
-                            if order_head_db is not None:
-                                data["table_1"].append({
-                                    "order_id": order_head_db.id,
-                                    "date": f"{order_head_db.created_at.date()}",
-                                    "name": f"{customer_details_db.first_name} {customer_details_db.last_name}",
-                                    "price": f"{order_head_db.price}",
-                                    "delivery": f"{'Home Delivery' if customer_order.delivery == 'HD' else 'In Store Pickup'}"
-                                })
+                            if (
+                                order_head_db is not None
+                                and order_head_db.id not in orders
+                            ):
+                                orders.append(order_head_db.id)
+                                data["table_1"].append(
+                                    {
+                                        "order_id": order_head_db.id,
+                                        "date": f"{order_head_db.created_at.date()}",
+                                        "name": f"{customer_details_db.first_name} {customer_details_db.last_name}",
+                                        "price": f"{order_head_db.price}",
+                                        "delivery": f"""{
+                                        'Home Delivery' if customer_order.delivery == 'HD' else 'In Store Pickup'
+                                        }""",
+                                    }
+                                )
 
                 # Closed Orders
                 customer_orders_db = CustomerOrder.query.filter(
-                    CustomerOrder.status == OrderStatus.COMPLETE
+                    (CustomerOrder.status == OrderStatus.COMPLETE)
+                    | (CustomerOrder.status == OrderStatus.ORDER_ACCEPTED)
+                    | (CustomerOrder.status == OrderStatus.ORDER_REJECTED)
                 )
                 if customer_orders_db is not None:
                     for customer_order in customer_orders_db:
@@ -2162,21 +2466,28 @@ def employeeOrders():
                             OrderLine.id == customer_order.order_line_id,
                         ).first()
                         customer_details_db = CustomerDetails.query.filter(
-                            CustomerDetails.customer_login_id == customer_order.customer_id,
+                            CustomerDetails.customer_login_id
+                            == customer_order.customer_id,
                         ).first()
                         if order_line_db is not None:
                             order_head_db = OrderHead.query.filter(
                                 OrderHead.id == order_line_db.order_head_id,
                             ).first()
-                            if order_head_db is not None:
-                                data["table_2"].append({
-                                    "order_id": order_head_db.id,
-                                    "date": f"{order_head_db.created_at.date()}",
-                                    "name": f"{customer_details_db.first_name} {customer_details_db.last_name}",
-                                    "price": f"{order_head_db.price}",
-                                    "type1": "External",
-                                    "type2": "Accepted",
-                                })
+                            if (
+                                order_head_db is not None
+                                and order_head_db.id not in orders
+                            ):
+                                orders.append(order_head_db.id)
+                                data["table_2"].append(
+                                    {
+                                        "order_id": order_head_db.id,
+                                        "date": f"{order_head_db.created_at.date()}",
+                                        "name": f"{customer_details_db.first_name} {customer_details_db.last_name}",
+                                        "price": f"{order_head_db.price}",
+                                        "type1": "External",
+                                        "type2": f"{customer_order.status}",
+                                    }
+                                )
 
                 employee_orders_db = EmployeeOrder.query.filter(
                     EmployeeOrder.status == OrderStatus.COMPLETE
@@ -2187,49 +2498,342 @@ def employeeOrders():
                             OrderLine.id == employee_order.order_line_id,
                         ).first()
                         employee_details_db = EmployeeDetails.query.filter(
-                            EmployeeDetails.employee_login_id == employee_order.employee_id,
+                            EmployeeDetails.employee_login_id
+                            == employee_order.employee_id,
                         ).first()
                         if order_line_db is not None:
                             order_head_db = OrderHead.query.filter(
                                 OrderHead.id == order_line_db.order_head_id,
                             ).first()
-                            if order_head_db is not None:
-                                data["table_2"].append({
-                                    "order_id": order_head_db.id,
-                                    "date": f"{order_head_db.created_at.date()}",
-                                    "name": f"{employee_details_db.first_name} {employee_details_db.last_name}",
-                                    "price": f"{order_head_db.price}",
-                                    "type1": "Internal",
-                                    "type2": "Accepted",
-                                })
+                            if (
+                                order_head_db is not None
+                                and order_head_db.id not in orders
+                            ):
+                                orders.append(order_head_db.id)
+                                data["table_2"].append(
+                                    {
+                                        "order_id": order_head_db.id,
+                                        "date": f"{order_head_db.created_at.date()}",
+                                        "name": f"{employee_details_db.first_name} {employee_details_db.last_name}",
+                                        "price": f"{order_head_db.price}",
+                                        "type1": "Internal",
+                                        "type2": "Accepted",
+                                    }
+                                )
 
-                page_name = 'employee_orders.html'
+                page_name = "employee_orders.html"
                 path = os.path.join(page_name)
                 return render_template(path, data=data)
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/employee/orderView', methods=[GET, POST])
-def employeeViewOrderInfo():
-    page_name = 'employee_viewOrderInfo.html'
-    path = os.path.join(page_name)
-    return render_template(path)
+@app.route("/employee/orderView/<int:order_id>/<action>", methods=[GET])
+def employeeViewOrderInfo(order_id: int, action: str):
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
 
-@app.route('/employee/returnItems', methods=[GET, POST])
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                order_head_db = OrderHead.query.filter(
+                    OrderHead.id == order_id,
+                ).first()
+                if order_head_db is not None:
+                    data = {
+                        "order_id": order_head_db.id,
+                        "word": BLANK,
+                        "action": False,
+                        "status": BLANK,
+                        "first_name": BLANK,
+                        "last_name": BLANK,
+                        "phone": BLANK,
+                        "address": BLANK,
+                        "order_details": [],
+                    }
+
+                    order_lines_db = OrderLine.query.filter(
+                        OrderLine.order_head_id == order_head_db.id,
+                    )
+                    if order_lines_db is not None:
+                        order_line_db = order_lines_db.first()
+                        if order_line_db is not None:
+                            customer_order_db = CustomerOrder.query.filter(
+                                CustomerOrder.order_line_id == order_line_db.id,
+                            ).first()
+                            if customer_order_db is not None:
+                                if action == "+":
+                                    for order_line_db in order_lines_db:
+                                        customer_order_db = CustomerOrder.query.filter(
+                                            CustomerOrder.order_line_id
+                                            == order_line_db.id,
+                                        ).first()
+                                        if customer_order_db is not None:
+                                            customer_order_db.status = (
+                                                OrderStatus.ORDER_ACCEPTED
+                                            )
+                                            product_db = Product.query.filter(
+                                                Product.id == order_line_db.product_id,
+                                            ).first()
+                                            if product_db is not None:
+                                                if (
+                                                    product_db.available_quant
+                                                    >= order_line_db.quant
+                                                ):
+                                                    product_db.available_quant = (
+                                                        product_db.available_quant
+                                                        - order_line_db.quant
+                                                    )
+                                                else:
+                                                    order_line_db.quant = (
+                                                        product_db.available_quant
+                                                    )
+                                            db.session.commit()
+
+                                elif action == "-":
+                                    for order_line_db in order_lines_db:
+                                        customer_order_db = CustomerOrder.query.filter(
+                                            CustomerOrder.order_line_id
+                                            == order_line_db.id,
+                                        ).first()
+                                        if customer_order_db is not None:
+                                            customer_order_db.status = (
+                                                OrderStatus.ORDER_REJECTED
+                                            )
+                                            db.session.commit()
+
+                                else:
+                                    pass
+
+                                customer_detail_db = CustomerDetails.query.filter(
+                                    CustomerDetails.customer_login_id
+                                    == customer_order_db.customer_id,
+                                ).first()
+                                if customer_detail_db is not None:
+                                    data["word"] = "Customer"
+                                    data["status"] = customer_order_db.status
+                                    if (
+                                        customer_order_db.status
+                                        == OrderStatus.ORDER_COMPLETE
+                                    ):
+                                        data["action"] = True
+                                    data[
+                                        "first_name"
+                                    ] = customer_detail_db.first_name.capitalize()
+                                    data[
+                                        "last_name"
+                                    ] = customer_detail_db.last_name.capitalize()
+                                    data["phone"] = customer_detail_db.phoneNumber
+                                    data["address"] = customer_detail_db.address
+
+                            emp_order_db = EmployeeOrder.query.filter(
+                                EmployeeOrder.order_line_id == order_line_db.id,
+                            ).first()
+                            if emp_order_db is not None:
+                                emp_detail_db = EmployeeDetails.query.filter(
+                                    EmployeeDetails.employee_login_id
+                                    == emp_order_db.employee_id,
+                                ).first()
+                                if emp_detail_db is not None:
+                                    data["word"] = "Employee"
+                                    data["status"] = emp_order_db.status
+                                    data[
+                                        "first_name"
+                                    ] = emp_detail_db.first_name.capitalize()
+                                    data[
+                                        "last_name"
+                                    ] = emp_detail_db.last_name.capitalize()
+                                    data["phone"] = emp_detail_db.phoneNumber
+                                    data["address"] = emp_detail_db.address
+
+                        count = 0
+                        for order_line_db in order_lines_db:
+                            count = count + 1
+                            product_db = Product.query.filter(
+                                Product.id == order_line_db.product_id,
+                            ).first()
+                            if product_db is not None:
+                                data["order_details"].append(
+                                    {
+                                        "sl_no": count,
+                                        "name": product_db.name,
+                                        "price": order_line_db.price,
+                                        "qty": order_line_db.quant,
+                                        "sub": order_line_db.price
+                                        * order_line_db.quant,
+                                    }
+                                )
+                    page_name = "employee_viewOrderInfo.html"
+                    path = os.path.join(page_name)
+                    return render_template(path, data=data)
+                else:
+                    flash(f"Order Id: {order_id}")
+                    flash("Invalid Id")
+                    cookies = [
+                        [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                    ]
+                    redirect = _redirect(destination="employeeOrders", cookies=cookies)
+                    return redirect, 302
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
+                return redirect, 302
+        else:
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
+            return redirect, 302
+
+    elif req_method == POST:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                employee_orders_db = EmployeeOrder.query.filter(
+                    EmployeeOrder.employee_id == employee_login_db.id,
+                    EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
+                )
+                if employee_orders_db is not None and employee_orders_db.count() > 0:
+                    price = 0
+                    order_content_str = []
+                    for employee_order in employee_orders_db:
+                        order_line_db = OrderLine.query.filter(
+                            OrderLine.id == employee_order.order_line_id
+                        ).first()
+                        if order_line_db is not None:
+                            price = price + (order_line_db.quant * order_line_db.price)
+                            product_db = Product.query.filter(
+                                Product.id == order_line_db.product_id,
+                            ).first()
+                            if product_db is not None:
+                                if len(order_content_str) <= 0:
+                                    order_content_str.append(
+                                        "{}\t\t{}\t\t{}\t\t{}".format(
+                                            "Product Name",
+                                            "Quantity",
+                                            "Price per Unit",
+                                            "Subtotal",
+                                        )
+                                    )
+                                order_content_str.append(
+                                    "{}\t\t\t{}\t\t\t{}\t\t\t{}".format(
+                                        product_db.name,
+                                        order_line_db.quant,
+                                        order_line_db.price,
+                                        order_line_db.quant * order_line_db.price,
+                                    )
+                                )
+                    order_head_db = OrderHead(
+                        price=price,
+                    )
+                    db.session.add(order_head_db)
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
+                    db.session.refresh(order_head_db)
+
+                    for employee_order in employee_orders_db:
+                        employee_order.status = OrderStatus.COMPLETE
+                        order_line_db = OrderLine.query.filter(
+                            OrderLine.id == employee_order.order_line_id
+                        ).first()
+                        if order_line_db is not None:
+                            order_line_db.order_head_id = order_head_db.id
+
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
+
+                    emp_details_db = EmployeeDetails.query.filter(
+                        EmployeeDetails.employee_login_id == employee_login_db.id,
+                    ).first()
+                    if emp_details_db is not None:
+                        body = f"""
+                            Hi {emp_details_db.first_name},
+    
+                            You have placed an Order from POS.
+    
+                            Order ID : {order_head_db.id}
+    
+                            Order Contents are
+                            """
+                        for order in order_content_str:
+                            body = (
+                                body
+                                + f"""
+                                {order}
+                                """
+                            )
+                        body = (
+                            body
+                            + f"""
+                            Total : {order_head_db.price}
+    
+                            Thanks and Regards,
+                            Bot.
+                            """
+                        )
+                        email_send_ref = EmailSend(
+                            thread_name="Employee Order Creation",
+                            email=emp_details_db.emailID,
+                            subject=f"{server_name} | Employee | Order Created | {order_head_db.id}",
+                            body=body,
+                        )
+                        email_send_ref.start()
+
+                    flash(f"Order ID : {order_head_db.id}")
+                    flash(f"Order Created")
+                cookies = [
+                    [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                ]
+                redirect = _redirect(destination="employeePosTerminal", cookies=cookies)
+                return redirect, 302
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination="employeePosTerminal", cookies=cookies)
+                return redirect, 302
+        else:
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
+            return redirect, 302
+
+    else:
+        abort(401)
+
+
+@app.route("/employee/returnItems", methods=[GET, POST])
 def employeeReturnItems():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -2242,43 +2846,47 @@ def employeeReturnItems():
             ).first()
             if employee_login_db is not None:
                 data = []
-                data.append({
-                    "prod_id" : 1,
-                    "prod_name": "Dummy",
-                    "prod_return": "No",
-                    "order_id": 22,
-                    "readonly" : "readonly",
-                    "disabled": "disabled",
-                })
-                data.append({
-                    "prod_id": 1,
-                    "prod_name": "Dummy",
-                    "prod_return": "Yes",
-                    "order_id": 22,
-                    "readonly": BLANK,
-                    "disabled": BLANK,
-                })
-                page_name = 'employee_returnItems.html'
+                data.append(
+                    {
+                        "prod_id": 1,
+                        "prod_name": "Dummy",
+                        "prod_return": "No",
+                        "order_id": 22,
+                        "readonly": "readonly",
+                        "disabled": "disabled",
+                    }
+                )
+                data.append(
+                    {
+                        "prod_id": 1,
+                        "prod_name": "Dummy",
+                        "prod_return": "Yes",
+                        "order_id": 22,
+                        "readonly": BLANK,
+                        "disabled": BLANK,
+                    }
+                )
+                page_name = "employee_returnItems.html"
                 path = os.path.join(page_name)
                 return render_template(path, data=data)
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='employee_signin', cookies=cookies)
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
                 return redirect, 302
         else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='employee_signin', cookies=cookies)
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
             return redirect, 302
 
     else:
         abort(401)
 
 
-@app.route('/employee/logout', methods=[GET, POST])
+@app.route("/employee/logout", methods=[GET, POST])
 def employeeLogout():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
@@ -2287,7 +2895,7 @@ def employeeLogout():
         cookies = [
             [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
         ]
-        redirect = _redirect(destination='employee_signin', cookies=cookies)
+        redirect = _redirect(destination="employee_signin", cookies=cookies)
         return redirect, 302
     else:
         abort(401)
@@ -2296,17 +2904,18 @@ def employeeLogout():
 # ======================
 # Routing Admin
 
+
 class AdminSignin:
     def __init__(self, login_id: str, password: str):
         self.login_id = login_id
         self.password = password
         # Hash actual password
         password_hash = hashlib.sha1()
-        password_hash.update(self.password.encode('utf-8'))
+        password_hash.update(self.password.encode("utf-8"))
         self.password = password_hash.hexdigest()
 
 
-@app.route('/admin', methods=[GET, POST])
+@app.route("/admin", methods=[GET, POST])
 def adminSignIn():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
@@ -2322,18 +2931,18 @@ def adminSignIn():
                 cookies = [
                     [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
                 ]
-                redirect = _redirect(destination='adminWelcome', cookies=cookies)
+                redirect = _redirect(destination="adminWelcome", cookies=cookies)
                 return redirect, 302
             else:
                 # Cookie is wrong
                 cookies = [
                     [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                redirect = _redirect(destination="adminSignIn", cookies=cookies)
                 return redirect, 302
         else:
             # No cookie present
-            page_name = 'admin_signin.html'
+            page_name = "admin_signin.html"
             path = os.path.join(page_name)
             return render_template(path)
     elif req_method == POST:
@@ -2344,26 +2953,26 @@ def adminSignIn():
         )
         admin_login_db = AdminLogin.query.filter(
             AdminLogin.user_name == admin_signin_ref.login_id.upper(),
-            AdminLogin.password_hash == admin_signin_ref.password
+            AdminLogin.password_hash == admin_signin_ref.password,
         ).first()
         if admin_login_db is not None:
             cookies = [
                 [AUTH_COOKIE_ADMIN, admin_login_db.user_name, EXPIRE_1_WEEK],
             ]
-            redirect = _redirect(destination='adminWelcome', cookies=cookies)
+            redirect = _redirect(destination="adminWelcome", cookies=cookies)
             return redirect, 302
         else:
             flash(INVALID_CRED)
             cookies = [
                 [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            redirect = _redirect(destination="adminSignIn", cookies=cookies)
             return redirect, 302
     else:
         abort(401)
 
 
-@app.route('/admin/welcome', methods=[GET])
+@app.route("/admin/welcome", methods=[GET])
 def adminWelcome():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
@@ -2376,7 +2985,7 @@ def adminWelcome():
             ).first()
             if admin_login_db is not None:
                 # Cookie is okay
-                page_name = 'admin_welcome.html'
+                page_name = "admin_welcome.html"
                 path = os.path.join(page_name)
                 return render_template(path)
             else:
@@ -2384,21 +2993,23 @@ def adminWelcome():
                 cookies = [
                     [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                redirect = _redirect(destination="adminSignIn", cookies=cookies)
                 return redirect, 302
         else:
             # No Cookie
             cookies = [
                 [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            redirect = _redirect(destination="adminSignIn", cookies=cookies)
             return redirect, 302
     else:
         abort(401)
 
 
 class AdminUserAcess:
-    def __init__(self, first_name: str, phone: str, last_name: str, email: str, password: str):
+    def __init__(
+        self, first_name: str, phone: str, last_name: str, email: str, password: str
+    ):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -2406,11 +3017,11 @@ class AdminUserAcess:
         self.password = password
         # Hash actual password
         password_hash = hashlib.sha1()
-        password_hash.update(self.password.encode('utf-8'))
+        password_hash.update(self.password.encode("utf-8"))
         self.password = password_hash.hexdigest()
 
 
-@app.route('/admin/userAccess', methods=[GET, POST])
+@app.route("/admin/userAccess", methods=[GET, POST])
 def adminUserAccess():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
@@ -2423,17 +3034,19 @@ def adminUserAccess():
             ).first()
             if admin_login_db is not None:
                 # Cookie is okay
-                page_name = 'admin_userAccess.html'
+                page_name = "admin_userAccess.html"
                 emp_details_db = EmployeeDetails.query.all()
                 data_send = []
                 for emp in emp_details_db:
-                    data_send.append({
-                        "id": emp.employee_login_id,
-                        "first_name": emp.first_name,
-                        "last_name": emp.last_name,
-                        "email": emp.emailID,
-                        "phoneNumber": emp.phoneNumber,
-                    })
+                    data_send.append(
+                        {
+                            "id": emp.employee_login_id,
+                            "first_name": emp.first_name,
+                            "last_name": emp.last_name,
+                            "email": emp.emailID,
+                            "phoneNumber": emp.phoneNumber,
+                        }
+                    )
                 path = os.path.join(page_name)
                 return render_template(path, data=data_send)
             else:
@@ -2441,14 +3054,14 @@ def adminUserAccess():
                 cookies = [
                     [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                redirect = _redirect(destination="adminSignIn", cookies=cookies)
                 return redirect, 302
         else:
             # No Cookie
             cookies = [
                 [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            redirect = _redirect(destination="adminSignIn", cookies=cookies)
             return redirect, 302
     elif req_method == POST:
         if req_cookies[AUTH_COOKIE_ADMIN] is not None:
@@ -2473,15 +3086,19 @@ def adminUserAccess():
                     # User exists
                     flash("Email Id Exists !")
                     cookies = [
-                        [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                        [
+                            AUTH_COOKIE_ADMIN,
+                            req_cookies[AUTH_COOKIE_ADMIN],
+                            EXPIRE_1_WEEK,
+                        ],
                     ]
-                    redirect = _redirect(destination='adminUserAccess', cookies=cookies)
+                    redirect = _redirect(destination="adminUserAccess", cookies=cookies)
                     return redirect, 302
                 else:
                     # Create Employee
                     emp_login_db = EmployeeLogin(
                         user_name=admin_user_access_ref.email.upper(),
-                        password_hash=admin_user_access_ref.password
+                        password_hash=admin_user_access_ref.password,
                     )
                     db.session.add(emp_login_db)
                     try:
@@ -2520,29 +3137,36 @@ def adminUserAccess():
 
                         Thanks and Regards,
                         Bot.
-                        """
+                        """,
                     )
                     email_send_ref.start()
 
+                    flash(
+                        f"Employee : [{emp_details_db.employee_login_id}] {emp_details_db.first_name} {emp_details_db.last_name}"
+                    )
                     flash("Employee Added")
                     cookies = [
-                        [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                        [
+                            AUTH_COOKIE_ADMIN,
+                            req_cookies[AUTH_COOKIE_ADMIN],
+                            EXPIRE_1_WEEK,
+                        ],
                     ]
-                    redirect = _redirect(destination='adminUserAccess', cookies=cookies)
+                    redirect = _redirect(destination="adminUserAccess", cookies=cookies)
                     return redirect, 302
             else:
                 # Cookie is wrong
                 cookies = [
                     [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                redirect = _redirect(destination="adminSignIn", cookies=cookies)
                 return redirect, 302
         else:
             # No Cookie
             cookies = [
                 [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            redirect = _redirect(destination="adminSignIn", cookies=cookies)
             return redirect, 302
 
     else:
@@ -2558,11 +3182,11 @@ class AdminEditEmployee:
         self.password = psw
         # Hash actual password
         password_hash = hashlib.sha1()
-        password_hash.update(self.password.encode('utf-8'))
+        password_hash.update(self.password.encode("utf-8"))
         self.password = password_hash.hexdigest()
 
 
-@app.route('/admin/editEmployee/<int:empid>', methods=[GET, POST])
+@app.route("/admin/editEmployee/<int:empid>", methods=[GET, POST])
 def admin_editEmployee(empid: int):
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
@@ -2590,7 +3214,7 @@ def admin_editEmployee(empid: int):
                             "email": employee_details_db.emailID,
                             "mobile": employee_details_db.phoneNumber,
                         }
-                        page_name = 'admin_editProfile.html'
+                        page_name = "admin_editProfile.html"
                         path = os.path.join(page_name)
                         return render_template(path, data=data)
 
@@ -2599,14 +3223,14 @@ def admin_editEmployee(empid: int):
                 cookies = [
                     [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                redirect = _redirect(destination="adminSignIn", cookies=cookies)
                 return redirect, 302
         else:
             # No Cookie
             cookies = [
                 [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            redirect = _redirect(destination="adminSignIn", cookies=cookies)
             return redirect, 302
 
     elif req_method == POST:
@@ -2642,9 +3266,15 @@ def admin_editEmployee(empid: int):
                             if emp_login_db_other.id != emp_login_db.id:
                                 flash("Email Id Exists !")
                                 cookies = [
-                                    [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                                    [
+                                        AUTH_COOKIE_ADMIN,
+                                        req_cookies[AUTH_COOKIE_ADMIN],
+                                        EXPIRE_1_WEEK,
+                                    ],
                                 ]
-                                redirect = _redirect(destination='admin_editEmployee', cookies=cookies)
+                                redirect = _redirect(
+                                    destination="admin_editEmployee", cookies=cookies
+                                )
                                 return redirect, 302
                         else:
                             recepients.append(employee_details_db.emailID)  # Old Email
@@ -2656,8 +3286,10 @@ def admin_editEmployee(empid: int):
                         recepients.append(employee_details_db.emailID)  # Old Email
 
                     actual_password = form_data["psw"]
-                    if (actual_password != BLANK
-                            and emp_login_db.password_hash != admin_edit_employee_ref):
+                    if (
+                        actual_password != BLANK
+                        and emp_login_db.password_hash != admin_edit_employee_ref
+                    ):
                         emp_login_db.password_hash = admin_edit_employee_ref.password
                     else:
                         actual_password = None
@@ -2684,7 +3316,7 @@ def admin_editEmployee(empid: int):
     
                             Thanks and Regards,
                             Bot.
-                            """
+                            """,
                         )
                         email_send_ref.start()
 
@@ -2694,43 +3326,52 @@ def admin_editEmployee(empid: int):
                         print(f"Error : {str(e)}")
                         sleep(1)
                         db.session.commit()
+                    flash(
+                        f"Employee: [{employee_details_db.employee_login_id}] {employee_details_db.first_name} {employee_details_db.last_name}"
+                    )
                     flash("Employee Account Updated")
                     cookies = [
-                        [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                        [
+                            AUTH_COOKIE_ADMIN,
+                            req_cookies[AUTH_COOKIE_ADMIN],
+                            EXPIRE_1_WEEK,
+                        ],
                     ]
-                    redirect = _redirect(destination='adminUserAccess', cookies=cookies)
+                    redirect = _redirect(destination="adminUserAccess", cookies=cookies)
                     return redirect, 302
 
                 else:
                     flash("Incorrect Employee Id")
                     cookies = [
-                        [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                        [
+                            AUTH_COOKIE_ADMIN,
+                            req_cookies[AUTH_COOKIE_ADMIN],
+                            EXPIRE_1_WEEK,
+                        ],
                     ]
-                    redirect = _redirect(destination='adminUserAccess', cookies=cookies)
+                    redirect = _redirect(destination="adminUserAccess", cookies=cookies)
                     return redirect, 302
-
-
-
 
             else:
                 # Cookie is wrong
                 cookies = [
                     [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                redirect = _redirect(destination="adminSignIn", cookies=cookies)
                 return redirect, 302
         else:
             # No Cookie
             cookies = [
                 [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            redirect = _redirect(destination="adminSignIn", cookies=cookies)
             return redirect, 302
 
     else:
         abort(401)
 
-@app.route('/admin/deleteEmployee/<int:empid>', methods=[GET])
+
+@app.route("/admin/deleteEmployee/<int:empid>", methods=[GET])
 def admin_deleteEmployee(empid: int):
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
@@ -2747,7 +3388,7 @@ def admin_deleteEmployee(empid: int):
                     EmployeeLogin.id == empid,
                 ).first()
                 if emp_login_db is not None:
-                    flash(f'Employee {emp_login_db.user_name} deleted')
+                    flash(f"Employee {emp_login_db.user_name} deleted")
                     emp_details_db = EmployeeDetails.query.filter(
                         EmployeeDetails.employee_login_id == empid,
                     ).first()
@@ -2765,7 +3406,7 @@ def admin_deleteEmployee(empid: int):
     
                             Thanks and Regards,
                             Bot.
-                            """
+                            """,
                         )
                         email_send_ref.start()
 
@@ -2778,29 +3419,33 @@ def admin_deleteEmployee(empid: int):
                         db.session.commit()
 
                     cookies = [
-                        [AUTH_COOKIE_ADMIN, req_cookies[AUTH_COOKIE_ADMIN], EXPIRE_1_WEEK],
+                        [
+                            AUTH_COOKIE_ADMIN,
+                            req_cookies[AUTH_COOKIE_ADMIN],
+                            EXPIRE_1_WEEK,
+                        ],
                     ]
-                    redirect = _redirect(destination='adminUserAccess', cookies=cookies)
+                    redirect = _redirect(destination="adminUserAccess", cookies=cookies)
                     return redirect, 302
             else:
                 # Cookie is wrong
                 cookies = [
                     [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
                 ]
-                redirect = _redirect(destination='adminSignIn', cookies=cookies)
+                redirect = _redirect(destination="adminSignIn", cookies=cookies)
                 return redirect, 302
         else:
             # No Cookie
             cookies = [
                 [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
             ]
-            redirect = _redirect(destination='adminSignIn', cookies=cookies)
+            redirect = _redirect(destination="adminSignIn", cookies=cookies)
             return redirect, 302
     else:
         abort(401)
 
 
-@app.route('/admin/logout', methods=[GET])
+@app.route("/admin/logout", methods=[GET])
 def admin_logout():
     req_method = request.method
     req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_ADMIN])
@@ -2809,7 +3454,7 @@ def admin_logout():
         cookies = [
             [AUTH_COOKIE_ADMIN, BLANK, EXPIRE_NOW],
         ]
-        redirect = _redirect(destination='adminSignIn', cookies=cookies)
+        redirect = _redirect(destination="adminSignIn", cookies=cookies)
         return redirect, 302
     else:
         abort(401)

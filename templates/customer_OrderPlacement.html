@@ -26,7 +26,7 @@
 		</tr>
 		{% for item in data %}
 		<tr>
-			<td>{{item.order_id}}</td>
+			<td>{{item.sl_no}}</td>
 			<td>{{item.name}}</td>
 			<td>{{item.quantity}}</td>
 			<td style="display: flex;">
@@ -63,18 +63,16 @@
 			<h2>Please choose your delivery choice!</h2>
 		</tr>
 		<tr>
-			<td>
-				<div class="deliveryButton">
-					<input type="radio" id="homeDelivery" name="deliveryChoice" value="HD" checked required>
-					<label for="homeDelivery">Home Delivery</label><br>
-				</div>
-			</td>
-			<td>
-				<div class ="deliveryButton">
-					<input type="radio" id="pickUp" name="deliveryChoice" value="PU" required>
-					<label for="pickUp">Pick Up From Store</label><br>
-				</div>
-			</td>
+			<div class="deliveryButton">
+				<input type="radio" id="homeDelivery" name="deliveryChoice" value="HD" required>
+				<label for="homeDelivery">Home Delivery</label><br>
+			</div>
+		</tr>
+		<tr>
+			<div class ="deliveryButton">
+				<input type="radio" id="pickUp" name="deliveryChoice" value="PU"  checked required>
+				<label for="pickUp">Pick Up From Store</label><br>
+			</div>
 		</tr>
 	</table>
 </form>
@@ -118,21 +116,16 @@
 				<td style = "margin-left: 50px;"><button class="button1" type="submit">Add Item</button></td>
 			</div>
 		</tr>
-		<tr>
-
-		</tr>
-	</table>
-	<div style="color:red; margin-left: 65%; margin-top: -150px; font-size: 18px;">
 		{% with messages = get_flashed_messages() %}
 		{% if messages %}
-		<ul class=flashes style="list-style: none;">
 			{% for message in messages %}
-			<li>{{ message }}</li>
+			<tr>
+				<td>{{ message }}</td>
+			</tr>
 			{% endfor %}
-		</ul>
 		{% endif %}
 		{% endwith %}
-	</div>
+	</table>
 </form>
 <div style="float: right; margin-right: 90px; margin-top: -530px; display: flex; align-items: center;">
 	<a href="/customer/editprofile">

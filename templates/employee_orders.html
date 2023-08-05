@@ -45,7 +45,7 @@
                     <td>{{item.price}}</td>
                     <td>{{item.delivery}}</td>
                     <td>
-                        <a href="/employee/orderView/{{item.order_id}}">
+                        <a href="/employee/orderView/{{item.order_id}}/0">
                             <button class="editUserPassword" style="font-size:24px;">
                                 <i class = "fa fa-edit center"></i>
                             </button>
@@ -74,7 +74,7 @@
                     <td>{{item.name}}</td>
                     <td>{{item.price}}</td>
                     <td>
-                        <a href="/employee/orderView/{{item.order_id}}">
+                        <a href="/employee/orderView/{{item.order_id}}/0">
                             <button class="editUserPassword" style="font-size:24px;">
                                 <i class = "fa fa-edit center"></i>
                             </button>
@@ -84,6 +84,15 @@
                     <td>{{item.type2}}</td>
                 </tr>
                 {% endfor %}
+            </table>
+            <table>
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    {% for message in messages %}
+                    <tr><td>{{ message }}</td></tr>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
             </table>
         </div>
     </body>
