@@ -29,22 +29,22 @@ class EmailSend(threading.Thread):
                 email = data[SERVER][EMAIL][ID]
                 password = data[SERVER][EMAIL][KEY]
         except Exception as e:
-            print('FILE ERROR : ' + str(e))
+            print("FILE ERROR : " + str(e))
         else:
             # Build email
             msg = EmailMessage()
             msg.set_content(self.body)
-            msg['Subject'] = self.subject
-            msg['From'] = email
-            msg['To'] = self.recepient
+            msg["Subject"] = self.subject
+            msg["From"] = email
+            msg["To"] = self.recepient
 
             try:
-                email_send_ref = smtplib.SMTP('smtp.gmail.com', 587)
+                email_send_ref = smtplib.SMTP("smtp.gmail.com", 587)
                 email_send_ref.starttls()
                 email_send_ref.login(email, password)
                 email_send_ref.send_message(msg)
                 email_send_ref.quit()
             except Exception as e:
-                print('EMAIL FAILED : ' + str(e))
+                print("EMAIL FAILED : " + str(e))
             else:
-                print('EMAIL SENT')
+                print("EMAIL SENT")

@@ -2,7 +2,7 @@ import sys
 
 from main import *
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with app.app_context():
         db.create_all()
         migrate = Migrate(app, db)
@@ -13,7 +13,6 @@ if __name__ == '__main__':
                 if command_line_args[2] == "all":
                     admin_logins_db = AdminLogin.query.all()
                     for admin_login_db in admin_logins_db:
-
                         admin_details_db = AdminDetails.query.filter(
                             AdminDetails.admin_login_id == admin_login_db.id
                         ).first()
@@ -31,7 +30,7 @@ if __name__ == '__main__':
 
                                 Thanks and Regards,
                                 Bot.
-                                """
+                                """,
                             )
                             email_send_ref.start()
                         db.session.delete(admin_login_db)
@@ -68,7 +67,7 @@ if __name__ == '__main__':
     
                             Thanks and Regards,
                             Bot.
-                            """
+                            """,
                         )
                         email_send_ref.start()
 
@@ -95,7 +94,7 @@ if __name__ == '__main__':
                     password = input("Password : ")
                 # Hash actual password
                 password_hash = hashlib.sha1()
-                password_hash.update(password.encode('utf-8'))
+                password_hash.update(password.encode("utf-8"))
                 password_org = password
                 password = password_hash.hexdigest()
                 try:
@@ -133,7 +132,7 @@ if __name__ == '__main__':
 
                         Thanks and Regards,
                         Bot.
-                        """
+                        """,
                     )
                     email_send_ref.start()
 
@@ -144,8 +143,4 @@ if __name__ == '__main__':
                 pass
 
         else:
-            app.run(
-                host=server_host,
-                port=server_port,
-                debug=server_stat
-            )
+            app.run(host=server_host, port=server_port, debug=server_stat)

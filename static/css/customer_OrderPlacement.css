@@ -15,12 +15,12 @@ h1{
 	text-align: center;
 	padding-top: 80px;
 }
-h2{
+.centerText{
 	text-align: center;
 }
 .logo{
 	flex-basis: 20%;
-	position: fixed;
+	position: absolute;
 }
 .logo img{
 	width: 180px;
@@ -48,6 +48,9 @@ button{
 }
 .button4:hover{
 	background-color:rgb(80, 158, 89)
+}
+.button5:hover{
+    background-color: rgb(220, 33, 33)
 }
 .cartButtons{
 	margin: 20px 0px 0px 60%;
@@ -82,8 +85,7 @@ table {
 }
 .buttonsTable{
 	margin: -15% 0px 0px 40%;
-	width: 50%; 
-	border:2px solid black; 
+	width: 50%;
 	position: sticky;
 }
 th {
@@ -141,5 +143,26 @@ th {
 	background-color: red;
 	color: black;
 }
+.form-inline .form-group {
+     display: inline-block;
+      margin-bottom: 0;
+      vertical-align: middle;
+      }
+      .form-inline .form-control {
+         display: inline-block;
+         margin-bottom: 0;
+         vertical-align: middle;
+      }
+.form-inline .form-group { margin-right:20px;}
 
+#grandTotal{
+    background-color:green;
+	Color:white;
+	font-size: 20px;
+    width: 160px;
+	text-align:center;
+	border:1px solid black;
+	padding: 5px;
+    margin-left: 480px;
+}
 

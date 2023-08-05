@@ -13,7 +13,7 @@ var c=1;
   				var item = row.insertCell(1);
   				var qty = row.insertCell(2);
 				var editQtyBtn = row.insertCell(3);
-				editQtyBtn.innerHTML = "<button class=\"plusBtn\" onclick = \"plusItem(this)\"><i class=\"fa fa-plus\"></i></button><button onclick = \"minusItem(this)\" class=\"minusBtn\" style=\"font-size:24px\"><i class=\"fa fa-minus\"></i></button>";
+				editQtyBtn.innerHTML = "<button class=\"plusBtn\" onclick = \"plusItem(this)\" style=\"font-size:10px\"><i class=\"fa fa-plus\"></i></button><button onclick = \"minusItem(this)\" class=\"minusBtn\" style=\"font-size:10px\"><i class=\"fa fa-minus\"></i></button>";
 				serial_no.innerHTML = c++;
   				item.innerHTML = document.getElementById("itemName_input").value ;
 				if (document.getElementById("quantity_input").value == "Other"){
@@ -31,18 +31,6 @@ var c=1;
 				document.getElementById("quantity_input").value="1";
 			};
 
-			/*function editItemName(element){	// Function for the edit icon which appears next to the item name in the table. It allows a user to correct any mistakes in the names of products.
-				var table = document.getElementById("orders_table");
-				var newItem = prompt("Please edit the name of the medicine");
-				if (newItem == table.rows[element.parentNode.parentNode.rowIndex].cells[1].innerHTML){
-					alert("The name of the medicine is the same");
-				}else if (newItem == null || newItem == "") {
-					alert("Null isn't an appropriate value for this field. If you would like to change the value for this cell, please click the edit icon again. ");
-				}else{
-					table.rows[element.parentNode.parentNode.rowIndex].cells[1].innerHTML = newItem + "<button \"style=\"font-size:24px\" onclick = \"editItemName(this)\"><i class = \"fas fa-edit\"></i></button>";
-				}
-
-			};*/
 
 			function plusItem(element){  // Increase quantity of the item at a later stage.
 				var table = document.getElementById("orders_table");
