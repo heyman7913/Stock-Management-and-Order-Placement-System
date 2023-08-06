@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Employee Order Info</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/normalize.css' ) }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/employee_orderView.css' ) }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <div class="logo">
+            <img src="{{ url_for('static', filename = 'images/logo.png' ) }}">
+        </div>
+        <h1>Order Information</h1>
+        <h2 style="margin-left: 10px;">Order ID:</h2>
+        <label style="margin-left:10px; font-size: 18px;">{{data.order_id}}</label>
+        <h2 style="margin-left: 10px">{{data.word}} Details:</h2>
+        <div>
+            <label style="font-size: 18px; margin-left:10px">Name: </label>
+            <label style="font-size: 18px; margin-left:10px">{{data.first_name}} {{data.last_name}}</label>
+            <br>
+            <label style="font-size: 18px; margin-left:10px">Mobile Number: </label>
+            <label style="font-size: 18px; margin-left:10px">{{data.phone}}</label>
+            <br>
+            <label style="font-size: 18px; margin-left:10px">Address:</label>
+            <label style="font-size: 18px; margin-left:10px">{{data.address}}</label>
+            <br>
+            <label style="font-size: 18px; margin-left:10px">Order Status:</label>
+            <label style="font-size: 18px; margin-left:10px">{{data.status}}</label>
+            <br>
+            <label style="font-size: 18px; margin-left:10px">Order Type:</label>
+            <label style="font-size: 18px; margin-left:10px">{{data.type}}</label>
+            <br>
+        </div>
+        <table class="orderInfoTable" style="margin-left: 6%;  top:35%;">
+            <tr style="position: absolute;">
+                <th>Order Sub ID</th>
+                <th>Product Name</th>
+                <th>Price Per Unit</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+            </tr>
+            {% for item in data.order_details %}
+            <tr>
+                <td>{{item.sl_no}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.price}}</td>
+                <td>{{item.qty}}</td>
+                <td>{{item.sub}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% if data.action == True %}
+        <div class="clearfix">
+            <button type="button" class="cancelbtn" onclick="window.location.href = '/employee/orderView/{{data.order_id}}/-'">Reject</button>
+            <button type="button" class="acceptbtn" onclick="window.location.href = '/employee/orderView/{{data.order_id}}/+'">Accept</button>
+        </div>
+        {% endif %}
+        <div>
+            <button type="button" class="backbtn" onclick="window.location.href='/employee/orders'">Back</button>
+        </div>
+    </body>
+</html>

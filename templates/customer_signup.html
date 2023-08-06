@@ -39,6 +39,9 @@
                 <input type="password" placeholder="Repeat Password" id="psw-repeat" name="psw-repeat" required>
             </tr>
         </table>
+        <!--
+        Check for the placement of the message.
+        -->
         <div style="color:red;">
             {% with messages = get_flashed_messages() %}
               {% if messages %}

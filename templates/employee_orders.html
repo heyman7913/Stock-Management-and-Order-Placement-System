@@ -31,13 +31,28 @@
             <table id ="activeordersTable">
                 <tr style="position: fixed; margin-top: -50px;">
                     <th>Order ID</th>
-                    <th>Product Name</th>
-                    <th>Quantity Ordered</th>
                     <th>Order Date</th>
+                    <th>Order By</th>
                     <th>Amount Due</th>
-                    <th>Accept/Decline Order</th>
                     <th>Delivery Choice (Home/PickUp)</th>
+                    <th>View Order</th>
                 </tr>
+                {% for item in data.table_1 %}
+                <tr>
+                    <td>{{item.order_id}}</td>
+                    <td>{{item.date}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.price}}</td>
+                    <td>{{item.delivery}}</td>
+                    <td>
+                        <a href="/employee/orderView/{{item.order_id}}/0">
+                            <button class="editUserPassword" style="font-size:24px;">
+                                <i class = "fa fa-edit center"></i>
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
             </table>
         </div>
         <div  class="elapsedOrdersTable" style = "margin-top: 300px; margin-left: 60px;">
@@ -45,11 +60,39 @@
             <table id ="elapsedordersTable">
                 <tr style="position: fixed; margin-top: -50px;">
                     <th>Order ID</th>
-                    <th>Product Name</th>
-                    <th>Quantity Ordered</th>
                     <th>Order Date</th>
+                    <th>Order By</th>
                     <th>Amount Received</th>
+                    <th>View Order</th>
+                    <th>Order Type I (Internal/External)</th>
+                    <th>Order Type II</th>
                 </tr>
+                {% for item in data.table_2 %}
+                <tr>
+                    <td>{{item.order_id}}</td>
+                    <td>{{item.date}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.price}}</td>
+                    <td>
+                        <a href="/employee/orderView/{{item.order_id}}/0">
+                            <button class="editUserPassword" style="font-size:24px;">
+                                <i class = "fa fa-edit center"></i>
+                            </button>
+                        </a>
+                    </td>
+                    <td>{{item.type1}}</td>
+                    <td>{{item.type2}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <table>
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    {% for message in messages %}
+                    <tr><td>{{ message }}</td></tr>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
             </table>
         </div>
     </body>
