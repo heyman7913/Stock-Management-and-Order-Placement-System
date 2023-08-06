@@ -2586,6 +2586,15 @@ def employeeOrders():
                                     }
                                 )
 
+                if len(data["table_1"]) > 0:
+                    data["table_1"] = sorted(
+                        data["table_1"], key=lambda d: d["order_id"]
+                    )
+                if len(data["table_2"]) > 0:
+                    data["table_2"] = sorted(
+                        data["table_2"], key=lambda d: d["order_id"], reverse=True
+                    )
+
                 page_name = "employee_orders.html"
                 path = os.path.join(page_name)
                 return render_template(path, data=data)
