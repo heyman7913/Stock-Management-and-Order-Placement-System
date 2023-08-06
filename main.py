@@ -2725,7 +2725,9 @@ def employeeViewOrderInfo(order_id: int, action: str):
                                             customer_order_db.status = (
                                                 OrderStatus.ORDER_REJECTED
                                             )
+                                            order_head_db.price = 0
                                             db.session.commit()
+                                            db.session.refresh(order_head_db)
 
                                     customer_detail_db = CustomerDetails.query.filter(
                                         CustomerDetails.customer_login_id
