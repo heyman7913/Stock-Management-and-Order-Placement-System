@@ -31,10 +31,11 @@
             <h3 style="position: fixed; margin-top: -70px;">Item Return</h3>
             <table id ="returnTable">
                 <tr style="position: fixed; margin-top: -50px;">
-                    <th>Product ID</th>
+                    <th>Serial No</th>
                     <th>Product Name</th>
                     <th>Price(₹)/Unit</th>
 					<th>Return Quantity</th>
+                    <th>Subtotal</th>
                     <th>Accept Returns</th>
                     <th>Delete Item</th>
                 </tr>
@@ -42,23 +43,27 @@
                 <tr>
                     <form action="/employee/returnItemsEdit/{{item.order_id}}" method="post">
                         <td>
-                            <input type="text" name="prod_id" value="{{item.prod_id}}" disabled readonly>
+                            {{item.sl_no}}
                         </td>
                         <td>
-                            <input type="text" name="prod_name" value="{{item.prod_name}}" disabled readonly>
+                            {{item.prod_name}}
                         </td>
                         <td>
-                            <input type="number" name="prod_price" value="0" {{item.readonly}} {{item.disabled}}/>
+                            <input type="number" name="prod_price" value="{{item.price}}" {{item.readonly}} {{item.disabled}}/>
                         </td>
                         <td>
-                            <input type="number" name="prod_quant" value="0" {{item.readonly}} {{item.disabled}}/>
+                            <input type="number" name="prod_quant" value="{{item.quant}}" {{item.readonly}} {{item.disabled}}/>
                         </td>
                         <td>
-                            <input type="text" name="prod_return" value="{{item.prod_return}}" disabled readonly>
+                            {{item.sub}}
                         </td>
+                        <td>
+                            {{item.prod_return}}
+                        </td>
+                        <input type="submit" hidden>
                     </form>
                     <td>
-                        <a href="/employee/returnDel/{{item.order_id}}">
+                        <a href="/employee/returnItemsDel/{{item.order_id}}">
                             <button class="editUserPassword" style="font-size:24px;">
                                 <i class = "fa fa-edit center"></i>
                             </button>
@@ -78,7 +83,7 @@
                 </form>
             </tr>
             <tr>
-                <form action="/employee/returnItemsAdd" method="post">
+                <form action="/employee/returnItems" method="post">
                     <td>
                         {% with messages = get_flashed_messages() %}
                           {% if messages %}
@@ -96,7 +101,7 @@
             <tr>
                 <td></td>
                 <td>
-                    <a href="/employee/returnItemsDel">
+                    <a href="/employee/returnItemsDel/0">
                         <button class="returnItem">Clear Form</button>
                     </a>
                 </td>

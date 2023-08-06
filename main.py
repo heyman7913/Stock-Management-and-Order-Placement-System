@@ -797,12 +797,12 @@ def customer_OrderPlacement():
                 if customer_orders_db is not None and customer_orders_db.count() > 0:
                     count = 0
                     for customer_order in customer_orders_db:
-                        count = count + 1
                         order_line_db = OrderLine.query.filter(
                             OrderLine.id == customer_order.order_line_id,
                             OrderLine.type == True,
                         ).first()
                         if order_line_db is not None:
+                            count = count + 1
                             product_db = Product.query.filter(
                                 Product.id == order_line_db.product_id,
                             ).first()
@@ -2179,12 +2179,12 @@ def employeePosTerminal():
                 if employee_orders_db is not None and employee_orders_db.count() > 0:
                     count = 0
                     for employee_order in employee_orders_db:
-                        count = count + 1
                         order_line_db = OrderLine.query.filter(
                             OrderLine.id == employee_order.order_line_id,
                             OrderLine.type == True,
                         ).first()
                         if order_line_db is not None:
+                            count = count + 1
                             product_db = Product.query.filter(
                                 Product.id == order_line_db.product_id,
                             ).first()
@@ -2417,7 +2417,7 @@ def employeeMonthlyRevenue():
                                     period = f"{order_head_db.created_at.year}{order_head_db.created_at.month if len(str(order_head_db.created_at.month)) == 2 else f'0{order_head_db.created_at.month}'}"
                                     orders.append(order_head_db.id)
 
-                                    if order_line_db.type == True:  # Normal
+                                    if order_line_db.type is True:  # Normal
                                         revenue = order_head_db.price
                                     else:
                                         revenue = order_head_db.price * -1
@@ -2581,9 +2581,9 @@ def employeeOrders():
                                         "order_id": order_head_db.id,
                                         "date": f"{order_head_db.created_at.date()}",
                                         "name": f"{employee_details_db.first_name} {employee_details_db.last_name}",
-                                        "price": f"{order_head_db.price}",
+                                        "price": f"{order_head_db.price if order_line_db.type is True else order_head_db.price*-1}",
                                         "type1": "Internal",
-                                        "type2": "Accepted",
+                                        "type2": f"{'POS' if order_line_db.type is True else 'Return'}",
                                     }
                                 )
 
@@ -2782,6 +2782,11 @@ def employeeViewOrderInfo(order_id: int, action: str):
                                 ).first()
                                 if emp_detail_db is not None:
                                     data["word"] = "Employee"
+                                    data["type"] = (
+                                        "POS"
+                                        if order_line_db.type is True
+                                        else "Return"
+                                    )
                                     data["status"] = emp_order_db.status
                                     data[
                                         "first_name"
@@ -2962,6 +2967,249 @@ def employeeViewOrderInfo(order_id: int, action: str):
         abort(401)
 
 
+class EmployeeReturnAdd:
+    def __init__(self, prod_id: int):
+        self.prod_id = prod_id
+
+
+@app.route("/employee/returnItemsAdd", methods=[POST])
+def employeeReturnItemsAdd():
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == POST:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                form_data = request.form
+                emp_ret_add_ref = EmployeeReturnAdd(prod_id=int(form_data["productID"]))
+                product_db = Product.query.filter(
+                    Product.id == emp_ret_add_ref.prod_id,
+                ).first()
+                if product_db is not None:
+                    flag_item_exists = False
+                    emp_orders_db = EmployeeOrder.query.filter(
+                        EmployeeOrder.employee_id == employee_login_db.id,
+                        EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
+                    )
+                    if emp_orders_db is not None:
+                        for emp_order_db in emp_orders_db:
+                            order_line_db = OrderLine.query.filter(
+                                OrderLine.id == emp_order_db.order_line_id,
+                                OrderLine.type == False,
+                                OrderLine.product_id == product_db.id,
+                            ).first()
+                            if order_line_db is not None:
+                                flag_item_exists = True
+
+                    if flag_item_exists:
+                        flash(f"Product ID : [{product_db.id}] {product_db.name}")
+                        flash("Item Exists in Cart")
+                    else:
+                        order_line_db = OrderLine(
+                            product_id=product_db.id,
+                            quant=0,
+                            price=0,
+                            type=False,
+                        )
+
+                        db.session.add(order_line_db)
+                        try:
+                            db.session.commit()
+                        except sqlite3.OperationalError as e:
+                            print(f"Error : {str(e)}")
+                            sleep(1)
+                            db.session.commit()
+                        db.session.refresh(order_line_db)
+
+                        emp_order_db = EmployeeOrder(
+                            order_line_id=order_line_db.id,
+                            employee_id=employee_login_db.id,
+                            status=OrderStatus.ORDER_INCOMPLETE,
+                        )
+                        db.session.add(emp_order_db)
+                        try:
+                            db.session.commit()
+                        except sqlite3.OperationalError as e:
+                            print(f"Error : {str(e)}")
+                            sleep(1)
+                            db.session.commit()
+
+                        flash(f"Product ID : [{product_db.id}] {product_db.name}")
+                        flash("Added to Cart")
+                else:
+                    flash(f"Product ID : {emp_ret_add_ref.prod_id}")
+                    flash("Invalid ID")
+                cookies = [
+                    [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                ]
+                redirect = _redirect(destination="employeeReturnItems", cookies=cookies)
+                return redirect, 302
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
+                return redirect, 302
+        else:
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
+            return redirect, 302
+
+    else:
+        abort(401)
+
+
+@app.route("/employee/returnItemsDel/<int:order_id>", methods=[GET])
+def employeeReturnItemsDel(order_id: int):
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                if order_id == 0:
+                    emp_orders_db = EmployeeOrder.query.filter(
+                        EmployeeOrder.employee_id == employee_login_db.id,
+                        EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
+                    )
+                    for emp_order_db in emp_orders_db:
+                        db.session.delete(emp_order_db)
+                    flash("Deleted all Items")
+                else:
+                    emp_order_db = EmployeeOrder.query.filter(
+                        EmployeeOrder.employee_id == employee_login_db.id,
+                        EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
+                        EmployeeOrder.order_line_id == order_id,
+                    ).first()
+                    if emp_order_db is not None:
+                        order_line_db = OrderLine.query.filter(
+                            OrderLine.id == emp_order_db.order_line_id,
+                            OrderLine.type == False,
+                        ).first()
+                        if order_line_db is not None:
+                            prod_db = Product.query.filter(
+                                Product.id == order_line_db.product_id,
+                            ).first()
+                            if prod_db is not None:
+                                flash(f"Product : [{prod_db.id}] {prod_db.name}")
+                                flash("Deleted from Cart")
+                        db.session.delete(emp_order_db)
+
+                try:
+                    db.session.commit()
+                except sqlite3.OperationalError as e:
+                    print(f"Error : {str(e)}")
+                    sleep(1)
+                    db.session.commit()
+
+                cookies = [
+                    [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                ]
+                redirect = _redirect(destination="employeeReturnItems", cookies=cookies)
+                return redirect, 302
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
+                return redirect, 302
+        else:
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
+            return redirect, 302
+
+    else:
+        abort(401)
+
+
+class EmplpyeeReturnItemEdit:
+    def __init__(self, price: float, qunt: int):
+        self.price = price
+        self.quant = qunt
+
+
+@app.route("/employee/returnItemsEdit/<int:order_id>", methods=[POST])
+def employeeReturnItemsEdit(order_id: int):
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == POST:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                form_data = request.form
+                edit_ref = EmplpyeeReturnItemEdit(
+                    price=float(form_data["prod_price"]),
+                    qunt=int(form_data["prod_quant"]),
+                )
+                if order_id == 0:
+                    flash(f"Order Id : {order_id}")
+                    flash("Invalid ID")
+                else:
+                    emp_order_db = EmployeeOrder.query.filter(
+                        EmployeeOrder.employee_id == employee_login_db.id,
+                        EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
+                        EmployeeOrder.order_line_id == order_id,
+                    ).first()
+                    if emp_order_db is not None:
+                        order_line_db = OrderLine.query.filter(
+                            OrderLine.id == emp_order_db.order_line_id,
+                            OrderLine.type == False,
+                        ).first()
+                        if order_line_db is not None:
+                            order_line_db.price = edit_ref.price
+                            order_line_db.quant = edit_ref.quant
+                            prod_db = Product.query.filter(
+                                Product.id == order_line_db.product_id,
+                            ).first()
+                            if prod_db is not None:
+                                flash(f"Product : [{prod_db.id}] {prod_db.name}")
+                            flash("Cart Updated")
+
+                            try:
+                                db.session.commit()
+                            except sqlite3.OperationalError as e:
+                                print(f"Error : {str(e)}")
+                                sleep(1)
+                                db.session.commit()
+
+                cookies = [
+                    [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                ]
+                redirect = _redirect(destination="employeeReturnItems", cookies=cookies)
+                return redirect, 302
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
+                return redirect, 302
+        else:
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
+            return redirect, 302
+
+    else:
+        abort(401)
+
+
 @app.route("/employee/returnItems", methods=[GET, POST])
 def employeeReturnItems():
     req_method = request.method
@@ -2975,29 +3223,124 @@ def employeeReturnItems():
             ).first()
             if employee_login_db is not None:
                 data = []
-                data.append(
-                    {
-                        "prod_id": 1,
-                        "prod_name": "Dummy",
-                        "prod_return": "No",
-                        "order_id": 22,
-                        "readonly": "readonly",
-                        "disabled": "disabled",
-                    }
+                emp_orders_db = EmployeeOrder.query.filter(
+                    EmployeeOrder.employee_id == employee_login_db.id,
+                    EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
                 )
-                data.append(
-                    {
-                        "prod_id": 1,
-                        "prod_name": "Dummy",
-                        "prod_return": "Yes",
-                        "order_id": 22,
-                        "readonly": BLANK,
-                        "disabled": BLANK,
-                    }
-                )
+                if emp_orders_db is not None:
+                    count = 0
+                    for emp_order_db in emp_orders_db:
+                        order_line_db = OrderLine.query.filter(
+                            OrderLine.id == emp_order_db.order_line_id,
+                            OrderLine.type == False,
+                        ).first()
+                        if order_line_db is not None:
+                            count = count + 1
+                            product_db = Product.query.filter(
+                                Product.id == order_line_db.product_id,
+                            ).first()
+                            if product_db is not None:
+                                data.append(
+                                    {
+                                        "prod_id": product_db.id,
+                                        "prod_name": product_db.name,
+                                        "prod_return": f"{'Yes' if product_db.accp_return is True else 'No'}",
+                                        "price": order_line_db.price,
+                                        "quant": order_line_db.quant,
+                                        "sub": f"{order_line_db.price * order_line_db.quant}",
+                                        "order_id": order_line_db.id,
+                                        "sl_no": count,
+                                        "readonly": f"{'readonly' if product_db.accp_return is False else BLANK}",
+                                        "disabled": f"{'disabled' if product_db.accp_return is False else BLANK}",
+                                    }
+                                )
                 page_name = "employee_returnItems.html"
                 path = os.path.join(page_name)
                 return render_template(path, data=data)
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
+                return redirect, 302
+        else:
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
+            return redirect, 302
+
+    elif req_method == POST:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                emp_orders_db = EmployeeOrder.query.filter(
+                    EmployeeOrder.employee_id == employee_login_db.id,
+                    EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
+                )
+                if emp_orders_db is not None:
+                    order_head_db = OrderHead(price=0)
+                    count = 0
+                    for emp_order_db in emp_orders_db:
+                        order_line_db = OrderLine.query.filter(
+                            OrderLine.id == emp_order_db.order_line_id,
+                            OrderLine.type == False,
+                        ).first()
+                        if order_line_db is not None:
+                            count = count + 1
+                            emp_order_db.status = OrderStatus.COMPLETE
+                            order_head_db.price = order_head_db.price + (
+                                order_line_db.quant * order_line_db.price
+                            )
+                    if count > 0:
+                        db.session.add(order_head_db)
+                    try:
+                        db.session.commit()
+                    except sqlite3.OperationalError as e:
+                        print(f"Error : {str(e)}")
+                        sleep(1)
+                        db.session.commit()
+
+                    if count > 0:
+                        db.session.refresh(order_head_db)
+
+                        emp_orders_db = EmployeeOrder.query.filter(
+                            EmployeeOrder.employee_id == employee_login_db.id,
+                            EmployeeOrder.status == OrderStatus.COMPLETE,
+                        )
+                        for emp_order_db in emp_orders_db:
+                            order_line_db = OrderLine.query.filter(
+                                OrderLine.id == emp_order_db.order_line_id,
+                                OrderLine.type == False,
+                                OrderLine.order_head_id == None,
+                            ).first()
+                            if order_line_db is not None:
+                                order_line_db.order_head_id = order_head_db.id
+                                product_db = Product.query.filter(
+                                    Product.id == order_line_db.product_id,
+                                ).first()
+                                if product_db is not None:
+                                    product_db.available_quant = (
+                                        product_db.available_quant + order_line_db.quant
+                                    )
+
+                        try:
+                            db.session.commit()
+                        except sqlite3.OperationalError as e:
+                            print(f"Error : {str(e)}")
+                            sleep(1)
+                            db.session.commit()
+
+                        flash(f"Order ID : {order_head_db.id}")
+                        flash("Return Order Placed")
+                cookies = [
+                    [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
+                ]
+                redirect = _redirect(destination="employeeReturnItems", cookies=cookies)
+                return redirect, 302
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
