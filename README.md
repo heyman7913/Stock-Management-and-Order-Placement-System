@@ -1,6 +1,7 @@
 # ComputerScienceIA
 ___
 #### By Himansh Chitkara
+##### Guided by akash-sgta
 ___
 Commands:
 > Install prerequisites :
