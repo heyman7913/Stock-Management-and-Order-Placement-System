@@ -257,6 +257,7 @@ class OrderLine(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     quant = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
+    type = db.Column(db.Boolean, nullable=False)  # True -> Normal , False -> Return
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
@@ -616,6 +617,7 @@ def customer_addOrder():
                         for customer_order_db in customer_orders_db:
                             order_line_db = OrderLine.query.filter(
                                 OrderLine.id == customer_order_db.order_line_id,
+                                OrderLine.type == True,
                             ).first()
                             if order_line_db is not None:
                                 if order_line_db.product_id == product_db.id:
@@ -634,6 +636,7 @@ def customer_addOrder():
                                 quant=customer_order_add_ref.quantity,
                                 price=product_db.price,
                                 product_id=product_db.id,
+                                type=True,
                             )
                             db.session.add(order_line_db)
                             try:
@@ -796,7 +799,8 @@ def customer_OrderPlacement():
                     for customer_order in customer_orders_db:
                         count = count + 1
                         order_line_db = OrderLine.query.filter(
-                            OrderLine.id == customer_order.order_line_id
+                            OrderLine.id == customer_order.order_line_id,
+                            OrderLine.type == True,
                         ).first()
                         if order_line_db is not None:
                             product_db = Product.query.filter(
@@ -854,7 +858,8 @@ def customer_OrderPlacement():
                         customer_order.delivery = customer_order_ref.deliveryChoice
 
                         order_line_db = OrderLine.query.filter(
-                            OrderLine.id == customer_order.order_line_id
+                            OrderLine.id == customer_order.order_line_id,
+                            OrderLine.type == True,
                         ).first()
                         if order_line_db is not None:
                             price = price + (order_line_db.quant * order_line_db.price)
@@ -894,7 +899,8 @@ def customer_OrderPlacement():
                     for customer_order in customer_orders_db:
                         customer_order.status = OrderStatus.ORDER_COMPLETE
                         order_line_db = OrderLine.query.filter(
-                            OrderLine.id == customer_order.order_line_id
+                            OrderLine.id == customer_order.order_line_id,
+                            OrderLine.type == True,
                         ).first()
                         if order_line_db is not None:
                             order_line_db.order_head_id = order_head_db.id
@@ -1892,6 +1898,7 @@ def employeePosTerminalAdd():
                         for employee_order_db in employee_orders_db:
                             order_line_db = OrderLine.query.filter(
                                 OrderLine.id == employee_order_db.order_line_id,
+                                OrderLine.type == True,
                             ).first()
                             if order_line_db is not None:
                                 if order_line_db.product_id == product_db.id:
@@ -1907,6 +1914,7 @@ def employeePosTerminalAdd():
                                 quant=employee_pos_terminal_add_ref.quantity,
                                 price=product_db.price,
                                 product_id=employee_pos_terminal_add_ref.prod_id,
+                                type=True,
                             )
                             if (
                                 product_db.available_quant
@@ -2173,7 +2181,8 @@ def employeePosTerminal():
                     for employee_order in employee_orders_db:
                         count = count + 1
                         order_line_db = OrderLine.query.filter(
-                            OrderLine.id == employee_order.order_line_id
+                            OrderLine.id == employee_order.order_line_id,
+                            OrderLine.type == True,
                         ).first()
                         if order_line_db is not None:
                             product_db = Product.query.filter(
@@ -2228,7 +2237,8 @@ def employeePosTerminal():
                     order_content_str = []
                     for employee_order in employee_orders_db:
                         order_line_db = OrderLine.query.filter(
-                            OrderLine.id == employee_order.order_line_id
+                            OrderLine.id == employee_order.order_line_id,
+                            OrderLine.type == True,
                         ).first()
                         if order_line_db is not None:
                             price = price + (order_line_db.quant * order_line_db.price)
@@ -2268,7 +2278,8 @@ def employeePosTerminal():
                     for employee_order in employee_orders_db:
                         employee_order.status = OrderStatus.COMPLETE
                         order_line_db = OrderLine.query.filter(
-                            OrderLine.id == employee_order.order_line_id
+                            OrderLine.id == employee_order.order_line_id,
+                            OrderLine.type == True,
                         ).first()
                         if order_line_db is not None:
                             order_line_db.order_head_id = order_head_db.id
@@ -2353,23 +2364,78 @@ def employeeMonthlyRevenue():
                 EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
             ).first()
             if employee_login_db is not None:
-                order_heads_db = OrderHead.query.all()
+                orders = []
                 data_raw = {}
-                if order_heads_db is not None:
-                    for order_head in order_heads_db:
-                        period = f"{order_head.created_at.year}{order_head.created_at.month if len(str(order_head.created_at.month)) == 2 else f'0{order_head.created_at.month}'}"
-                        try:
-                            data_raw[period][0] = data_raw[period][0] + 1
-                            data_raw[period][1] = data_raw[period][1] + order_head.price
-                        except:
-                            data_raw.update(
-                                {
-                                    period: [
-                                        1,
-                                        order_head.price,
-                                    ]
-                                }
-                            )
+
+                # Customer Orders => Accepted
+                customer_orders_db = CustomerOrder.query.filter(
+                    CustomerOrder.status == OrderStatus.ORDER_ACCEPTED
+                )
+                if customer_orders_db is not None:
+                    for customer_order_db in customer_orders_db:
+                        order_line_db = OrderLine.query.filter(
+                            OrderLine.id == customer_order_db.order_line_id,
+                        ).first()
+                        if order_line_db is not None:
+                            order_head_db = OrderHead.query.filter(
+                                OrderHead.id == order_line_db.order_head_id,
+                            ).first()
+                            if order_head_db is not None:
+                                if order_head_db.id not in orders:
+                                    period = f"{order_head_db.created_at.year}{order_head_db.created_at.month if len(str(order_head_db.created_at.month)) == 2 else f'0{order_head_db.created_at.month}'}"
+                                    orders.append(order_head_db.id)
+                                    try:
+                                        data_raw[period][0] = data_raw[period][0] + 1
+                                        data_raw[period][1] = (
+                                            data_raw[period][1] + order_head_db.price
+                                        )
+                                    except KeyError:
+                                        data_raw.update(
+                                            {
+                                                period: [
+                                                    1,
+                                                    order_head_db.price,
+                                                ]
+                                            }
+                                        )
+
+                # Employee Orders => Completed ( Normal + Return )
+                employee_orders_db = EmployeeOrder.query.filter(
+                    EmployeeOrder.status == OrderStatus.COMPLETE
+                )
+                if employee_orders_db is not None:
+                    for employee_order_db in employee_orders_db:
+                        order_line_db = OrderLine.query.filter(
+                            OrderLine.id == employee_order_db.order_line_id,
+                        ).first()
+                        if order_line_db is not None:
+                            order_head_db = OrderHead.query.filter(
+                                OrderHead.id == order_line_db.order_head_id,
+                            ).first()
+                            if order_head_db is not None:
+                                if order_head_db.id not in orders:
+                                    period = f"{order_head_db.created_at.year}{order_head_db.created_at.month if len(str(order_head_db.created_at.month)) == 2 else f'0{order_head_db.created_at.month}'}"
+                                    orders.append(order_head_db.id)
+
+                                    if order_line_db.type == True:  # Normal
+                                        revenue = order_head_db.price
+                                    else:
+                                        revenue = order_head_db.price * -1
+
+                                    try:
+                                        data_raw[period][0] = data_raw[period][0] + 1
+                                        data_raw[period][1] = (
+                                            data_raw[period][1] + revenue
+                                        )
+                                    except KeyError:
+                                        data_raw.update(
+                                            {
+                                                period: [
+                                                    1,
+                                                    revenue,
+                                                ]
+                                            }
+                                        )
 
                 data_revenue = []
                 for key in sorted(data_raw.keys(), reverse=True):
@@ -2625,6 +2691,7 @@ def employeeViewOrderInfo(order_id: int, action: str):
                                         email_send_ref = EmailSend(
                                             thread_name="Employee Order Accept",
                                             email=customer_detail_db.emailID,
+                                            cc=employee_detail_db.emailID,
                                             subject=f"{server_name} | Order Accepted | {order_head_db.id}",
                                             body=f"""
                                             Hi {customer_detail_db.first_name},
@@ -2660,6 +2727,7 @@ def employeeViewOrderInfo(order_id: int, action: str):
                                         email_send_ref = EmailSend(
                                             thread_name="Employee Order Reject",
                                             email=customer_detail_db.emailID,
+                                            cc=employee_detail_db.emailID,
                                             subject=f"{server_name} | Order Rejected | {order_head_db.id}",
                                             body=f"""
                                             Hi {customer_detail_db.first_name},
