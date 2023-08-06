@@ -3431,6 +3431,7 @@ def admin_editEmployee(empid: int):
                         email_send_ref = EmailSend(
                             thread_name="Employee Updation",
                             email=recepient,
+                            cc=admin_login_db.user_name,
                             subject=f"{server_name} | Employee Account Updated",
                             body=f"""
                             Hi {employee_details_db.first_name},
@@ -3525,6 +3526,7 @@ def admin_deleteEmployee(empid: int):
                         email_send_ref = EmailSend(
                             thread_name="Employee Deletion",
                             email=emp_details_db.emailID,
+                            cc=admin_login_db.user_name,
                             subject=f"{server_name} | Employee Account Deleted",
                             body=f"""
                             Hi {emp_details_db.first_name},
