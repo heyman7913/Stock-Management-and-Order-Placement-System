@@ -1923,6 +1923,10 @@ def employeePosTerminalAdd():
                                 flash(f"Product: {product_db.name}")
                                 flash(f"Stock Left: {product_db.available_quant - 1}")
                             db.session.add(order_line_db)
+                            product_db.available_quant = (
+                                product_db.available_quant
+                                - employee_pos_terminal_add_ref.quantity
+                            )
                         else:
                             flash(f"Product: {product_db.name}")
                             flash(f"Stock Left: {product_db.available_quant}")
@@ -2308,8 +2312,7 @@ def employeePosTerminal():
                             body = (
                                 body
                                 + f"""
-                            {order}
-                            """
+                        {order}\n"""
                             )
                         body = (
                             body
@@ -2587,6 +2590,15 @@ def employeeOrders():
                                     }
                                 )
 
+                if len(data["table_1"]) > 0:
+                    data["table_1"] = sorted(
+                        data["table_1"], key=lambda d: d["order_id"]
+                    )
+                if len(data["table_2"]) > 0:
+                    data["table_2"] = sorted(
+                        data["table_2"], key=lambda d: d["order_id"], reverse=True
+                    )
+
                 page_name = "employee_orders.html"
                 path = os.path.join(page_name)
                 return render_template(path, data=data)
@@ -2717,7 +2729,9 @@ def employeeViewOrderInfo(order_id: int, action: str):
                                             customer_order_db.status = (
                                                 OrderStatus.ORDER_REJECTED
                                             )
+                                            order_head_db.price = 0
                                             db.session.commit()
+                                            db.session.refresh(order_head_db)
 
                                     customer_detail_db = CustomerDetails.query.filter(
                                         CustomerDetails.customer_login_id
@@ -3281,6 +3295,7 @@ def employeeReturnItems():
                     EmployeeOrder.employee_id == employee_login_db.id,
                     EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
                 )
+                order_content_str = []
                 if emp_orders_db is not None:
                     order_head_db = OrderHead(price=0)
                     count = 0
@@ -3290,6 +3305,27 @@ def employeeReturnItems():
                             OrderLine.type == False,
                         ).first()
                         if order_line_db is not None:
+                            if len(order_content_str) <= 0:
+                                order_content_str.append(
+                                    "{}\t\t{}\t\t{}\t\t{}".format(
+                                        "Product Name",
+                                        "Quantity",
+                                        "Price per Unit",
+                                        "Subtotal",
+                                    )
+                                )
+                            product_db = Product.query.filter(
+                                Product.id == order_line_db.product_id
+                            ).first()
+                            if product_db is not None:
+                                order_content_str.append(
+                                    "{}\t\t\t{}\t\t\t{}\t\t\t{}".format(
+                                        product_db.name,
+                                        order_line_db.quant,
+                                        order_line_db.price,
+                                        order_line_db.quant * order_line_db.price,
+                                    )
+                                )
                             count = count + 1
                             emp_order_db.status = OrderStatus.COMPLETE
                             order_head_db.price = order_head_db.price + (
@@ -3306,6 +3342,43 @@ def employeeReturnItems():
 
                     if count > 0:
                         db.session.refresh(order_head_db)
+
+                        emp_details_db = EmployeeDetails.query.filter(
+                            EmployeeDetails.employee_login_id == employee_login_db.id,
+                        ).first()
+                        if emp_details_db is not None:
+                            body = f"""
+                            Hi {emp_details_db.first_name},
+                        
+                            You have placed an Order from POS => Return Order.
+                        
+                            Order ID : {order_head_db.id}
+                        
+                            Order Contents are
+                            """
+                            for order in order_content_str:
+                                body = (
+                                    body
+                                    + f"""
+                            {order}\n"""
+                                )
+                            body = (
+                                body
+                                + f"""
+                            Total : {order_head_db.price}
+                        
+                            Thanks and Regards,
+                            Bot.
+                            """
+                            )
+
+                            email_send_ref = EmailSend(
+                                thread_name="Employee Order Creation",
+                                email=emp_details_db.emailID,
+                                subject=f"{server_name} | Employee | Order Created | Return | {order_head_db.id}",
+                                body=body,
+                            )
+                            email_send_ref.start()
 
                         emp_orders_db = EmployeeOrder.query.filter(
                             EmployeeOrder.employee_id == employee_login_db.id,
