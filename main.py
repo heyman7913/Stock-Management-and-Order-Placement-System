@@ -1923,6 +1923,10 @@ def employeePosTerminalAdd():
                                 flash(f"Product: {product_db.name}")
                                 flash(f"Stock Left: {product_db.available_quant - 1}")
                             db.session.add(order_line_db)
+                            product_db.available_quant = (
+                                product_db.available_quant
+                                - employee_pos_terminal_add_ref.quantity
+                            )
                         else:
                             flash(f"Product: {product_db.name}")
                             flash(f"Stock Left: {product_db.available_quant}")
