@@ -6,3 +6,4 @@ secret.json
 *.db-journal
 *pycache*
 Backup-codes-lodhachemist.txt
+ComputerScienceIA.code-workspace
