@@ -20,9 +20,18 @@
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="44cea790-7e81-4e68-8be1-7b3bf9e3590b" object-ref="schemas/main/tables/employee_login" />
+    </open-files>
+  </component>
+  <component name="DBNavigator.Project.DatabaseSessionManager">
+    <connection id="44cea790-7e81-4e68-8be1-7b3bf9e3590b" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="44cea790-7e81-4e68-8be1-7b3bf9e3590b" dataset="main.admin_login" active-filter-id="" />
+    <filter-actions connection-id="44cea790-7e81-4e68-8be1-7b3bf9e3590b" dataset="main.employee_details" active-filter-id="" />
+    <filter-actions connection-id="44cea790-7e81-4e68-8be1-7b3bf9e3590b" dataset="main.admin_details" active-filter-id="" />
+    <filter-actions connection-id="44cea790-7e81-4e68-8be1-7b3bf9e3590b" dataset="main.employee_login" active-filter-id="" />
     <filter-actions connection-id="44cea790-7e81-4e68-8be1-7b3bf9e3590b" dataset="main.customer_details" active-filter-id="EMPTY_FILTER">
       <filter id="496c85de-0b86-4522-819a-55fb170f9a2e" name="1" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="id" operator="=" value="1" active="true" />
@@ -44,7 +53,7 @@
           <description value="" />
           <database-type value="SQLITE" />
           <config-type value="BASIC" />
-          <database-version value="3.41" />
+          <database-version value="3.44" />
           <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />
@@ -96,7 +105,14 @@
           <max-connection-pool-size value="7" />
           <alternative-statement-delimiter value="" />
         </details>
-        <object-filters hide-empty-schemas="false" hide-pseudo-columns="false">
+        <debugger>
+          <compile-dependencies value="true" />
+          <tcp-driver-tunneling value="false" />
+          <tcp-host-address value="" />
+          <tcp-port-from value="4000" />
+          <tcp-port-to value="4999" />
+        </debugger>
+        <object-filters hide-empty-schemas="false" hide-pseudo-columns="false" hide-audit-columns="false">
           <object-type-filter>
             <object-type name="SCHEMA" enabled="true" />
             <object-type name="USER" enabled="true" />
@@ -274,6 +290,7 @@
       <confirmations>
         <save-changes value="false" />
         <revert-changes value="true" />
+        <exit-on-changes value="ASK" />
       </confirmations>
     </code-editor-settings>
     <code-completion-settings>
@@ -474,7 +491,6 @@
       </compiler>
       <debugger>
         <debugger-type value="JDBC" />
-        <use-generic-runners value="true" />
       </debugger>
     </operation-settings>
     <ddl-file-settings>

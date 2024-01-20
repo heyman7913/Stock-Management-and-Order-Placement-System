@@ -8,6 +8,10 @@ Commands:
 ```
 python -m pip install -r requirements.txt
 ```
+> Activate virtualenv :
+```
+source venv/bin/activate
+```
 > Test server :
 ```
 python run.py
