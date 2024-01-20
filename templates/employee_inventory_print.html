@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+<!--        <script type="text/javascript" src="{{ url_for('static', filename = 'js/employee_inventory.js' ) }}"></script>-->
+		<meta charset="utf-8">
+		<meta name = "viewport" content="width=device-width, initial-scale=1">
+		<title>Lodha Chemist Emp Inventory</title>
+		<link rel="stylesheet" type = "text/CSS" href="{{ url_for('static', filename = 'css/employee_inventory.css' ) }}">
+		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	</head>
+    <body>
+    <p id="head"></p>
+    <main>
+        <div  class="inventoryTable" style = "margin-top: 160px; margin-left: 60px;">
+            <h3 style="position: fixed; margin-top: -70px;">Inventory Details</h3>
+            <table id ="inventoryTable">
+                <tr style="position: fixed; margin-top: -50px;">
+                    <th>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Price(₹)/Unit</th>
+                    <th>Quantity Available</th>
+                    <th>Shelf Location</th>
+                    <th>Accept Returns</th>
+                    <th>Reorder Quantity</th>
+                </tr>
+                {% for item in data %}
+                <tr>
+                    <td>{{item.id}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.price}}</td>
+                    <td>{{item.quant_a}}</td>
+                    <td>{{item.shelf}}</td>
+                    <td>{{item.returns}}</td>
+                    <td>{{item.quant_r}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </main>
+    </body>
+</html>

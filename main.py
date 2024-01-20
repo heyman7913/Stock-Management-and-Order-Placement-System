@@ -1719,22 +1719,31 @@ def employeeInventoryPrint():
                     page_name.split(".")[0], random.choice([x for x in range(1, 1000)])
                 )
                 file_path = os.path.join(PROJECT_DIR, "temp_files", page_name)
-                pdfkit.from_string(html_code, file_path)
-                pdf_bin = None
-                with open(file_path, "r") as pdf_file:
-                    pdf_bin = pdf_file.read()
-                if pdf_bin is not None:
-                    return Response(
-                        pdf_bin,
-                        mimetype="application/pdf",
-                        headers={
-                            "Content-disposition": "attachment; filename=inventory.pdf"
-                        },
+                try:
+                    pdfkit.from_string(
+                        html_code, file_path, options={"enable-local-file-access": ""}
                     )
-                else:
+                except Exception as e:
+                    print("PDF generaion error : ", str(e))
                     page_name = "employee_inventory.html"
                     path = os.path.join(page_name)
                     return render_template(path, data=data)
+                else:
+                    pdf_bin = None
+                    with open(file_path, "rb") as pdf_file:
+                        pdf_bin = pdf_file.read()
+                    if pdf_bin is not None:
+                        return Response(
+                            pdf_bin,
+                            mimetype="application/pdf",
+                            headers={
+                                "Content-disposition": "attachment; filename=inventory.pdf"
+                            },
+                        )
+                    else:
+                        page_name = "employee_inventory.html"
+                        path = os.path.join(page_name)
+                        return render_template(path, data=data)
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
