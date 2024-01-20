@@ -1731,9 +1731,10 @@ def employeeInventoryPrint():
                             "Content-disposition": "attachment; filename=inventory.pdf"
                         },
                     )
-                page_name = "employee_inventory.html"
-                path = os.path.join(page_name)
-                return render_template(path, data=data)
+                else:
+                    page_name = "employee_inventory.html"
+                    path = os.path.join(page_name)
+                    return render_template(path, data=data)
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
