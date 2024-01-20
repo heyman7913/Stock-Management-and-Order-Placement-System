@@ -10,9 +10,19 @@ import string
 import calendar
 from pathlib import Path
 from time import sleep
+from ironpdf import *
 
 # from cryptography.fernet import Fernet
-from flask import Flask, render_template, abort, request, make_response, url_for, flash
+from flask import (
+    Flask,
+    render_template,
+    abort,
+    request,
+    make_response,
+    url_for,
+    flash,
+    Response,
+)
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Column, DateTime, desc
@@ -1666,6 +1676,64 @@ def employeeInventory():
                 return redirect, 302
         else:
             # No Cookie
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
+            return redirect, 302
+
+    else:
+        abort(401)
+
+
+@app.route("/employee/inventoryprint", methods=[GET])
+def employeeInventoryPrint():
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                products_db = Product.query.all()
+                data = []
+                for product in products_db:
+                    data.append(
+                        {
+                            "id": product.id,
+                            "name": product.name,
+                            "price": product.price,
+                            "quant_a": product.available_quant,
+                            "shelf": product.shelf_loc,
+                            "returns": "Yes" if product.accp_return is True else "No",
+                            "quant_r": product.reorder_quant,
+                        }
+                    )
+                page_name = "employee_inventory_print.html"
+                path = os.path.join(page_name)
+                html_code = render_template(path, data=data)
+                renderer = ChromePdfRenderer()
+                pdf = renderer.RenderHtmlAsPdf(html_code)
+                return Response(
+                    csv,
+                    mimetype="application/pdf",
+                    headers={
+                        "Content-disposition": "attachment; filename=inventory.pdf"
+                    },
+                )
+                page_name = "employee_inventory.html"
+                path = os.path.join(page_name)
+                return render_template(path, data=data)
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
+                return redirect, 302
+        else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
