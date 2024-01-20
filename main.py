@@ -1715,10 +1715,19 @@ def employeeInventoryPrint():
                 page_name = "employee_inventory_print.html"
                 path = os.path.join(page_name)
                 html_code = render_template(path, data=data)
-                page_name = "{}_{}.pdf".format(
+                page_name = "{}_{}.htm".format(
                     page_name.split(".")[0], random.choice([x for x in range(1, 1000)])
                 )
                 file_path = os.path.join(PROJECT_DIR, "temp_files", page_name)
+                # return Response(
+                #     html_code,
+                #     mimetype="text/html",
+                #     headers={
+                #         "Content-disposition": "attachment; filename={}".format(
+                #             page_name
+                #         )
+                #     },
+                # )
                 try:
                     pdfkit.from_string(
                         html_code, file_path, options={"enable-local-file-access": ""}
