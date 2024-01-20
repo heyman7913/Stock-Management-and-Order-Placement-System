@@ -143,4 +143,18 @@ if __name__ == "__main__":
                 pass
 
         else:
+            dir_path = os.path.join(PROJECT_DIR, "temp_files")
+            for filename in os.listdir(dir_path):
+                if filename == "do not delete":
+                    continue
+                else:
+                    file_path = os.path.join(dir_path, filename)
+                    try:
+                        if os.path.isfile(file_path) or os.path.islink(file_path):
+                            os.unlink(file_path)
+                    except Exception as e:
+                        print("Failed to delete %s. Reason: %s" % (file_path, e))
+                    else:
+                        print("Temp file deleted : ", filename)
+            print("Temp file(s) deleted")
             app.run(host=server_host, port=server_port, debug=server_stat)
