@@ -3,14 +3,24 @@ ___
 #### By Himansh Chitkara
 ##### Guided by akash-sgta
 ___
-Commands:
-> Install prerequisites :
+OS Commands:
+> Install wkhtmltopdf (Debian/Ubuntu:):
 ```
-python -m pip install -r requirements.txt
+sudo apt-get install wkhtmltopdf
 ```
+> Install wkhtmltopdf (macOS):
+```
+brew install homebrew/cask/wkhtmltopdf
+```
+___
+Python Commands:
 > Activate virtualenv :
 ```
 source venv/bin/activate
+```
+> Install prerequisites :
+```
+python -m pip install -r requirements.txt
 ```
 > Test server :
 ```

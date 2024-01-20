@@ -8,9 +8,9 @@ import random
 import sqlite3
 import string
 import calendar
-from pathlib import Path
+import pdfkit
 from time import sleep
-from ironpdf import *
+from pathlib import Path
 
 # from cryptography.fernet import Fernet
 from flask import (
@@ -1715,15 +1715,22 @@ def employeeInventoryPrint():
                 page_name = "employee_inventory_print.html"
                 path = os.path.join(page_name)
                 html_code = render_template(path, data=data)
-                renderer = ChromePdfRenderer()
-                pdf = renderer.RenderHtmlAsPdf(html_code)
-                return Response(
-                    csv,
-                    mimetype="application/pdf",
-                    headers={
-                        "Content-disposition": "attachment; filename=inventory.pdf"
-                    },
+                page_name = "{}_{}.pdf".format(
+                    page_name.split(".")[0], random.choice([x for x in range(1, 1000)])
                 )
+                file_path = os.path.join(PROJECT_DIR, "temp_files", page_name)
+                pdfkit.from_string(html_code, file_path)
+                pdf_bin = None
+                with open(file_path, "r") as pdf_file:
+                    pdf_bin = pdf_file.read()
+                if pdf_bin is not None:
+                    return Response(
+                        pdf_bin,
+                        mimetype="application/pdf",
+                        headers={
+                            "Content-disposition": "attachment; filename=inventory.pdf"
+                        },
+                    )
                 page_name = "employee_inventory.html"
                 path = os.path.join(page_name)
                 return render_template(path, data=data)
