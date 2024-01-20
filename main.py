@@ -1715,7 +1715,7 @@ def employeeInventoryPrint():
                 page_name = "employee_inventory_print.html"
                 path = os.path.join(page_name)
                 html_code = render_template(path, data=data)
-                page_name = "{}_{}.htm".format(
+                page_name = "{}_{}.html".format(
                     page_name.split(".")[0], random.choice([x for x in range(1, 1000)])
                 )
                 file_path = os.path.join(PROJECT_DIR, "temp_files", page_name)
