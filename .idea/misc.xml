@@ -3,7 +3,7 @@
   <component name="Black">
     <option name="enabledOnReformat" value="true" />
     <option name="enabledOnSave" value="true" />
-    <option name="sdkUUID" value="eb9a6c2b-4785-4ade-bdfb-49ed7f09b240" />
+    <option name="sdkName" value="Python 3.10 (ComputerScienceIA)" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10 (ComputerScienceIA)" project-jdk-type="Python SDK" />
   <component name="PyCharmProfessionalAdvertiser">

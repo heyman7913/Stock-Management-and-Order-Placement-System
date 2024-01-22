@@ -8,11 +8,21 @@ import random
 import sqlite3
 import string
 import calendar
-from pathlib import Path
+import pdfkit
 from time import sleep
+from pathlib import Path
 
 # from cryptography.fernet import Fernet
-from flask import Flask, render_template, abort, request, make_response, url_for, flash
+from flask import (
+    Flask,
+    render_template,
+    abort,
+    request,
+    make_response,
+    url_for,
+    flash,
+    Response,
+)
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Column, DateTime, desc
@@ -1666,6 +1676,81 @@ def employeeInventory():
                 return redirect, 302
         else:
             # No Cookie
+            cookies = [
+                [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+            ]
+            redirect = _redirect(destination="employee_signin", cookies=cookies)
+            return redirect, 302
+
+    else:
+        abort(401)
+
+
+@app.route("/employee/inventoryprint", methods=[GET])
+def employeeInventoryPrint():
+    req_method = request.method
+    req_cookies = _get_cookies(request.cookies, [AUTH_COOKIE_EMP])
+
+    if req_method == GET:
+        if req_cookies[AUTH_COOKIE_EMP] is not None:
+            # Check Cookie
+            employee_login_db = EmployeeLogin.query.filter(
+                EmployeeLogin.user_name == req_cookies[AUTH_COOKIE_EMP],
+            ).first()
+            if employee_login_db is not None:
+                products_db = Product.query.all()
+                data = []
+                for product in products_db:
+                    data.append(
+                        {
+                            "id": product.id,
+                            "name": product.name,
+                            "price": product.price,
+                            "quant_a": product.available_quant,
+                            "shelf": product.shelf_loc,
+                            "returns": "Yes" if product.accp_return is True else "No",
+                            "quant_r": product.reorder_quant,
+                        }
+                    )
+                page_name = "employee_inventory_print.html"
+                path = os.path.join(page_name)
+                html_code = render_template(path, data=data)
+                page_name = "{}_{}.pdf".format(
+                    page_name.split(".")[0], random.choice([x for x in range(1, 1000)])
+                )
+                file_path = os.path.join(PROJECT_DIR, "temp_files", page_name)
+                try:
+                    pdfkit.from_string(
+                        html_code, file_path, options={"enable-local-file-access": ""}
+                    )
+                except Exception as e:
+                    print("PDF generaion error : ", str(e))
+                    page_name = "employee_inventory.html"
+                    path = os.path.join(page_name)
+                    return render_template(path, data=data)
+                else:
+                    pdf_bin = None
+                    with open(file_path, "rb") as pdf_file:
+                        pdf_bin = pdf_file.read()
+                    if pdf_bin is not None:
+                        return Response(
+                            pdf_bin,
+                            mimetype="application/pdf",
+                            headers={
+                                "Content-disposition": "attachment; filename=inventory.pdf"
+                            },
+                        )
+                    else:
+                        page_name = "employee_inventory.html"
+                        path = os.path.join(page_name)
+                        return render_template(path, data=data)
+            else:
+                cookies = [
+                    [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
+                ]
+                redirect = _redirect(destination="employee_signin", cookies=cookies)
+                return redirect, 302
+        else:
             cookies = [
                 [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
             ]
