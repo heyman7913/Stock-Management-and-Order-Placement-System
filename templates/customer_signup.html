@@ -21,11 +21,11 @@
             </tr>
             <tr>
                 <label for="email"><b>Email</b></label>
-                <input type="text" placeholder="Enter Email" name="email" required>
+                <input type="email" placeholder="Enter Email" name="email" required>
             </tr>
             <tr>
                 <label for="mobile"><b>Mobile Number</b></label>
-                <input type="tel" placeholder="10 Digit Mobile Number" name="mobile" required maxlength="10"></input>
+                <input type="tel" placeholder="10 Digit Mobile Number" name="mobile" required maxlength="10" pattern="[0-9]{10}"></input>
             </tr>
             <tr>
                 <label for="address"><b>Home Address</b></label>
@@ -33,10 +33,10 @@
             </tr>
             <tr>
                 <label for="psw"><b>Password</b></label>
-                <input type="password" placeholder="Enter Password - Minimum 8 characters" id="psw" name="psw" required minlength="8">
+                <input type="password" placeholder="Enter Password - Minimum 8 characters" id="psw" name="psw" required minlength="8" onchange="checkMatching()">
 
                 <label for="psw-repeat"><b>Repeat Password</b></label>
-                <input type="password" placeholder="Repeat Password" id="psw-repeat" name="psw-repeat" required>
+                <input type="password" placeholder="Repeat Password" id="psw-repeat" name="psw-repeat" onchange="checkMatching()" required>
             </tr>
         </table>
         <!--
@@ -57,7 +57,7 @@
 
         <div class="clearfix">
           <button type="button" class="cancelbtn" onclick="window.location.href = '/customer'">Cancel</button>
-          <button type="submit" id="submitBtn" class="signupbtn">Sign Up</button>
+          <button type="submit" id="submitBtn" class="signupbtn" disabled="true">Sign Up</button>
         </div>
       </div>
     </form>

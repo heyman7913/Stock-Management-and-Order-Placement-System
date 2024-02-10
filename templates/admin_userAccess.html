@@ -77,19 +77,19 @@
                 <tr>
                     <div class="inputBoxes">
                         <td>
-                            <input type="text" id="EmpFirstName" name="first_name" placeholder="Emp First Name" required>
+                            <input type="text" id="EmpFirstName" name="first_name" placeholder="Emp First Name" required maxlength="50">
                         </td>
                         <td>
-                            <input type="text" id="EmpLastName" name="last_name" placeholder="Emp Last Name" required>
+                            <input type="text" id="EmpLastName" name="last_name" placeholder="Emp Last Name" required maxlength="50">
                         </td>
                         <td>
-                            <input type="text" id="EmpEmailID" name="email" placeholder="Emp Email ID">
+                            <input type="email" id="EmpEmailID" name="email" placeholder="Emp Email ID" required>
                         </td>
                         <td>
-                            <input type="number" id="EmpMobileNum" name="mobile" placeholder="Emp Mobile Number">
+                            <input type="tel" id="EmpMobileNum" name="mobile" placeholder="Emp Mobile Number" pattern="[0-9]{10}" required maxlength="10">
                         </td>
                         <td>
-                            <input type="text" id="EmpPassword" name="password" placeholder="Password">
+                            <input type="password" id="EmpPassword" name="password" placeholder="Password" required>
                         </td>
                     </div>
                 </tr>
