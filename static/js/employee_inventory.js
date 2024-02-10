@@ -82,3 +82,35 @@ var c=1;
 				}
 
 			};*/
+			/*function highlight_row(){
+			    table = document.getElementById("inventoryTable");
+			    var checkRowHighlight = false;
+			    for (var i = 0, row; row = table.rows[i]; i++){
+			        if (row.cells[3]<row.cells[6]){
+			            checkRowHighlight = true;
+			        }
+			        else{
+			            checkRowHighlight = false;
+			        }
+			        if (checkRowHighlight = true){
+			            row.style.backgroundColor = "yellow";
+			        }
+			        checkRowHighlight = false;
+			    }
+			}*/
+			function highlight_row(){
+			    console.log("function called");
+                var table = document.getElementById("inventoryTable");
+                for (var i = 0; i < table.rows.length; i++){
+                    var row = table.rows[i];
+                    var cell3Value = parseFloat(row.cells[3].innerText); // Get the numerical value from cell 3
+                    var cell6Value = parseFloat(row.cells[6].innerText); // Get the numerical value from cell 6
+                    if (!isNaN(cell3Value) && !isNaN(cell6Value) && cell3Value < cell6Value){
+                         row.style.backgroundColor = "yellow";
+                    } else {
+                         row.style.backgroundColor = ""; // Reset background color if condition is not met
+        }
+    }
+}
+
+

@@ -5,6 +5,22 @@
 		<meta charset="utf-8">
 		<meta name = "viewport" content="width=device-width, initial-scale=1">
 		<title>Lodha Chemist Emp Inventory</title>
+        <script>
+            function highlight_row(){
+			    console.log("function called");
+                var table = document.getElementById("inventoryTable");
+                for (var i = 0; i < table.rows.length; i++){
+                    var row = table.rows[i];
+                    var cell3Value = parseFloat(row.cells[3].innerText); // Get the numerical value from cell 3
+                    var cell6Value = parseFloat(row.cells[6].innerText); // Get the numerical value from cell 6
+                    if (!isNaN(cell3Value) && !isNaN(cell6Value) && cell3Value < cell6Value){
+                         row.style.backgroundColor = "yellow";
+                    } else {
+                         row.style.backgroundColor = ""; // Reset background color if condition is not met
+        }
+    }
+}
+        </script>
 		<style>
             *{
                 padding: 0;
@@ -160,7 +176,7 @@
 		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
-    <body>
+    <body onload="highlight_row()">
     <p id="head"></p>
     <main>
         <svg version="1.0" xmlns="http://www.w3.org/2000/svg"

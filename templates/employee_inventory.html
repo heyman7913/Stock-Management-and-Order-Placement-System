@@ -9,7 +9,7 @@
 		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
-	<body>
+	<body onload="highlight_row()">
         <header>
 			<a href="#" class="logo"><img class="logoImg" src="{{ url_for('static', filename = 'images/logo.png') }}"></a>
 			<ul class ="navbar">
@@ -27,13 +27,13 @@
         <br>
         <br>
         <br>
-        <div  class="inventoryTable" style = "margin-top: 160px; margin-left: 60px;">
+        <div  class="inventoryTable" style = "margin-top: 160px; margin-left: 60px;" >
             <h3 style="position: fixed; margin-top: -70px;">Inventory Details&nbsp;&nbsp;
                 <a href = "/employee/inventoryprint">
                     <i style="font-size:24px" class="fa">&#xf02f;</i>
                 </a>
             </h3>
-            <table id ="inventoryTable">
+            <table id ="inventoryTable" >
                 <tr style="position: relative; margin-top: -50px;">
                     <th>Product ID</th>
                     <th>Product Name</th>
