@@ -39,7 +39,7 @@
                     <th>Sub Total(₹)</th>
                     <th>Delete Line</th>
                 </tr>
-                {% for item in data %}
+                {% for item in data.list %}
                 <tr>
                     <td>{{item.id}}</td>
                     <td>{{item.name}}</td>
@@ -71,7 +71,7 @@
                 {% endfor %}
             </table>
         </div>
-        <p id = "grandTotal"><strong>Grand Total</strong></p>
+        <p id = "grandTotal"><strong>Grand Total</strong>{{ data.gtotal }}</p>
         <form action="/employee/posTerminalAdd/" method="post">
             <h3 style="position: fixed; margin-left: 1200px; margin-top: -475px;">To add items into the POS Terminal, <br>please enter their product ID  <br>below and click add item to cart.</h3>
             <table class = "inputBoxes" style="position: fixed; margin-left: 1200px; margin-top: -400px;">
