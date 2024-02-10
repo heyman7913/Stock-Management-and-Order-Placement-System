@@ -2265,6 +2265,7 @@ def employeePosTerminal():
                 )
 
                 order_lines = []
+                order_total = 0
                 if employee_orders_db is not None and employee_orders_db.count() > 0:
                     count = 0
                     for employee_order in employee_orders_db:
@@ -2293,10 +2294,15 @@ def employeePosTerminal():
                                     * order_line_db.quant,
                                 }
                             )
+                            order_total = order_total + (
+                                order_line_db.price * order_line_db.quant
+                            )
 
                 page_name = "employee_posTerminal.html"
                 path = os.path.join(page_name)
-                return render_template(path, data=order_lines)
+                return render_template(
+                    path, data={"list": order_lines, "gtotal": order_total}
+                )
             else:
                 cookies = [
                     [AUTH_COOKIE_EMP, BLANK, EXPIRE_NOW],
