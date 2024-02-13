@@ -105,9 +105,12 @@ var c=1;
                     var row = table.rows[i];
                     var cell3Value = parseFloat(row.cells[3].innerText); // Get the numerical value from cell 3
                     var cell6Value = parseFloat(row.cells[6].innerText); // Get the numerical value from cell 6
-                    if (!isNaN(cell3Value) && !isNaN(cell6Value) && cell3Value < cell6Value){
+                    if (!isNaN(cell3Value) && cell3Value === 0.0) { // Check if quantity is 0
+                           row.style.backgroundColor = "red"; // Highlight row in red if quantity is 0
+                    }else if (!isNaN(cell3Value) && !isNaN(cell6Value) && cell3Value < cell6Value){
                          row.style.backgroundColor = "yellow";
-                    } else {
+                    }
+                    else {
                          row.style.backgroundColor = ""; // Reset background color if condition is not met
                     }
 
