@@ -8,3 +8,5 @@ secret.json
 Backup-codes-lodhachemist.txt
 ComputerScienceIA.code-workspace
 /temp_files/employee_inventory_print_*
+/.idea/runConfigurations/run.xml
+*.iml
