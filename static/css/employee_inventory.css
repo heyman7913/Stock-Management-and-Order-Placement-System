@@ -145,6 +145,7 @@ td{
 .addItem:hover{
     background-color: rgb(105, 225, 105);
 }
+
 .deleteButton:hover{
-    background-color: rgb(214, 53, 53);
+    background-color: red;
 }
