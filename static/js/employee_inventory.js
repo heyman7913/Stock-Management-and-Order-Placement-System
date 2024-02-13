@@ -109,8 +109,11 @@ var c=1;
                          row.style.backgroundColor = "yellow";
                     } else {
                          row.style.backgroundColor = ""; // Reset background color if condition is not met
-        }
-    }
-}
+                    }
 
+                }
+            }
+            function confirmDelete() {
+                    return confirm("Are you sure you want to delete this item?");
+            }
 

@@ -62,11 +62,17 @@
                         </a>
                     </td>
                     <td>
-                        <a href="/employee/delItemInfo/{{item.id}}">
-                            <button class="deleteButton">
+                        <a href="/employee/delItemInfo/{{item.id}}" onclick="return confirmDelete();">
+                            <button class="deleteButton" onclick="deleteConfirmation()">
                                 <i class="ri-delete-bin-line"></i>
                             </button>
                         </a>
+
+                        <!--<a href="/employee/delItemInfo/{{item.id}}">
+                            <button class="deleteButton" onclick="deleteConfirmation()">
+                                <i class="ri-delete-bin-line"></i>
+                            </button>
+                        </a>*/-->
                     </td>
                 </tr>
                 {% endfor %}
