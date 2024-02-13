@@ -57,3 +57,6 @@ var c = 1;
 					table.rows[element.parentNode.parentNode.rowIndex].cells[3].innerHTML = parseInt(table.rows[element.parentNode.parentNode.rowIndex].cells[3].innerHTML) - 1 + "<button class=\"plusBtn\" onclick = \"plusItem(this)\"><i class=\"fa fa-plus\"></i></button><button onclick = \"minusItem(this)\" class=\"minusBtn\" style=\"font-size:24px\"><i class=\"fa fa-minus\"></i></button>";
 				}
             }
+            function confirmDelete() {
+                    return confirm("Are you sure you want to delete this item from the cart?");
+            }
