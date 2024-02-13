@@ -124,7 +124,7 @@ button{
 .billingTable{
     height: 450px;
     overflow-y: auto;
-    width: 820px;
+    width: 960px;
     border-collapse: collapse;
     
 }
@@ -147,10 +147,28 @@ button{
 	color: black;
 }
 tr{
-    text-align: center;
+    text-align:center;
+    height: 60px;
+    padding: 8px; /* Add padding to cells */
+    vertical-align: middle; /* Align content vertically to the middle */
+    display: flex; /* Use flexbox */
+    align-items: center; /* Center content vertically */
+    justify-content: center;
 }
 td{
     padding: 5px;
-    width: 160px;
+    width:132px;
     text-align: center;
+    padding: 8px; /* Add padding to cells */
+    vertical-align: middle; /* Align content vertically to the middle */
+    display: flex; /* Use flexbox */
+    align-items: center; /* Center content vertically */
+    justify-content: center;
+}
+.grandTotalTable{
+    height: 50px;
+    overflow-y: auto;
+    width: 100px;
+    border-collapse: collapse;
+
 }

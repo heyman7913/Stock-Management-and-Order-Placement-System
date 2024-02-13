@@ -30,7 +30,7 @@
         <div class = "billingTable" style = "margin-top: 160px; margin-left: 60px;">
             <h3 style="position: fixed; margin-top: -70px;">Receipt Details</h3>
             <table id ="billingTable">
-                <tr style="position: fixed; margin-top: -50px;">
+                <tr style="position: fixed; margin-top: -50px; width: 800px;">
                     <th>Product ID</th>
                     <th>Product Name</th>
                     <th>Price(₹)/Unit</th>
@@ -61,7 +61,7 @@
                     <td>{{item.subtotal}}</td>
                     <td>
                         <a href="/employee/posTerminalDel/{{item.order_id}}" onclick="return confirmDelete();">
-                            <button class="deleteButton">
+                            <button class="deleteButton" onmouseover="this.style.backgroundColor='rgb(255, 2, 40)'" onmouseout="this.style.backgroundColor=''">
                                 <i class="ri-delete-bin-line"></i>
                             </button>
                         </a>
@@ -70,13 +70,18 @@
                 {% endfor %}
             </table>
         </div>
-        <table>
+        <div style="margin-left: 630px; margin-top:30px;">
+            <h3><strong>Grand Total:</strong>             {{data.gtotal}}</h3>
+        </div>
+
+        <!--
+        <table class="grandTotalTable">
             <tr>
-                <td><strong>Grand Total</strong></td>
+                <td ><strong>Grand Total</strong></td>
                 <td id="grandTotal">{{data.gtotal}}</td>
             </tr>
-
         </table>
+        -->
         <form action="/employee/posTerminalAdd/" method="post">
             <h3 style="position: fixed; margin-left: 1200px; margin-top: -475px;">To add items into the POS Terminal, <br>please enter their product ID  <br>below and click add item to cart.</h3>
             <table class = "inputBoxes" style="position: fixed; margin-left: 1200px; margin-top: -400px;">
