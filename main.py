@@ -1974,70 +1974,76 @@ def employeePosTerminalAdd():
                     Product.id == employee_pos_terminal_add_ref.prod_id,
                 ).first()
                 if product_db is not None:
-                    employee_orders_db = EmployeeOrder.query.filter(
-                        EmployeeOrder.employee_id == employee_login_db.id,
-                        EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
-                    )
-                    flag_prod_exists = False
-                    if employee_orders_db is not None:
-                        for employee_order_db in employee_orders_db:
-                            order_line_db = OrderLine.query.filter(
-                                OrderLine.id == employee_order_db.order_line_id,
-                                OrderLine.type == True,
-                            ).first()
-                            if order_line_db is not None:
-                                if order_line_db.product_id == product_db.id:
-                                    flag_prod_exists = True
-                            if flag_prod_exists:
-                                break
-                    if flag_prod_exists:
-                        flash(f"Product : [{product_db.id}] {product_db.name}")
-                        flash(f"Exists in Cart")
+                    if product_db.available_quant <= 0:
+                        flash(f"Product: {product_db.name}")
+                        flash(f"Stock Left: {product_db.available_quant}")
                     else:
-                        if product_db.available_quant > 0:
-                            order_line_db = OrderLine(
-                                quant=employee_pos_terminal_add_ref.quantity,
-                                price=product_db.price,
-                                product_id=employee_pos_terminal_add_ref.prod_id,
-                                type=True,
-                            )
-                            if (
-                                product_db.available_quant
-                                < product_db.reorder_quant / 2
-                            ):
-                                flash(f"Product: {product_db.name}")
-                                flash(f"Stock Left: {product_db.available_quant - 1}")
-                            db.session.add(order_line_db)
-                            product_db.available_quant = (
-                                product_db.available_quant
-                                - employee_pos_terminal_add_ref.quantity
-                            )
-                        else:
-                            flash(f"Product: {product_db.name}")
-                            flash(f"Stock Left: {product_db.available_quant}")
-                        try:
-                            db.session.commit()
-                        except sqlite3.OperationalError as e:
-                            print(f"Error : {str(e)}")
-                            sleep(1)
-                            db.session.commit()
-                        db.session.refresh(order_line_db)
-
-                        employee_order_db = EmployeeOrder(
-                            status=OrderStatus.ORDER_INCOMPLETE,
-                            order_line_id=order_line_db.id,
-                            employee_id=employee_login_db.id,
+                        employee_orders_db = EmployeeOrder.query.filter(
+                            EmployeeOrder.employee_id == employee_login_db.id,
+                            EmployeeOrder.status == OrderStatus.ORDER_INCOMPLETE,
                         )
-                        db.session.add(employee_order_db)
-                        try:
-                            db.session.commit()
-                        except sqlite3.OperationalError as e:
-                            print(f"Error : {str(e)}")
-                            sleep(1)
-                            db.session.commit()
+                        flag_prod_exists = False
+                        if employee_orders_db is not None:
+                            for employee_order_db in employee_orders_db:
+                                order_line_db = OrderLine.query.filter(
+                                    OrderLine.id == employee_order_db.order_line_id,
+                                    OrderLine.type == True,
+                                ).first()
+                                if order_line_db is not None:
+                                    if order_line_db.product_id == product_db.id:
+                                        flag_prod_exists = True
+                                if flag_prod_exists:
+                                    break
+                        if flag_prod_exists:
+                            flash(f"Product : [{product_db.id}] {product_db.name}")
+                            flash(f"Exists in Cart")
+                        else:
+                            if product_db.available_quant > 0:
+                                order_line_db = OrderLine(
+                                    quant=employee_pos_terminal_add_ref.quantity,
+                                    price=product_db.price,
+                                    product_id=employee_pos_terminal_add_ref.prod_id,
+                                    type=True,
+                                )
+                                if (
+                                    product_db.available_quant
+                                    < product_db.reorder_quant / 2
+                                ):
+                                    flash(f"Product: {product_db.name}")
+                                    flash(
+                                        f"Stock Left: {product_db.available_quant - 1}"
+                                    )
+                                db.session.add(order_line_db)
+                                product_db.available_quant = (
+                                    product_db.available_quant
+                                    - employee_pos_terminal_add_ref.quantity
+                                )
+                            else:
+                                flash(f"Product: {product_db.name}")
+                                flash(f"Stock Left: {product_db.available_quant}")
+                            try:
+                                db.session.commit()
+                            except sqlite3.OperationalError as e:
+                                print(f"Error : {str(e)}")
+                                sleep(1)
+                                db.session.commit()
+                            db.session.refresh(order_line_db)
 
-                        flash(f"Product : [{product_db.id}] {product_db.name}")
-                        flash(f"Added To Cart")
+                            employee_order_db = EmployeeOrder(
+                                status=OrderStatus.ORDER_INCOMPLETE,
+                                order_line_id=order_line_db.id,
+                                employee_id=employee_login_db.id,
+                            )
+                            db.session.add(employee_order_db)
+                            try:
+                                db.session.commit()
+                            except sqlite3.OperationalError as e:
+                                print(f"Error : {str(e)}")
+                                sleep(1)
+                                db.session.commit()
+
+                            flash(f"Product : [{product_db.id}] {product_db.name}")
+                            flash(f"Added To Cart")
                     cookies = [
                         [AUTH_COOKIE_EMP, req_cookies[AUTH_COOKIE_EMP], EXPIRE_1_WEEK],
                     ]
