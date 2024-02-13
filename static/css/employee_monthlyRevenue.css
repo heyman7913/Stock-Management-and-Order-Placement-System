@@ -86,7 +86,7 @@ th {
 	background-color:green;
 	Color:white;
 	font-size: 15px;
-    width: 300px;
+    width: 200px;
 	text-align:center;
 	border:1px solid black;
 	padding: 5px;
@@ -110,3 +110,21 @@ button{
 .showRev:hover{
     background-color: green; 
 }
+td{
+    padding: 5px;
+    width: 200px;
+    text-align: center;
+}
+select {
+            font-size: 16px; /* Set font size to 14 pixels */
+            width: 150px; /* Set the width of the select box */
+            padding: 8px; /* Add padding */
+            text-align: center; /* Center text horizontally */
+            border-radius: 5px; /* Add border radius */
+            appearance: auto;
+        }
+
+        /* Style the options in the select dropdown */
+        select option {
+            text-align: center; /* Center text horizontally */
+        }
