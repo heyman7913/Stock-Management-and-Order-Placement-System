@@ -37,7 +37,6 @@
                     <th>Quantity</th>
                     <th>Edit Quantity</th>
                     <th>Sub Total(₹)</th>
-                    <th>Delete Line</th>
                 </tr>
                 {% for item in data.list %}
                 <tr>
@@ -61,7 +60,7 @@
                     </td>
                     <td>{{item.subtotal}}</td>
                     <td>
-                        <a href="/employee/posTerminalDel/{{item.order_id}}">
+                        <a href="/employee/posTerminalDel/{{item.order_id}}" onclick="return confirmDelete();">
                             <button class="deleteButton">
                                 <i class="ri-delete-bin-line"></i>
                             </button>
@@ -71,7 +70,13 @@
                 {% endfor %}
             </table>
         </div>
-        <p id = "grandTotal"><strong>Grand Total</strong>{{ data.gtotal }}</p>
+        <table>
+            <tr>
+                <td><strong>Grand Total</strong></td>
+                <td id="grandTotal">{{data.gtotal}}</td>
+            </tr>
+
+        </table>
         <form action="/employee/posTerminalAdd/" method="post">
             <h3 style="position: fixed; margin-left: 1200px; margin-top: -475px;">To add items into the POS Terminal, <br>please enter their product ID  <br>below and click add item to cart.</h3>
             <table class = "inputBoxes" style="position: fixed; margin-left: 1200px; margin-top: -400px;">
@@ -90,10 +95,6 @@
                     {% endfor %}
                   {% endif %}
                 {% endwith %}
-                <!--
-                Styling of the button. Right-hand side of the screen. Fix margins and alignment. Check float.
-
-                -->
             </table>
         </form>
         <table class = "inputBoxes" style="position: fixed; margin-left: 1200px; margin-top: -200px;">
