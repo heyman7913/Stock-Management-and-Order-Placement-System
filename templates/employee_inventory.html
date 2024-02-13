@@ -27,14 +27,14 @@
         <br>
         <br>
         <br>
-        <div  class="inventoryTable" style = "margin-top: 160px; margin-left: 60px;" >
-            <h3 style="position: fixed; margin-top: -70px;">Inventory Details&nbsp;&nbsp;
+        <div  class="inventoryTable" style = "margin-top: 120px; margin-left: 60px;" >
+            <h3 style="position: fixed; margin-top: -60px; ">Inventory Details&nbsp;&nbsp;
                 <a href = "/employee/inventoryprint">
                     <i style="font-size:24px" class="fa">&#xf02f;</i>
                 </a>
             </h3>
-            <table id ="inventoryTable" >
-                <tr style="position: relative; margin-top: -50px;">
+            <table id ="inventoryTable">
+                <tr style="position: absolute; margin-top: -40px; z-index: 1;">
                     <th>Product ID</th>
                     <th>Product Name</th>
                     <th>Price(₹)/Unit</th>
@@ -67,23 +67,12 @@
                                 <i class="ri-delete-bin-line"></i>
                             </button>
                         </a>
-
-                        <!--<a href="/employee/delItemInfo/{{item.id}}">
-                            <button class="deleteButton" onclick="deleteConfirmation()">
-                                <i class="ri-delete-bin-line"></i>
-                            </button>
-                        </a>*/-->
                     </td>
                 </tr>
                 {% endfor %}
             </table>
         </div>
-        <!--
-        Check the styling aspect of the notification
-        Add code through JS for the row highlighting component.
-        Update the records and check if the color returns to normal
-        -->
-        <div style="color:red;">
+        <div style="color:red; margin-left: 10px;">
             {% with messages = get_flashed_messages() %}
               {% if messages %}
                 <ul class=flashes>
