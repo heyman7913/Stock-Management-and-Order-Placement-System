@@ -20,6 +20,21 @@
         }
     }
 }
+            function getDate(){
+                // Get today's date
+                var today = new Date();
+
+                // Extract the day, month, and year from today's date
+                var day = today.getDate();
+                var month = today.getMonth() + 1; // January is 0, so we add 1 to get the correct month
+                var year = today.getFullYear();
+
+                // Format the date as desired (e.g., MM/DD/YYYY)
+                var formattedDate = day + '/' + month + '/' + year;
+
+                // Editing the PDF document
+                document.getElementById('todaysDate').textContent = "Date of Inventory Report Generation: " + formattedDate;
+            }
         </script>
 		<style>
             *{
@@ -44,7 +59,7 @@
                 background-blend-mode: multiply;
                 background-size: 100% 100%;
                 color: var(--text-color) ;
-            }
+                }
             header{
                 position: fixed;
                 width: 100%;
@@ -106,14 +121,7 @@
                 font-size: 28px;
                 margin-right: 7px;
             }
-            #welcomeBox{
-                background-color: rgba(88, 153, 226, 0.5);
-                margin-top: 250px;
-                margin-left: 425px;
-                position: fixed;
-                width: 600px;
-                height: 300px;
-            }
+
             p{
                 font-size: 30px;
             }
@@ -133,31 +141,8 @@
                 border:1px solid black;
                 padding: 5px;
             }
-            button{
-                border: solid;
-                border-width: medium;
-                text-align: center;
-                border-radius: 5px;
-                transition-duration: 0.5s;
-                cursor: pointer;
-                text-align: center;
-                display: inline-block;
-                padding:5px;
-                margin-left: 2%;
-                margin-right: 2%;
-                margin-top: 2%;
-                margin-bottom:2%;
-                position: static;
-                font-size: 20px;
-            }
-            .inputTable{
-                margin: 40px 0px 0px 150px;
-                position: fixed;
-            }
-            .buttonsTable{
-                margin: 20px 0px 0px 88%;
-                position: fixed;
-            }
+
+
             tr{
                 text-align: center;
             }
@@ -166,19 +151,13 @@
                 width: 160px;
                 text-align: center;
             }
-            .addItem:hover{
-                background-color: rgb(105, 225, 105);
-            }
-            .deleteButton:hover{
-                background-color: rgb(214, 53, 53);
-            }
         </style>
 		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
-    <body onload="highlight_row()">
+    <body onload="highlight_row(); getDate()">
     <p id="head"></p>
-    <main>
+    <main style="margin-left: 40%;">
         <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
          width="100.000000pt" height="100.000000pt" viewBox="0 0 305.000000 100.000000"
          preserveAspectRatio="xMidYMid meet">
@@ -255,9 +234,10 @@
             36 -83 47 -117 13z"/>
             </g>
         </svg>
-        <div  class="inventoryTable" style = "margin-top: 160px; margin-left: 60px;">
-            <h3 style="position: fixed; margin-top: -70px;">Inventory Details</h3>
-            <table id ="inventoryTable">
+        <h3 style="margin-left: 29%;" id = "todaysDate" ></h3>
+        <div  class="inventoryTable" style = "margin-top: 50px; text-align:center; margin-left:10%;">
+            <h3 style="position: fixed;  margin-top: -30px ;margin-left: 30%">Inventory Details</h3>
+            <table  id ="inventoryTable">
                 <tr style="position: relative; margin-top: -50px;">
                     <th>Product ID</th>
                     <th>Product Name</th>
