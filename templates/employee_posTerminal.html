@@ -70,27 +70,21 @@
                 {% endfor %}
             </table>
         </div>
-        <div style="margin-left: 630px; margin-top:30px;">
-            <h3><strong>Grand Total:</strong>             {{data.gtotal}}</h3>
+        <div style="margin-left: 595px; margin-top:30px; width: 300px;">
+            <h3><strong>Grand Total(₹):</strong>        {{data.gtotal}}</h3>
         </div>
 
-        <!--
-        <table class="grandTotalTable">
-            <tr>
-                <td ><strong>Grand Total</strong></td>
-                <td id="grandTotal">{{data.gtotal}}</td>
-            </tr>
-        </table>
-        -->
         <form action="/employee/posTerminalAdd/" method="post">
-            <h3 style="position: fixed; margin-left: 1200px; margin-top: -475px;">To add items into the POS Terminal, <br>please enter their product ID  <br>below and click add item to cart.</h3>
+            <h3 style="position: fixed; display: flex; margin-left: 1060px; margin-top: -475px; ">To add items into the POS Terminal,please enter their product ID below and click add item to cart.</h3>
             <table class = "inputBoxes" style="position: fixed; margin-left: 1200px; margin-top: -400px;">
+                <tr style="margin-top: 20px;">
+                    <td>
+                        <input type="number" min = "1" id="productID" name="productID" placeholder="Product ID" required style ="height: 40px; font-size: 20px;display: flex; margin-left: -160px;">
+                    </td>
+                </tr>
                 <tr>
                     <td>
-                        <input type="number" min = "1" id="productID" name="productID" placeholder="Product ID" required style ="height: 40px; font-size: 20px;">
-                    </td>
-                    <td>
-                        <button class="addItem" type="submit">Add Item to Cart</button>
+                        <button class="addItem" type="submit" style="white-space:nowrap; margin-left: -160px;">Add Item to Cart</button>
                     </td>
                 </tr>
                 {% with messages = get_flashed_messages() %}
@@ -102,7 +96,7 @@
                 {% endwith %}
             </table>
         </form>
-        <table class = "inputBoxes" style="position: fixed; margin-left: 1200px; margin-top: -200px;">
+        <table class = "inputBoxes" style="position: static; margin-left: 750px; white-space: nowrap;">
             <td>
                 <a href="/employee/posTerminalDel/0">
                     <button class="delItem" onmouseover="this.style.backgroundColor='rgb(255, 2, 40)'" onmouseout="this.style.backgroundColor=''">Clear Order</button>
@@ -110,7 +104,7 @@
             </td>
         </table>
         <form action="/employee/posTerminal/" method="post">
-            <table class = "inputBoxes" style="position: fixed; margin-left: 1200px; margin-top: -100px;">
+            <table class = "inputBoxes" style="position: static; display: flex; margin-left: 550px; margin-top:-62px; white-space: nowrap;">
                 <td>
                     <button class="addItem" type="submit">Submit Order</button>
                 </td>
