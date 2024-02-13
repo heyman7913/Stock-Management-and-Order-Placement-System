@@ -60,3 +60,6 @@ var c = 1;
             function confirmDelete() {
                     return confirm("Are you sure you want to delete this item from the cart?");
             }
+            function confirmClear() {
+                    return confirm("Are you sure you want to clear the cart?");
+            }
