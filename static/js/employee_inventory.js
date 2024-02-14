@@ -117,6 +117,6 @@ var c=1;
                 }
             }
             function confirmDelete() {
-                    return confirm("Are you sure you want to delete this item?");
+                    return confirm("Are you sure you want to delete this item? \nWARNING THIS ACTION WILL REMOVE ALL OCCURENCES OF THIS ITEM IN PAST ORDERS");
             }
 
