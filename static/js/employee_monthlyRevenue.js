@@ -33,12 +33,29 @@ function openPopup(period, totalOrders, monthlyRevenue) {
                 </tbody>
             </table>
             <button class="close-btn" onclick="closePopup()">Close</button>
+            <button class="save-btn" onclick="savePopupAsImage()">Save as Image</button>
         </div>
         <div class="overlay" onclick="closePopup()"></div>
     `;
     document.body.insertAdjacentHTML('beforeend', tableContent);
 }
 
+function savePopupAsImage() {
+    var popup = document.querySelector('.popup');
+     var selectedMonth = document.getElementById("filterMonth").value;
+    console.log(selectedMonth);
+    var selectedYear = document.getElementById("yearDropdown").value;
+    console.log(selectedYear);
+
+    html2canvas(popup, {
+        onrendered: function(canvas) {
+            var link = document.createElement('a');
+            link.download = 'monthly_revenue_details_'+ selectedMonth + '_' + selectedYear + '.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    });
+}
 
         function closePopup() {
             var popup = document.querySelector('.popup');
