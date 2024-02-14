@@ -178,3 +178,16 @@ select {
         .popup button.close-btn:hover {
             background-color: red;
         }
+        .save-btn {
+    background-color: #007bff; /* Blue color */
+    color: #fff; /* White text */
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.save-btn:hover {
+    background-color: #0056b3; /* Darker shade of blue when hovered over */
+}
