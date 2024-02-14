@@ -55,3 +55,4 @@ function populateYearDropdown() {
             // Call this function when the "Filter Data" button is clicked
             openPopup();
         }
+
