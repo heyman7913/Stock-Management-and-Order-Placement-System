@@ -13,33 +13,31 @@ function populateYearDropdown() {
             yearDropdown.add(option);
         }
     }
-        function openPopup() {
-            var tableContent = `
-                <div class="popup">
-                    <h2>Monthly Revenue Details</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Month/Year</th>
-                                <th>Total Number of Orders</th>
-                                <th>Monthly Revenue</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>January 2024</td>
-                                <td>100</td>
-                                <td>$5000</td>
-                            </tr>
-                            <!-- Add more rows here if needed -->
-                        </tbody>
-                    </table>
-                    <button class="close-btn" onclick="closePopup()">Close</button>
-                </div>
-                <div class="overlay" onclick="closePopup()"></div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', tableContent);
-        }
+        function openPopup(period, totalOrders, monthlyRevenue) {
+    var tableContent = `
+        <div class="popup">
+            <h2>Monthly Revenue Details - ${period}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Total Number of Orders</th>
+                        <th>Monthly Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${totalOrders}</td>
+                        <td>${monthlyRevenue}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="close-btn" onclick="closePopup()">Close</button>
+        </div>
+        <div class="overlay" onclick="closePopup()"></div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', tableContent);
+}
+
 
         function closePopup() {
             var popup = document.querySelector('.popup');
@@ -52,7 +50,36 @@ function populateYearDropdown() {
         }
 
         function currentMonthRevenue() {
-            // Call this function when the "Filter Data" button is clicked
-            openPopup();
+    // Get selected month and year
+    var selectedMonth = document.getElementById("filterMonth").value;
+    console.log(selectedMonth);
+    var selectedYear = document.getElementById("yearDropdown").value;
+    console.log(selectedYear);
+
+    // Get the table element
+    var table = document.getElementById("monthlyRevenueTable");
+
+    // Get all rows from the table
+    var rows = table.getElementsByTagName("tr");
+
+    // Loop through all rows except the header row (index 0)
+    for (var i = 1; i < rows.length; i++) {
+        var row = rows[i];
+        var cells = row.getElementsByTagName("td");
+
+        // Check if the month and year match the selected values
+        if (cells.length >= 3 && cells[0].innerText === selectedMonth + "/" + selectedYear) {
+            // If match found, update the popup content with this row's data
+            var totalOrders = cells[1].innerText;
+            var monthlyRevenue = cells[2].innerText;
+
+            // Open popup with the selected month and year's data
+            openPopup(selectedMonth + "/" + selectedYear, totalOrders, monthlyRevenue);
+            return; // Exit the function after finding the match
         }
+    }
+
+    // If no matching data found, display a message or handle it accordingly
+    alert("No data found for the selected month and year.");
+}
 
