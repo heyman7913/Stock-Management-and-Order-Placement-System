@@ -33,7 +33,7 @@ function openPopup(period, totalOrders, monthlyRevenue) {
                 </tbody>
             </table>
             <button class="close-btn" onclick="closePopup()">Close</button>
-            <button class="save-btn" onclick="savePopupAsImage()">Save as Image</button>
+            <button class="save-btn" onclick="savePopupAsImage()">Download</button>
             <a href="mailto:?subject=Monthly Revenue Report - ${period}&body=Total Orders: ${totalOrders}%0D%0A Monthly Revenue: ${monthlyRevenue}" target="_blank">Share via Email</a>
         </div>
         <div class="overlay" onclick="closePopup()"></div>
