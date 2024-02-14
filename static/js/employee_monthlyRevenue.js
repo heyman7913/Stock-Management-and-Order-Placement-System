@@ -37,7 +37,7 @@ function populateYearDropdown() {
                     <button class="close-btn" onclick="closePopup()">Close</button>
                 </div>
                 <div class="overlay" onclick="closePopup()"></div>
-
+            `;
             document.body.insertAdjacentHTML('beforeend', tableContent);
         }
 
