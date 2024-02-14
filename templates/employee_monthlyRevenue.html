@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script text = "type/javascript" src="{{ url_for('static', filename = 'js/employee_monthlyRevenue.js') }}"></script>
 	</head>
-    <body onload="populateYearDropdown(); populateYearDropdown2(); populateYearDropdown3()">
+    <body onload="populateYearDropdown();">
         <header>
 			<a href="#" class="logo"><img class="logoImg" src="{{ url_for('static', filename = 'images/logo.png') }}"></a>
 			<ul class ="navbar">
@@ -48,19 +48,19 @@
             </table>
             <table style="display:flex;  ">
                 <tr>
-                    <div style="width:700px;margin-left: 650px;margin-top:80px;  position: fixed;">
+                    <div style="width:700px;margin-left: 650px;margin-top:-190px;  position: fixed;">
                         <h3>To filter data for a particular month, please fill in the form below.</h3>
                     </div>
                 </tr>
                 <tr>
                     <td>
-                        <div style="width:200px;margin-left: 730px; margin-top:120px; position: fixed;">
-                        <h3>Start Month</h3>
+                        <div style="width:200px;margin-left: 730px; margin-top:-120px; position: fixed;">
+                        <h3>Month</h3>
                         </div>
                     </td>
                     <td>
-                        <div style="width:200px; margin-left: 840px;margin-top:120px; display: flex; position: fixed;">
-                        <h3>Start Year</h3>
+                        <div style="width:200px; margin-left: 870px;margin-top:-120px; display: flex; position: fixed;">
+                        <h3>Year</h3>
                         </div>
                     </td>
                 </tr>
@@ -87,90 +87,8 @@
                 <option value="" disabled>Year</option>
                 </select>
             </div>
-            <!--Table for Range Selection-->
-
             <table class = "inputBoxes" style="display: flex; position: fixed; margin-left: 875px; margin-top: -30px;">
                 <td><button style="whitespace: nowrap; width: 150px; height: 60px;"class="showRev" onclick="currentMonthRevenue()">Filter Data</button></td>
-            </table>
-            <table style="display:flex;  ">
-                <tr>
-                    <div style="width:700px;margin-left: 650px;margin-top:-180px;  position: fixed;">
-                        <h3>To filter data for a range of months, please fill in the form below.</h3>
-                    </div>
-                </tr>
-                <tr>
-                    <td>
-                        <div style="width:100px;margin-left: 785px; margin-top:-120px; position: fixed;">
-                        <h3>Month</h3>
-                        </div>
-                    </td>
-                    <td>
-                        <div style="width:100px; margin-left: 865px;margin-top:-120px; display: flex; position: fixed;">
-                        <h3>Year</h3>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            <div style="margin-left: 770px; margin-top:130px; display: flex; position: fixed;">
-                <select id="filterMonthRangeStart">
-                    <option value="" disabled>Month</option>
-                    <option>January</option>
-                    <option>February</option>
-                    <option>March</option>
-                    <option>April</option>
-                    <option>May</option>
-                    <option>June</option>
-                    <option>July</option>
-                    <option>August</option>
-                    <option>September</option>
-                    <option>October</option>
-                    <option>November</option>
-                    <option>December</option>
-                </select>
-            </div>
-            <div style="margin-left: 1030px; margin-top: 130px; display: flex; position: fixed;">
-                <select id="yearDropdownRangeStart" placeholder="Year">
-                <option value="" disabled>Year</option>
-                </select>
-            </div>
-            <table>
-                <tr>
-                    <td>
-                        <div style="width:200px;margin-left: 730px; margin-top:180px; position: fixed;">
-                        <h3>End Month</h3>
-                        </div>
-                    </td>
-                    <td>
-                        <div style="width:200px; margin-left: 850px;margin-top:180px; display: flex; position: fixed;">
-                        <h3>End  Year</h3>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-             <div style="margin-left: 770px; margin-top:220px; display: flex; position: fixed;">
-                <select id="filterMonthRangeEnd">
-                    <option value="" disabled>Month</option>
-                    <option>January</option>
-                    <option>February</option>
-                    <option>March</option>
-                    <option>April</option>
-                    <option>May</option>
-                    <option>June</option>
-                    <option>July</option>
-                    <option>August</option>
-                    <option>September</option>
-                    <option>October</option>
-                    <option>November</option>
-                    <option>December</option>
-                </select>
-            </div>
-            <div style="margin-left: 1030px; margin-top: 220px; display: flex; position: fixed;">
-                <select id="yearDropdownRangeEnd" placeholder="Year">
-                <option value="" disabled>Year</option>
-                </select>
-            </div>
-            <table class = "inputBoxes" style="display: flex; position: fixed; margin-left: 875px; margin-top: 260px;">
-                <td><button style="whitespace: nowrap; width: 150px; height: 60px;"class="showRev" onclick="rangeMonthRevenue()">Filter Data</button></td>
             </table>
         </div>
     </body>
