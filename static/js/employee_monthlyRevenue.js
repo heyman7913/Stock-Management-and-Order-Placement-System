@@ -14,7 +14,22 @@ function populateYearDropdown() {
         }
     }
 function populateYearDropdown2() {
-        var yearDropdown = document.getElementById("yearDropdownRange");
+        var yearDropdown = document.getElementById("yearDropdownRangeStart");
+
+        var currentYear = new Date().getFullYear();
+
+        var startYear = 2023;
+        var endYear = currentYear + 100; // Display 10 years after the current year
+
+
+        for (var year = startYear; year <= endYear; year++) {
+            var option = document.createElement("option");
+            option.text = year;
+            yearDropdown.add(option);
+        }
+    }
+function populateYearDropdown3() {
+        var yearDropdown = document.getElementById("yearDropdownRangeEnd");
 
         var currentYear = new Date().getFullYear();
 
