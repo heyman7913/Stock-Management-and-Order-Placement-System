@@ -3,7 +3,7 @@ function populateYearDropdown() {
 
         var currentYear = new Date().getFullYear();
 
-        var startYear = currentYear; // Display 10 years before the current year
+        var startYear = 2023;
         var endYear = currentYear + 100; // Display 10 years after the current year
 
 
