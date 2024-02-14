@@ -13,7 +13,8 @@ function populateYearDropdown() {
             yearDropdown.add(option);
         }
     }
-        function openPopup(period, totalOrders, monthlyRevenue) {
+
+function openPopup(period, totalOrders, monthlyRevenue) {
     var tableContent = `
         <div class="popup">
             <h2>Monthly Revenue Details - ${period}</h2>
