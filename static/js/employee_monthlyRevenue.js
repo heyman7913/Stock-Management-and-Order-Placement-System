@@ -13,6 +13,21 @@ function populateYearDropdown() {
             yearDropdown.add(option);
         }
     }
+function populateYearDropdown2() {
+        var yearDropdown = document.getElementById("yearDropdownRange");
+
+        var currentYear = new Date().getFullYear();
+
+        var startYear = 2023;
+        var endYear = currentYear + 100; // Display 10 years after the current year
+
+
+        for (var year = startYear; year <= endYear; year++) {
+            var option = document.createElement("option");
+            option.text = year;
+            yearDropdown.add(option);
+        }
+    }
 
 function openPopup(period, totalOrders, monthlyRevenue) {
     var tableContent = `
