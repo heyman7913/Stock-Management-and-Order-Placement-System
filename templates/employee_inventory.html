@@ -8,6 +8,7 @@
 		<link rel="stylesheet" type = "text/CSS" href="{{ url_for('static', filename = 'css/employee_inventory.css' ) }}">
 		<link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 	</head>
 	<body onload="highlight_row()">
         <header>
@@ -144,6 +145,10 @@
             </table>
             <div class="buttonsTable">
                 <button class="addItem" type="submit">Add Item</button>
+            </div>
+            <div style="display:flex; margin-top: -530px; margin-left: 330px;">
+                <a href="#" onclick="copyTable('inventoryTable')">Share via Email</a>
+                <!--<a href="mailto:?subject=Inventory Table &body=Inventory table details:%0D%0A%0D%0A ${inventoryTable}" target="_blank">Share via Email</a>-->
             </div>
         </form>
     </body>
