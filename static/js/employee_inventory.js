@@ -96,7 +96,7 @@ var c=1;
             }
 
             function copyTable(tableId) {
-                console.log("Function copyTable called Successfully. ")
+                console.log("Function copyTable called Successfully.")
                 var table = document.getElementById(tableId); // Select the table by its id
                 if (!table) {
                     console.error("Table with id '" + tableId + "' not found.");
@@ -109,6 +109,8 @@ var c=1;
                 window.getSelection().addRange(range);
                 document.execCommand('copy');
                 window.getSelection().removeAllRanges();
+
+                window.location.href = "mailto:user@example.com?subject=Inventory Details&body=" + navigator.clipboard.readText();
             }
 
 
