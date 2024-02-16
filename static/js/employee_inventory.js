@@ -111,7 +111,7 @@ var c=1;
                 window.getSelection().removeAllRanges();
 
                 navigator.clipboard.readText().then(function(clipboardData) {
-                    var mailtoLink = "mailto:user@example.com?subject=Inventory Details&body=" + encodeURIComponent(clipboardData);
+                    var mailtoLink = "mailto:?subject=Inventory Details&body=" + encodeURIComponent(clipboardData);
                     window.location.href = mailtoLink;
                 }).catch(function(err) {
                     console.error('Failed to read clipboard contents: ', err);
