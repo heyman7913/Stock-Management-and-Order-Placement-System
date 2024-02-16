@@ -58,6 +58,7 @@ var c=1;
                 document.getElementById("reorderQty").value = "Reorder Quantity";
                 document.getElementById("quantityAvailable").value = "Quantity Available";
 			};
+
             function deleteItem(element){
                 var table = document.getElementById("inventoryTable");
                 var remove = confirm("This action will delete the item from the inventory and delete all pertaining records in other tables. Please confirm if you would like to do so.")
@@ -70,34 +71,7 @@ var c=1;
 					}
 				}
             }
-            /*function editItemInfo(element){	// Function for the edit icon which appears next to the item name in the table. It allows a user to correct any mistakes in the names of products.
-				var table = document.getElementById("inventoryTable");
-				var newValue = prompt("Please enter the new value for this field"); //FOr the Accept Returns column - separate function
-				if (newValue == table.rows[element.parentNode.parentNode.rowIndex].cells[element.parentNode.cellIndex].innerHTML){
-					alert("The same value has been entered again");
-				}else if (newValue == null || newValue == "") {
-					alert("Null isn't an appropriate value for this field. If you would like to change the value for this cell, please click the edit icon again. ");
-				}else{
-					table.rows[element.parentNode.parentNode.rowIndex].cells[element.parentNode.cellIndex].innerHTML = newValue + "<button class=\"editItemInfo\" \"style=\"font-size:24px;\" onclick = \"editItemInfo(this)\"><i class = \"fa fa-edit center\"></i></button>";
-				}
 
-			};*/
-			/*function highlight_row(){
-			    table = document.getElementById("inventoryTable");
-			    var checkRowHighlight = false;
-			    for (var i = 0, row; row = table.rows[i]; i++){
-			        if (row.cells[3]<row.cells[6]){
-			            checkRowHighlight = true;
-			        }
-			        else{
-			            checkRowHighlight = false;
-			        }
-			        if (checkRowHighlight = true){
-			            row.style.backgroundColor = "yellow";
-			        }
-			        checkRowHighlight = false;
-			    }
-			}*/
 			function highlight_row(){
 			    console.log("function called");
                 var table = document.getElementById("inventoryTable");
@@ -116,7 +90,25 @@ var c=1;
 
                 }
             }
+
             function confirmDelete() {
                     return confirm("Are you sure you want to delete this item? \nWARNING THIS ACTION WILL REMOVE ALL OCCURENCES OF THIS ITEM IN PAST ORDERS");
             }
+
+            function copyTable(tableId) {
+                console.log("Function copyTable called Successfully. ")
+                var table = document.getElementById(tableId); // Select the table by its id
+                if (!table) {
+                    console.error("Table with id '" + tableId + "' not found.");
+                    return;
+                }
+
+                var range = document.createRange();
+                range.selectNode(table);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+            }
+
 
