@@ -28,6 +28,9 @@
         <br>
         <br>
         <br>
+        <div style="display: flex; position: absolute; margin-left:74%; margin-top:4%;  ">
+            <input style="width: 250px;" type="text" id="searchInput" placeholder="Search Table By Product Name...">
+        </div>
         <div  class="inventoryTable" style = "margin-top: 120px; display: flex; margin-left: 60px;" >
             <h3 style="position: fixed; margin-top: -60px; ">Inventory Details&nbsp;&nbsp;
                 <a href = "/employee/inventoryprint">
@@ -153,3 +156,22 @@
         </form>
     </body>
 </html>
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const table = document.getElementById('inventoryTable');
+    const tableRows = table.getElementsByTagName('tr');
+
+    searchInput.addEventListener('input', function () {
+        const searchText = this.value.toLowerCase();
+
+        for (let i = 1; i < tableRows.length; i++) {
+            const rowData = tableRows[i].getElementsByTagName('td')[1].innerText.toLowerCase();
+            if (rowData.includes(searchText)) {
+                tableRows[i].style.display = '';
+            } else {
+                tableRows[i].style.display = 'none';
+            }
+        }
+    });
+
+</script>
