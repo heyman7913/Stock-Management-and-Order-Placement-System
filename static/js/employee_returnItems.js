@@ -1,3 +1,4 @@
+/*
 var c = 1;
             var row, productID, productName, priceUnit, quantityRet, acceptReturns;
             function returnItem(){
@@ -56,4 +57,9 @@ var c = 1;
 				}else{
 					table.rows[element.parentNode.parentNode.rowIndex].cells[3].innerHTML = parseInt(table.rows[element.parentNode.parentNode.rowIndex].cells[3].innerHTML) - 1 + "<button class=\"plusBtn\" onclick = \"plusItem(this)\"><i class=\"fa fa-plus\"></i></button><button onclick = \"minusItem(this)\" class=\"minusBtn\" style=\"font-size:24px\"><i class=\"fa fa-minus\"></i></button>";
 				}
-            }
+            }*/
+
+function confirmDeleteItem() {
+    return confirm("Are you sure you want to delete this item from the return order?\nThis action cannot be undone.");
+}
+

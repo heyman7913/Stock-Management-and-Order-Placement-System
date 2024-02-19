@@ -63,11 +63,11 @@
                         <input type="submit" hidden>
                     </form>
                     <td>
-                        <a href="/employee/returnItemsDel/{{item.order_id}}">
+                        <a href="/employee/returnItemsDel/{{item.order_id}}" onclick="return confirmDeleteItem()">
                             <button class="minusBtn" style="font-size:20px;">
-                                <i class = "fa fa-trash center"></i>
+                                <i class="fa fa-trash center"></i>
                             </button>
-                        </a>
+                         </a>
                     </td>
                 </tr>
                 {% endfor %}
