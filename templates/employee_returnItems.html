@@ -27,7 +27,7 @@
         <br>
         <br>
         <br>
-		<div  class="returnTable" style = "margin-top: 160px; margin-left: 60px;">
+		<div  class="returnTable" style = "margin-top: 160px; margin-left: 60px; height: 350px; overflow-y:auto;">
             <h3 style="position: fixed; margin-top: -70px;">Item Return</h3>
             <table id ="returnTable">
                 <tr style="position: fixed; margin-top: -50px;">
@@ -64,8 +64,8 @@
                     </form>
                     <td>
                         <a href="/employee/returnItemsDel/{{item.order_id}}">
-                            <button class="editUserPassword" style="font-size:24px;">
-                                <i class = "fa fa-edit center"></i>
+                            <button class="minusBtn" style="font-size:20px;">
+                                <i class = "fa fa-trash center"></i>
                             </button>
                         </a>
                     </td>
@@ -73,18 +73,22 @@
                 {% endfor %}
             </table>
         </div>
-
-		<h3 style="position: fixed; margin-left: 1055px; margin-top: -475px;">To return any purchased items <br>please enter their product ID  <br>below and click return item.</h3>
-        <table class = "inputBoxes" style="position: fixed; margin-left: 1055px; margin-top: -400px;">
+        <div style="display: flex;">
+            <h3 style="position: absolute; margin-left: 35px; margin-top: 0px;">To return any purchased items please enter their product ID  below and click return item.</h3>
+        </div>
+        <table class = "inputBoxes" style="display: flex; position: absolute; margin-left: 40px; margin-top: 20px;">
             <tr>
                 <form action="/employee/returnItemsAdd" method="post">
                     <td><input type="number" min = "1" id="productID" name="productID" placeholder="Product ID" required style ="height: 40px; font-size: 20px;"></td>
-                    <td><button class="returnItem" type="submit">Return Item</button></td>
+                    <td><button class="returnBtn" type="submit">Return Item</button></td>
                 </form>
             </tr>
-            <tr>
-                <form action="/employee/returnItems" method="post">
-                    <td>
+        </table>
+        <table style="margin-top: 30px; margin-left: 400px;">
+            <form action="/employee/returnItems" method="post">
+                 <tr>
+                     <div >
+                         <td style="margin-left: -100px;">
                         {% with messages = get_flashed_messages() %}
                           {% if messages %}
                             <ul class=flashes>
@@ -95,17 +99,17 @@
                           {% endif %}
                         {% endwith %}
                     </td>
-                    <td><button class="returnItem" type="submit">Submit Form</button></td>
-                </form>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
+                     </div>
+                 </tr>
+                <tr style="">
+                    <td style="width: 400px;margin-left:600px;"><button class="submitForm" type="submit">Submit Return Order</button></td>
+                    <td style="width: 400px;">
                     <a href="/employee/returnItemsDel/0">
-                        <button class="returnItem">Clear Form</button>
+                        <button class="clearForm">Clear Return Order</button>
                     </a>
                 </td>
-            </tr>
+                </tr>
+                </form>
         </table>
     </body>
 </html>
