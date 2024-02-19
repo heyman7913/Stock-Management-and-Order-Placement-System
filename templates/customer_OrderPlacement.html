@@ -55,40 +55,42 @@
 <form action="/customer/orderplacement" method="POST" style="position: static; margin-top: 20px;">
 	<table>
 		<tr>
-			<div class="submitOrder" style="margin-top: 100px; position: relative; ">
+			<div class="submitOrder" style="margin-top: 100px; position: relative; margin-left: 200px; ">
 				<button type = "submit" class="button4" style="display: inline; font-size: 18px;">Submit Order</button>
 			</div>
 		</tr>
 		<tr>
-			<h2>Please choose your delivery choice!</h2>
+			<div style="position: absolute; margin-top: -180px;">
+				<h2>Please choose your delivery choice!</h2>
+			</div>
 		</tr>
 		<tr>
-			<div class="deliveryButton" style="margin-left: 400px;">
+			<div class="deliveryButton" style="position: absolute; margin-left: 50px;margin-top: -150px;">
 				<input type="radio" id="homeDelivery" name="deliveryChoice" value="HD" required>
 				<label for="homeDelivery">Home Delivery</label><br>
 			</div>
 		</tr>
 		<tr>
-			<div class ="deliveryButton" style="margin-left: 550px; margin-top: -25px; ">
+			<div class ="deliveryButton" style="margin-left: 300px; margin-top: -150px; ">
 				<input type="radio" id="pickUp" name="deliveryChoice" value="PU"  checked required>
 				<label for="pickUp">Pick Up From Store</label><br>
 			</div>
 		</tr>
 	</table>
 </form>
-<div>
+<div style="display: flex; position: absolute; margin-top:12px;margin-left: 500px;">
 	<a href="/customer/orderDel">
 		<div class="resetOrder">
-			<button type = "submit" class="button5" style="display: inline; font-size: 18px; ">Reset Order</button>
+			<button type = "submit" class="button5" style="display: inline; font-size: 18px; white-space: nowrap;">Reset Order</button>
 		</div>
 	</a>
 </div>
 
-<form class="form-inline" action="/customer/addorder" method="POST" style="margin-top: -300px; =">
-	<table class="buttonsTable" style="width: 40%; display: flex; margin-left:920px; position: relative; column-width:150px; align-items: center;">
+<form class="form-inline" action="/customer/addorder" method="POST" >
+	<table class="buttonsTable" style="width: 40%; display: flex; margin-left:920px; position: fixed; column-width:150px; align-items: center;">
 		<tr>
 		<tr>
-			<div style="white-space: nowrap; float: right; display: flex; margin-top: -350px; margin-left:820px; position: fixed; ">
+			<div style="white-space: nowrap; display: flex; margin-top: -300px; margin-left:820px; position: fixed; ">
 				<h2>Add Item To Cart Here!</h2>
 				<br>
 				<p style="white-space: nowrap; font-size: 15px; display: flex; position: fixed; margin-top: 40px; margin-left: 0px;">To add items to your cart, please type their names into the <br> textbox below.
@@ -97,8 +99,8 @@
 			</div>
 		</tr>
 		<tr>
-			<div class="inputBoxes, form-group" style="display: flex; position: fixed;" >
-				<td style= "width: 45%;"><input type="text" id="itemName_input" name="name" placeholder="Name of the Product" required></td>
+			<div class="inputBoxes, form-group" style="display: flex; position: relative; margin-top: -70px;" >
+				<td style= "width: 45%; "><input type="text" id="itemName_input" name="name" placeholder="Name of the Product" required></td>
 				<td style=><select name ="quantity" id="quantity_input" placeholder = "Quantity Required" required>
 					<option selected>1</option>
 					<option>2</option>
@@ -114,7 +116,7 @@
 				</td>
 			</div>
 			<div class="cartButtons">
-				<td style = "margin-top:-250px; position: fixed; display: flex; "><button class="button1" type="submit">Add Item</button></td>
+				<td style = "margin-top:-20px; position: fixed; display: flex; "><button class="button1" type="submit">Add Item</button></td>
 			</div>
 		</tr>
 		{% with messages = get_flashed_messages() %}
@@ -128,7 +130,7 @@
 		{% endwith %}
 	</table>
 </form>
-<div style="float: right; margin-right: 90px; margin-top: -580px; display: flex; align-items: center;">
+<div style="float: right; position: fixed; margin-right: 90px; margin-top: -520px; margin-left:1070px;display: flex; align-items: center;">
 	<a href="/customer/editprofile">
 		<div class="changeProfile">
 			<button class="button7" onclick = "window.location.href = '/customer/editprofile'" style="margin: 0 auto; display: inline;">Change Profile Details</button>
