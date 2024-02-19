@@ -54,7 +54,7 @@
         </div>
         {% if data.action == True %}
         <div class="clearfix">
-            <button type="button" class="cancelbtn" onclick="window.location.href = '/employee/orderView/{{data.order_id}}/-'">Reject</button>
+            <button type="button" class="cancelbtn" onclick="confirmReject()">Reject</button>
             <button type="button" class="acceptbtn" onclick="window.location.href = '/employee/orderView/{{data.order_id}}/+'">Accept</button>
         </div>
         {% endif %}
@@ -63,3 +63,12 @@
         </div>
     </body>
 </html>
+<script>
+    function confirmReject() {
+    if (confirm("Are you sure you want to reject this order? \nThis action cannot be undone.")) {
+        window.location.href = '/employee/orderView/{{data.order_id}}/-';
+    } else {
+        // Do nothing or provide alternative action
+    }
+}
+</script>
