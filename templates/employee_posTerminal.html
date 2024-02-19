@@ -95,6 +95,14 @@
                   {% endif %}
                 {% endwith %}
             </table>
+            <!--<div class="popup" id="warningPopup">
+                <div class="popup-content">
+                    <div class="popup-header" style="font-color: red; ">Warning!</div>
+                    <p>Before sale, please check if the Customer has the prescription.</p>
+                    <button class="popup-close close-btn" onclick="closePopup()">Close</button>
+                </div>
+            </div>
+            <div class="overlay" id="overlay"></div>-->
         </form>
         <table class = "inputBoxes" style="position: static; margin-left: 750px; white-space: nowrap;">
             <td>
@@ -103,10 +111,10 @@
                 </a>
             </td>
         </table>
-        <form action="/employee/posTerminal/" method="post">
+        <form action="/employee/posTerminal/" method="post" >
             <table class = "inputBoxes" style="position: static; display: flex; margin-left: 550px; margin-top:-62px; white-space: nowrap;">
                 <td>
-                    <button class="addItem" type="submit">Submit Order</button>
+                    <button class="addItem" type="submit" id="submitOrderButton">Submit Order</button>
                 </td>
             </table>
         </form>
