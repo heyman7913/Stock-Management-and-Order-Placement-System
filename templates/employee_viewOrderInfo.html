@@ -31,7 +31,9 @@
             <label style="font-size: 18px; margin-left:10px">{{data.type}}</label>
             <br>
         </div>
-        <table class="orderInfoTable" style="margin-left: 6%;  top:35%;">
+
+        <div class="table-wrapper">
+            <table class="orderInfoTable" style="margin-left: 6%;  top:35%;">
             <tr style="position: absolute;">
                 <th>Order Sub ID</th>
                 <th>Product Name</th>
@@ -49,6 +51,7 @@
             </tr>
             {% endfor %}
         </table>
+        </div>
         {% if data.action == True %}
         <div class="clearfix">
             <button type="button" class="cancelbtn" onclick="window.location.href = '/employee/orderView/{{data.order_id}}/-'">Reject</button>

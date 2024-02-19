@@ -69,7 +69,28 @@ th {
 	height: 10px;
 	font-size: 15px;
     width: 240px;
-	text-align:center;
 	border:1px solid black;
 	padding: 5px;
 }
+.table-wrapper {
+    max-height: 380px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.orderInfoTable tr {
+    height: 120px;
+}
+
+.orderInfoTable td {
+     width: 240px;
+     align-text:center;
+}
+
+.orderInfoTable {
+    width: 100%; /* Ensure table takes full width of its container */
+    border-collapse: collapse; /* Collapse table borders */
+}
+
+
+
