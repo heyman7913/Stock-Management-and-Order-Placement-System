@@ -99,8 +99,17 @@ button{
 	position: static;
     font-size: 20px;
 }
-.returnItem:hover{
-    background-color: rgb(52, 177, 52);
+.returnBtn:hover{
+    background-color: yellow;
+    white-space:nowrap;
+}
+.submitForm:hover {
+    background-color: green;
+    white-space:nowrap;
+}
+.clearForm:hover{
+    background-color: red;
+    white-space:nowrap;
 }
 .plusBtn{
 	font-size: 24px;
@@ -109,8 +118,8 @@ button{
 }
 .minusBtn{
 	font-size: 24px;
-	width: 48px;
-	height: 48px;
+	width: 40px;
+	height: 40px;
 }
 .plusBtn:hover{
 	background-color: green;
@@ -124,7 +133,7 @@ th {
 	background-color:green;
 	Color:white;
 	font-size: 15px;
-    width: 160px;
+    width: 179px;
 	text-align:center;
 	border:1px solid black;
 	padding: 5px;
@@ -134,13 +143,11 @@ tr{
 }
 td{
     padding: 5px;
-    width: 160px;
+    width: 180px;
     text-align: center;
 }
 .returnTable{
-    height: 450px;
-    overflow-y: auto;
-    width: 820px;
+    width: 1260px;
     border-collapse: collapse;
     
 }
