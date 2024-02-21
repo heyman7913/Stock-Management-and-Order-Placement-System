@@ -804,6 +804,7 @@ def customer_OrderPlacement():
                 )
 
                 order_lines = []
+                _total = 0
                 if customer_orders_db is not None and customer_orders_db.count() > 0:
                     count = 0
                     for customer_order in customer_orders_db:
@@ -829,10 +830,15 @@ def customer_OrderPlacement():
                                     * order_line_db.quant,
                                 }
                             )
+                            _total = _total + (
+                                order_line_db.price * order_line_db.quant
+                            )
 
                 page_name = "customer_OrderPlacement.html"
                 path = os.path.join(page_name)
-                return render_template(path, data=order_lines)
+                return render_template(
+                    path, data={"list": order_lines, "total": _total}
+                )
             else:
                 cookies = [
                     [AUTH_COOKIE_CUST, BLANK, EXPIRE_NOW],
