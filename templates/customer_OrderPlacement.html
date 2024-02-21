@@ -24,7 +24,7 @@
 			<th>Price per Unit</th>
 			<th>Subtotal</th>
 		</tr>
-		{% for item in data %}
+		{% for item in data.list %}
 		<tr>
 			<td>{{item.sl_no}}</td>
 			<td>{{item.name}}</td>
@@ -49,7 +49,7 @@
 </div>
 <div>
 	<label id = "grandTotal" ><strong>Grand Total</strong></label>
-	<label>Total Price</label>
+	<label>{{data.total}}</label>
 </div>
 
 <form action="/customer/orderplacement" method="POST" style="position: static; margin-top: 20px;">
