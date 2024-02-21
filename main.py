@@ -324,7 +324,7 @@ class EmployeeOrder(db.Model):
 class OrderStatus:
     ORDER_INCOMPLETE = "ORDER INCOMPLETE"
     ORDER_IN_PROGRESS = "ORDER IN PROGRESS"
-    ORDER_COMPLETE = "ORDER COMPLETE"
+    ORDER_PLACED = "ORDER PLACED"
     ORDER_ACCEPTED = "ORDER ACCEPTED"
     ORDER_REJECTED = "ORDER REJECTED"
     IN_PACK = "PACKAGING"
@@ -913,7 +913,7 @@ def customer_OrderPlacement():
                     db.session.refresh(order_head_db)
 
                     for customer_order in customer_orders_db:
-                        customer_order.status = OrderStatus.ORDER_COMPLETE
+                        customer_order.status = OrderStatus.ORDER_PLACED
                         order_line_db = OrderLine.query.filter(
                             OrderLine.id == customer_order.order_line_id,
                             OrderLine.type == True,
@@ -2594,7 +2594,7 @@ def employeeOrders():
 
                 # Open Orders
                 customer_orders_db = CustomerOrder.query.filter(
-                    CustomerOrder.status == OrderStatus.ORDER_COMPLETE
+                    CustomerOrder.status == OrderStatus.ORDER_PLACED
                 )
                 if customer_orders_db is not None:
                     for customer_order in customer_orders_db:
@@ -2877,7 +2877,7 @@ def employeeViewOrderInfo(order_id: int, action: str):
                                     data["status"] = customer_order_db.status
                                     if (
                                         customer_order_db.status
-                                        == OrderStatus.ORDER_COMPLETE
+                                        == OrderStatus.ORDER_PLACED
                                     ):
                                         data["action"] = True
                                     data[
