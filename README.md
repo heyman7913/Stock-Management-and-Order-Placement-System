@@ -1,7 +1,5 @@
 # ComputerScienceIA
 ___
-#### By Himansh Chitkara
-___
 OS Commands:
 > Install wkhtmltopdf (Debian/Ubuntu:):
 ```
