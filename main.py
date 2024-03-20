@@ -1730,7 +1730,7 @@ def employeeInventoryPrint():
                         html_code, file_path, options={"enable-local-file-access": ""}
                     )
                 except Exception as e:
-                    print("PDF generaion error : ", str(e))
+                    print("PDF generation error : ", str(e))
                     page_name = "employee_inventory.html"
                     path = os.path.join(page_name)
                     return render_template(path, data=data)
