@@ -73,11 +73,11 @@ try:
                 database=data[DATABASE][NAME],
             )
         else:
-            DB_CON = "mysql://{user_name}:password:{password}@{host}:{port}/{database}".format(
+            DB_CON = "mysql+pymysql://{user_name}:{password}@{host}/{database}".format(
                 user_name=data[DATABASE][USERNAME],
                 password=data[DATABASE][PASSWORD],
                 host=data[DATABASE][HOST],
-                port=data[DATABASE][PORT],
+                # port=data[DATABASE][PORT],
                 database=data[DATABASE][NAME],
             )
         app.config["SECRET_KEY"] = server_secret
