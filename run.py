@@ -11,7 +11,11 @@ if __name__ == "__main__":
         if len(command_line_args) > 1:
             try:
                 if command_line_args[1] == "delete_admin":
-                    if command_line_args[2] == "all":
+                    try:
+                        command = command_line_args[2]
+                    except Exception as e:
+                        command = BLANK
+                    if command == "all":
                         admin_logins_db = AdminLogin.query.all()
                         for admin_login_db in admin_logins_db:
                             admin_details_db = AdminDetails.query.filter(
@@ -38,42 +42,40 @@ if __name__ == "__main__":
                         db.session.commit()
                         print(f"All Admins have been deleted")
                     else:
-                        pass
-                elif command_line_args[1] == "delete_admin":
-                    email = command_line_args[2]
-                    while email is BLANK:
-                        email = input("Email Id : ")
-                    admin_login_db = AdminLogin.query.filter(
-                        AdminLogin.user_name == email.upper(),
-                    ).first()
-
-                    if admin_login_db is not None:
-                        admin_details_db = AdminDetails.query.filter(
-                            AdminDetails.admin_login_id == admin_login_db.id
+                        email = command
+                        while email is BLANK:
+                            email = input("Email Id : ")
+                        admin_login_db = AdminLogin.query.filter(
+                            AdminLogin.user_name == email.upper(),
                         ).first()
-                        if admin_details_db is not None:
-                            email_send_ref = EmailSend(
-                                thread_name="Admin Deletion",
-                                email=admin_details_db.emailID,
-                                subject=f"{server_name} | Admin Account Deleted",
-                                body=f"""
-                                Hi {admin_details_db.first_name},
-        
-                                Your admin access for user {admin_details_db.emailID}
-                                has been revoked.
-                                Thanks for being a valued admin.
-        
-                                Thanks and Regards,
-                                Bot.
-                                """,
-                            )
-                            email_send_ref.start()
 
-                        db.session.delete(admin_login_db)
-                        db.session.commit()
-                        print(f"Admin {email} has been deleted")
-                    else:
-                        print(f"Admin {email} not found")
+                        if admin_login_db is not None:
+                            admin_details_db = AdminDetails.query.filter(
+                                AdminDetails.admin_login_id == admin_login_db.id
+                            ).first()
+                            if admin_details_db is not None:
+                                email_send_ref = EmailSend(
+                                    thread_name="Admin Deletion",
+                                    email=admin_details_db.emailID,
+                                    subject=f"{server_name} | Admin Account Deleted",
+                                    body=f"""
+                                    Hi {admin_details_db.first_name},
+            
+                                    Your admin access for user {admin_details_db.emailID}
+                                    has been revoked.
+                                    Thanks for being a valued admin.
+            
+                                    Thanks and Regards,
+                                    Bot.
+                                    """,
+                                )
+                                email_send_ref.start()
+
+                            db.session.delete(admin_login_db)
+                            db.session.commit()
+                            print(f"Admin {email} has been deleted")
+                        else:
+                            print(f"Admin {email} not found")
                 elif command_line_args[1] == "create_admin":
                     first_name = command_line_args[2]
                     last_name = command_line_args[3]
